@@ -1,0 +1,62 @@
+@namespace TDComponents.Components
+
+<td-listbox class="td-field" data-multiple="@(Multiple ? "true" : "false")" data-name="@Name">
+    @if (!string.IsNullOrWhiteSpace(Label))
+    {
+        <TDLabel>@Label</TDLabel>
+    }
+    @if (AllowFiltering)
+    {
+        <div class="td-listbox__search">
+            <input type="search" placeholder="@FilterPlaceholder" aria-label="@FilterPlaceholder" data-td-list-filter />
+        </div>
+    }
+    <div class="td-listbox" role="listbox" aria-multiselectable="@(Multiple ? "true" : "false")" aria-label="@Label" tabindex="0" data-td-listbox>
+        @foreach (var option in Options)
+        {
+            var on = Selected.Contains(option.Value);
+            <button type="button"
+                    class="td-listbox__item @(on ? "is-on" : null)"
+                    role="option"
+                    aria-selected="@(on ? "true" : "false")"
+                    disabled="@option.Disabled"
+                    data-td-list-pick="@option.Value"
+                    data-label="@option.Label">
+                <span class="td-listbox__mark" aria-hidden="true"></span>
+                <span>@option.Label</span>
+                @if (!string.IsNullOrWhiteSpace(option.Hint))
+                {
+                    <em>@option.Hint</em>
+                }
+            </button>
+        }
+        <p class="td-listbox__empty" hidden data-td-list-empty>Sin resultados</p>
+    </div>
+    @foreach (var value in Selected)
+    {
+        <input type="hidden" name="@Name" value="@value" data-td-list-value />
+    }
+</td-listbox>
+
+@code {
+    /// <summary>Nombre de los valores enviados.</summary>
+    [Parameter] public string Name { get; set; } = "lista";
+
+    /// <summary>Etiqueta de la lista.</summary>
+    [Parameter] public string? Label { get; set; }
+
+    /// <summary>Texto del filtro. Solo se ve si <see cref="AllowFiltering"/> es verdadero.</summary>
+    [Parameter] public string FilterPlaceholder { get; set; } = "Filtrar…";
+
+    /// <summary>Filas visibles. <c>Disabled</c> desactiva una fila.</summary>
+    [Parameter] public IReadOnlyList<TDOption> Options { get; set; } = [];
+
+    /// <summary>Valores iniciales. En selección simple lleva un solo elemento.</summary>
+    [Parameter] public IReadOnlyList<string> Selected { get; set; } = [];
+
+    /// <summary>Permite elegir varias filas.</summary>
+    [Parameter] public bool Multiple { get; set; }
+
+    /// <summary>Muestra el filtro. Úsalo cuando hay más de unas ocho filas.</summary>
+    [Parameter] public bool AllowFiltering { get; set; }
+}

@@ -1,0 +1,10 @@
+@namespace TDComponents.Components
+
+<span class="td-loader" role="status" aria-label="@Label">
+    <span></span><span></span><span></span>
+</span>
+
+@code {
+    /// <summary>Qué se está cargando. El defecto es Cargando.</summary>
+    [Parameter] public string Label { get; set; } = "Cargando";
+}

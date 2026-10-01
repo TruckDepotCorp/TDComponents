@@ -1,0 +1,50 @@
+@namespace TDComponents.Components
+
+<td-switch>
+    <label class="td-switch @(SizeToken) @(LabelPosition == TDLabelPosition.Start ? "td-switch--start" : null) @(Disabled ? "is-disabled" : null)">
+        @if (LabelPosition == TDLabelPosition.Start)
+        {
+            <span class="td-switch__text">@Label</span>
+        }
+        <input class="td-sr"
+               type="checkbox"
+               name="@Name"
+               value="true"
+               checked="@Checked"
+               disabled="@Disabled"
+               role="switch"
+               aria-checked="@(Checked ? "true" : "false")" />
+        <span class="td-switch__track" aria-hidden="true"><span class="td-switch__thumb"></span></span>
+        @if (LabelPosition != TDLabelPosition.Start)
+        {
+            <span class="td-switch__text">@Label</span>
+        }
+    </label>
+</td-switch>
+
+@code {
+    /// <summary>Nombre del campo en el post. Activo envía el literal <c>true</c>.</summary>
+    [Parameter] public string? Name { get; set; }
+
+    /// <summary>Texto que dice qué cambia. El interruptor solo no alcanza.</summary>
+    [Parameter] public string Label { get; set; } = "";
+
+    /// <summary>Empieza activo.</summary>
+    [Parameter] public bool Checked { get; set; }
+
+    /// <summary>La persona no puede cambiarlo.</summary>
+    [Parameter] public bool Disabled { get; set; }
+
+    /// <summary>Tamaño de la pista. <see cref="TDSize.Small"/>, <see cref="TDSize.Medium"/> o <see cref="TDSize.Large"/>.</summary>
+    [Parameter] public TDSize Size { get; set; } = TDSize.Medium;
+
+    /// <summary>Lado del texto. <see cref="TDLabelPosition.End"/> lo deja a la derecha. <see cref="TDLabelPosition.Start"/> lo deja a la izquierda.</summary>
+    [Parameter] public TDLabelPosition LabelPosition { get; set; } = TDLabelPosition.End;
+
+    private string SizeToken => Size switch
+    {
+        TDSize.Small => "td-switch--sm",
+        TDSize.Large => "td-switch--lg",
+        _ => "td-switch--md"
+    };
+}

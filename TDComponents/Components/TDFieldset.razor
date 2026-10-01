@@ -1,0 +1,19 @@
+@namespace TDComponents.Components
+
+<details class="td-fieldset" open="@(!Collapsed)">
+    <summary class="td-fieldset__legend">@Legend</summary>
+    <div class="td-fieldset__body">
+        @ChildContent
+    </div>
+</details>
+
+@code {
+    /// <summary>Título del grupo. También es el control para plegarlo. Un grupo sin leyenda no se entiende.</summary>
+    [Parameter] public string Legend { get; set; } = "";
+
+    /// <summary>Empieza cerrado. Úsalo cuando el bloque es secundario.</summary>
+    [Parameter] public bool Collapsed { get; set; }
+
+    /// <summary>Campos que pertenecen al grupo.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

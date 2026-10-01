@@ -1,0 +1,66 @@
+@namespace TDComponents.Components
+
+<article class="td-card td-card--@VariantToken @(Horizontal ? "td-card--row" : null) @(Accent ? "td-card--accent" : null)">
+    @if (!string.IsNullOrWhiteSpace(Media))
+    {
+        <div class="td-card__media">@Media</div>
+    }
+    @if (!string.IsNullOrWhiteSpace(Header) || HeaderContent is not null)
+    {
+        <header class="td-card__head">
+            @if (HeaderContent is not null)
+            {
+                @HeaderContent
+            }
+            else
+            {
+                <span>@Header</span>
+            }
+        </header>
+    }
+    <div class="td-card__body">
+        @if (!string.IsNullOrWhiteSpace(Eyebrow))
+        {
+            <p class="td-section-title">@Eyebrow</p>
+        }
+        @if (!string.IsNullOrWhiteSpace(Title))
+        {
+            <h3 class="td-card__title">@Title</h3>
+        }
+        @ChildContent
+    </div>
+    @if (Footer is not null)
+    {
+        <footer class="td-card__foot">@Footer</footer>
+    }
+</article>
+
+@code {
+    /// <summary>Relieve. Outlined, Elevated o Flat. El defecto es Outlined.</summary>
+    [Parameter] public TDCardVariant Variant { get; set; } = TDCardVariant.Outlined;
+    /// <summary>Texto o fondo del bloque superior.</summary>
+    [Parameter] public string? Media { get; set; }
+    /// <summary>Título de la cabecera, como texto plano.</summary>
+    [Parameter] public string? Header { get; set; }
+    /// <summary>Cabecera libre. Si la usas, tiene prioridad sobre Header.</summary>
+    [Parameter] public RenderFragment? HeaderContent { get; set; }
+    /// <summary>Línea pequeña sobre el título.</summary>
+    [Parameter] public string? Eyebrow { get; set; }
+    /// <summary>Título de la tarjeta.</summary>
+    [Parameter] public string? Title { get; set; }
+    /// <summary>Coloca el medio al lado del texto.</summary>
+    [Parameter] public bool Horizontal { get; set; }
+    /// <summary>Marca la tarjeta con el color de acento.</summary>
+    [Parameter] public bool Accent { get; set; }
+    /// <summary>Cuerpo de la tarjeta.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    /// <summary>Pie de la tarjeta. En Razor se entrega con Footer.</summary>
+    [Parameter] public RenderFragment? Footer { get; set; }
+
+    private string VariantToken => Variant switch
+    {
+        TDCardVariant.Elevated => "elevated",
+        TDCardVariant.Flat => "flat",
+        _ => "outlined"
+    };
+}

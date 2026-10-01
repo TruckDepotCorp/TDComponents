@@ -1,0 +1,23 @@
+@namespace TDComponents.Components
+
+<td-drawer>
+    <button type="button" class="td-btn td-btn--primary td-btn--md" data-td-dialog-open="@Id">@Trigger</button>
+    <TDDialog Id="@Id" Title="@Title" Drawer="true" ConfirmText="@ConfirmText" CancelText="@CancelText">
+        @ChildContent
+    </TDDialog>
+</td-drawer>
+
+@code {
+    /// <summary>Identificador del panel. Tiene que ser único en la página.</summary>
+    [Parameter] public string Id { get; set; } = "td-drawer";
+    /// <summary>Texto del botón que abre el panel.</summary>
+    [Parameter] public string Trigger { get; set; } = "Abrir panel";
+    /// <summary>Título del panel.</summary>
+    [Parameter] public string Title { get; set; } = "Filtros";
+    /// <summary>Texto de la acción principal.</summary>
+    [Parameter] public string ConfirmText { get; set; } = "Aplicar";
+    /// <summary>Texto de la acción secundaria.</summary>
+    [Parameter] public string CancelText { get; set; } = "Limpiar";
+    /// <summary>Contenido del panel.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

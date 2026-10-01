@@ -1,0 +1,269 @@
+@namespace TDComponents.Components
+@using System.Data
+@using System.Globalization
+@using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.WebUtilities
+@using TDComponents.Data
+
+<td-data-grid class="td-grid" data-density="comfortable">
+    <div class="td-grid__card">
+        <form class="td-grid__toolbar" method="get" action="@_path" data-enhance>
+            <div class="td-grid__search">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+                <input type="search" name="@N("q")" value="@_search" placeholder="@SearchPlaceholder" aria-label="@SearchPlaceholder" />
+            </div>
+            @if (!string.IsNullOrEmpty(_sort))
+            {
+                <input type="hidden" name="@N("sort")" value="@_sort" />
+                <input type="hidden" name="@N("dir")" value="@(_desc ? "desc" : "asc")" />
+            }
+            @if (_size != PageSize)
+            {
+                <input type="hidden" name="@N("size")" value="@_size" />
+            }
+            <p class="td-grid__schema">Columnas desde el esquema · @(_table?.Columns.Count ?? 0)</p>
+        </form>
+        <form id="@_sizeFormId" method="get" action="@_path" data-enhance class="td-grid__sizeform">
+            @if (!string.IsNullOrEmpty(_search))
+            {
+                <input type="hidden" name="@N("q")" value="@_search" />
+            }
+            @if (!string.IsNullOrEmpty(_sort))
+            {
+                <input type="hidden" name="@N("sort")" value="@_sort" />
+                <input type="hidden" name="@N("dir")" value="@(_desc ? "desc" : "asc")" />
+            }
+        </form>
+        <div class="td-grid__scroll">
+            <table aria-label="@AriaLabel">
+                <thead>
+                    <tr>
+                        @if (_table is not null)
+                        {
+                            @foreach (DataColumn column in _table.Columns)
+                            {
+                                <th scope="col" class="@(IsNumeric(column) ? "is-end" : null)">
+                                    <div class="td-grid__head">
+                                        <a href="@SortHref(column.ColumnName)" class="@(_sort == column.ColumnName ? "is-active" : null)">
+                                            @(string.IsNullOrEmpty(column.Caption) ? column.ColumnName : column.Caption)
+                                            <span class="td-grid__sort" aria-hidden="true">@(_sort == column.ColumnName ? (_desc ? "↓" : "↑") : "↕")</span>
+                                        </a>
+                                    </div>
+                                </th>
+                            }
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var row in _page)
+                    {
+                        <tr>
+                            @foreach (DataColumn column in _table!.Columns)
+                            {
+                                <td class="@(IsNumeric(column) ? "is-end" : null)">
+                                    <span class="@CellClass(column)">@Format(row, column)</span>
+                                </td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            @if (_page.Count == 0)
+            {
+                <div class="td-grid__empty">
+                    <p>Ninguna fila coincide con la búsqueda</p>
+                    <a class="td-grid__tool" href="@_path">Limpiar filtros</a>
+                </div>
+            }
+        </div>
+        <TDPager Count="_total" Page="_pageNumber" PageSize="_size" PageSizeOptions="PageSizeOptions" HrefForPage="PageHref" SizeFieldName="@N("size")" SizeFormId="@_sizeFormId" />
+    </div>
+</td-data-grid>
+
+@code {
+    [Inject] private NavigationManager Navigation { get; set; } = default!;
+    /// <summary>Tabla ADO.NET. Las columnas salen de su esquema.</summary>
+    [Parameter] public DataTable? Data { get; set; }
+    /// <summary>Prefijo de la paginación y la búsqueda en la URL.</summary>
+    [Parameter] public string QueryKey { get; set; } = "dt";
+    /// <summary>Filas por página. El defecto es 8.</summary>
+    [Parameter] public int PageSize { get; set; } = 8;
+    /// <summary>Tamaños que la persona puede elegir.</summary>
+    [Parameter] public IReadOnlyList<int> PageSizeOptions { get; set; } = [8, 15, 30];
+    /// <summary>Texto de la búsqueda vacía.</summary>
+    [Parameter] public string SearchPlaceholder { get; set; } = "Buscar en la tabla…";
+    /// <summary>Nombre accesible de la tabla.</summary>
+    [Parameter] public string AriaLabel { get; set; } = "DataTable";
+
+    private DataTable? _table;
+    private List<DataRow> _page = [];
+    private int _total;
+    private int _pageNumber = 1;
+    private int _size = 8;
+    private string? _search;
+    private string? _sort;
+    private bool _desc;
+    private string _path = "/";
+    private string _sizeFormId = "td-size-dt";
+
+    protected override void OnParametersSet()
+    {
+        _table = Data;
+        _path = Navigation.ToAbsoluteUri(Navigation.Uri).AbsolutePath;
+        _sizeFormId = "td-size-" + QueryKey;
+        var query = QueryHelpers.ParseQuery(Navigation.ToAbsoluteUri(Navigation.Uri).Query)
+            .ToDictionary(pair => pair.Key, pair => pair.Value.ToString(), StringComparer.OrdinalIgnoreCase);
+        _search = TDGridRequest.Read(query, QueryKey, "q");
+        _sort = TDGridRequest.Read(query, QueryKey, "sort");
+        _desc = string.Equals(TDGridRequest.Read(query, QueryKey, "dir"), "desc", StringComparison.OrdinalIgnoreCase);
+        _pageNumber = TDGridRequest.ReadInt(query, QueryKey, "page", 1);
+        _size = TDGridRequest.ReadInt(query, QueryKey, "size", PageSize);
+        if (!PageSizeOptions.Contains(_size))
+        {
+            _size = PageSize;
+        }
+
+        var rows = (_table?.Rows.Cast<DataRow>() ?? []).Where(Matches).ToList();
+        if (!string.IsNullOrEmpty(_sort) && _table?.Columns.Contains(_sort) == true)
+        {
+            var column = _table.Columns[_sort]!;
+            rows.Sort((left, right) =>
+            {
+                var result = CompareValues(Value(left, column), Value(right, column));
+                return _desc ? -result : result;
+            });
+        }
+
+        _total = rows.Count;
+        var pages = Math.Max(1, (int)Math.Ceiling(_total / (double)_size));
+        _pageNumber = Math.Clamp(_pageNumber, 1, pages);
+        _page = rows.Skip((_pageNumber - 1) * _size).Take(_size).ToList();
+    }
+
+    private bool Matches(DataRow row)
+    {
+        if (string.IsNullOrWhiteSpace(_search) || _table is null)
+        {
+            return true;
+        }
+
+        foreach (DataColumn column in _table.Columns)
+        {
+            if (column.DataType == typeof(string) && Convert.ToString(row[column])?.Contains(_search, StringComparison.OrdinalIgnoreCase) == true)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private string PageHref(int page)
+    {
+        var fields = new Dictionary<string, string?>
+        {
+            [N("q")] = _search,
+            [N("sort")] = _sort,
+            [N("dir")] = string.IsNullOrEmpty(_sort) ? null : _desc ? "desc" : "asc",
+            [N("page")] = page > 1 ? page.ToString(CultureInfo.InvariantCulture) : null,
+            [N("size")] = _size == PageSize ? null : _size.ToString(CultureInfo.InvariantCulture)
+        };
+        var pairs = fields.Where(pair => !string.IsNullOrEmpty(pair.Value))
+            .Select(pair => new KeyValuePair<string, string?>(pair.Key, pair.Value));
+        return _path + QueryString.Create(pairs).ToUriComponent();
+    }
+
+    private string SortHref(string column)
+    {
+        var active = _sort == column;
+        string? nextSort = column;
+        string? nextDir = "asc";
+        if (active && !_desc)
+        {
+            nextDir = "desc";
+        }
+        else if (active)
+        {
+            nextSort = null;
+            nextDir = null;
+        }
+
+        var fields = new Dictionary<string, string?>
+        {
+            [N("q")] = _search,
+            [N("sort")] = nextSort,
+            [N("dir")] = nextDir,
+            [N("size")] = _size == PageSize ? null : _size.ToString(CultureInfo.InvariantCulture)
+        };
+        var pairs = fields.Where(pair => !string.IsNullOrEmpty(pair.Value))
+            .Select(pair => new KeyValuePair<string, string?>(pair.Key, pair.Value));
+        return _path + QueryString.Create(pairs).ToUriComponent();
+    }
+
+    private static bool IsNumeric(DataColumn column)
+        => column.DataType == typeof(int) || column.DataType == typeof(decimal) || column.DataType == typeof(double) || column.DataType == typeof(long);
+
+    private static string CellClass(DataColumn column)
+    {
+        if (column.DataType == typeof(DateTime))
+        {
+            return "td-grid__mono";
+        }
+
+        if (column.DataType == typeof(decimal))
+        {
+            return "td-grid__money";
+        }
+
+        return IsNumeric(column) ? "td-grid__mono" : "td-grid__text";
+    }
+
+    private static string Format(DataRow row, DataColumn column)
+    {
+        if (row.IsNull(column))
+        {
+            return "—";
+        }
+
+        var culture = CultureInfo.GetCultureInfo("es-CL");
+        var value = row[column];
+        if (value is DateTime date)
+        {
+            return date.ToString("dd'/'MM'/'yyyy", CultureInfo.InvariantCulture);
+        }
+
+        if (value is decimal money)
+        {
+            return "$ " + money.ToString("N0", culture);
+        }
+
+        return Convert.ToString(value, culture) ?? "";
+    }
+
+    private static int CompareValues(object? left, object? right)
+    {
+        if (left is null && right is null)
+        {
+            return 0;
+        }
+
+        if (left is null)
+        {
+            return -1;
+        }
+
+        if (right is null)
+        {
+            return 1;
+        }
+
+        return left is IComparable comparable
+            ? comparable.CompareTo(right)
+            : string.Compare(left.ToString(), right.ToString(), StringComparison.Ordinal);
+    }
+
+    private static object? Value(DataRow row, DataColumn column)
+        => row.IsNull(column) ? null : row[column];
+
+    private string N(string name) => TDGridRequest.Key(QueryKey, name);
+}

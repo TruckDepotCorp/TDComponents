@@ -1,0 +1,278 @@
+@typeparam TItem
+@typeparam TValue
+@implements TDComponents.Data.ITDGridColumn<TItem>
+@using System.Globalization
+@using System.Linq.Expressions
+@using TDComponents.Data
+
+@code {
+    [CascadingParameter] public TDDataGrid<TItem>? Grid { get; set; }
+    /// <summary>Campo del ítem que la columna lee, ordena y filtra.</summary>
+    [Parameter] public Expression<Func<TItem, TValue>>? Property { get; set; }
+    /// <summary>Clave estable de la columna. Si se omite, se usa el nombre de Property o Title.</summary>
+    [Parameter] public string? KeyName { get; set; }
+    /// <summary>Texto del encabezado.</summary>
+    [Parameter] public string Title { get; set; } = "";
+    /// <summary>Presentación y tipo de filtro cuando no hay Template. El defecto es Text.</summary>
+    [Parameter] public TDColumnKind Kind { get; set; } = TDColumnKind.Text;
+    /// <summary>Start para texto y End para números. El defecto es Start.</summary>
+    [Parameter] public TDColumnAlign Align { get; set; } = TDColumnAlign.Start;
+    /// <summary>La columna se puede ordenar. El defecto es verdadero.</summary>
+    [Parameter] public bool Sortable { get; set; } = true;
+    /// <summary>La columna se puede filtrar. El defecto es verdadero.</summary>
+    [Parameter] public bool Filterable { get; set; } = true;
+    /// <summary>La búsqueda general de la grilla incluye esta columna.</summary>
+    [Parameter] public bool Searchable { get; set; }
+    /// <summary>La columna se pinta. En falso no llega a la tabla.</summary>
+    [Parameter] public bool Visible { get; set; } = true;
+    /// <summary>La persona puede mostrarla u ocultarla en el selector de columnas. El defecto es verdadero.</summary>
+    [Parameter] public bool Pickable { get; set; } = true;
+    /// <summary>Ancho fijo en píxeles. 0 no fija el ancho.</summary>
+    [Parameter] public int Width { get; set; }
+    /// <summary>Ancho mínimo al redimensionar. El defecto es 72.</summary>
+    [Parameter] public int MinWidth { get; set; } = 72;
+    /// <summary>None, Left o Right. El defecto es None.</summary>
+    [Parameter] public TDFrozenEdge Frozen { get; set; }
+    /// <summary>Total del pie: None, Count, Sum o Average. Solo se ve si la grilla muestra el pie.</summary>
+    [Parameter] public TDAggregate Aggregate { get; set; }
+    /// <summary>Encabezado que agrupa esta columna con las siguientes que repiten el mismo texto.</summary>
+    [Parameter] public string? GroupTitle { get; set; }
+    /// <summary>Modo de filtro de esta columna. Inherit usa el de la grilla.</summary>
+    [Parameter] public TDFilterMode FilterMode { get; set; }
+    /// <summary>Dirección de la miniatura cuando Kind es Thumb.</summary>
+    [Parameter] public Func<TItem, string?>? Thumb { get; set; }
+    /// <summary>Celda libre. Si existe, reemplaza la presentación de Kind.</summary>
+    [Parameter] public RenderFragment<TItem>? Template { get; set; }
+
+    private Func<TItem, TValue>? _read;
+
+    public string Key => !string.IsNullOrWhiteSpace(KeyName) ? KeyName : PropertyName ?? Title;
+    public string? PropertyName { get; private set; }
+    public string FilterType => Kind is TDColumnKind.Number or TDColumnKind.Money or TDColumnKind.Stock
+        ? "num"
+        : Kind == TDColumnKind.Date ? "date" : "text";
+    public LambdaExpression? SortExpression => Property;
+    public RenderFragment<TItem>? TemplateFragment => Template;
+
+    RenderFragment<TItem>? ITDGridColumn<TItem>.Template => Template;
+
+    string ITDGridColumn<TItem>.Key => Key;
+    string ITDGridColumn<TItem>.Title => Title;
+    TDColumnKind ITDGridColumn<TItem>.Kind => Kind;
+    TDColumnAlign ITDGridColumn<TItem>.Align => Align;
+    bool ITDGridColumn<TItem>.Sortable => Sortable && Property is not null;
+    bool ITDGridColumn<TItem>.Filterable => Filterable && Property is not null;
+    bool ITDGridColumn<TItem>.Searchable => Searchable && FilterType == "text" && Property is not null;
+    bool ITDGridColumn<TItem>.Visible => Visible;
+    bool ITDGridColumn<TItem>.Pickable => Pickable;
+    int ITDGridColumn<TItem>.Width => Width;
+    int ITDGridColumn<TItem>.MinWidth => MinWidth < 1 ? 72 : MinWidth;
+    TDFrozenEdge ITDGridColumn<TItem>.Frozen => Frozen;
+    TDAggregate ITDGridColumn<TItem>.Aggregate => Aggregate;
+    string? ITDGridColumn<TItem>.GroupTitle => string.IsNullOrWhiteSpace(GroupTitle) ? null : GroupTitle;
+    TDFilterMode ITDGridColumn<TItem>.FilterMode => FilterMode;
+
+    protected override void OnInitialized()
+    {
+        PropertyName = MemberName(Property);
+        if (Property is not null)
+        {
+            _read = Property.Compile();
+        }
+
+        Grid?.AddColumn(this);
+    }
+
+    public object? Read(TItem item) => _read is null ? null : _read(item);
+
+    public string Display(TItem item)
+    {
+        var value = Read(item);
+        if (value is null)
+        {
+            return "";
+        }
+
+        var culture = CultureInfo.GetCultureInfo("es-CL");
+        return Kind switch
+        {
+            TDColumnKind.Money when value is IFormattable money => "$ " + money.ToString("N0", culture),
+            TDColumnKind.Date when value is DateOnly date => date.ToString("dd'/'MM'/'yyyy", CultureInfo.InvariantCulture),
+            TDColumnKind.Date when value is DateTime dateTime => dateTime.ToString("dd'/'MM'/'yyyy", CultureInfo.InvariantCulture),
+            TDColumnKind.Number or TDColumnKind.Stock => Convert.ToString(value, culture) ?? "",
+            _ => Convert.ToString(value, culture) ?? ""
+        };
+    }
+
+    public string? ThumbText(TItem item)
+    {
+        var text = Thumb?.Invoke(item);
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return null;
+        }
+
+        return text.Length <= 2 ? text.ToUpperInvariant() : text[..2].ToUpperInvariant();
+    }
+
+    public Expression<Func<TItem, bool>>? BuildFilter(string op, string? value)
+    {
+        if (Property is null || !TDColumnFilter.IsActive(op, value))
+        {
+            return null;
+        }
+
+        var parameter = Expression.Parameter(typeof(TItem), "p");
+        var body = new ParameterSwap(Property.Parameters[0], parameter).Visit(Property.Body)!;
+        if (body is UnaryExpression unary && unary.NodeType is ExpressionType.Convert or ExpressionType.ConvertChecked)
+        {
+            body = unary.Operand;
+        }
+
+        var test = BuildTest(body, op, value);
+        return test is null ? null : Expression.Lambda<Func<TItem, bool>>(test, parameter);
+    }
+
+    private Expression? BuildTest(Expression body, string op, string? raw)
+    {
+        if (op == "in")
+        {
+            Expression? any = null;
+            foreach (var piece in (raw ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+            {
+                Expression? equals = FilterType == "text"
+                    ? Expression.Equal(
+                        Expression.Call(body, nameof(string.ToLower), Type.EmptyTypes),
+                        Expression.Constant(piece.ToLowerInvariant()))
+                    : TryConstant(piece, body.Type, out var typed)
+                        ? Expression.Equal(body, typed)
+                        : null;
+                if (equals is null)
+                {
+                    continue;
+                }
+
+                any = any is null ? equals : Expression.OrElse(any, equals);
+            }
+
+            return any;
+        }
+
+        if (FilterType == "text")
+        {
+            if (op == "empty")
+            {
+                return Expression.Call(typeof(string), nameof(string.IsNullOrEmpty), null, body);
+            }
+
+            if (op == "nempty")
+            {
+                return Expression.Not(Expression.Call(typeof(string), nameof(string.IsNullOrEmpty), null, body));
+            }
+
+            var lower = Expression.Call(body, nameof(string.ToLower), Type.EmptyTypes);
+            var textValue = Expression.Constant((raw ?? "").ToLowerInvariant());
+            var method = op switch
+            {
+                "starts" => nameof(string.StartsWith),
+                "ends" => nameof(string.EndsWith),
+                _ => nameof(string.Contains)
+            };
+            if (op is "eq" or "neq")
+            {
+                var equals = Expression.Equal(lower, textValue);
+                return op == "neq" ? Expression.Not(equals) : equals;
+            }
+
+            var call = Expression.Call(lower, method, Type.EmptyTypes, textValue);
+            return op == "ncontains" ? Expression.Not(call) : call;
+        }
+
+        if (op is "empty" or "nempty")
+        {
+            var nil = Expression.Constant(null, body.Type);
+            var isNull = Expression.Equal(body, nil);
+            return op == "empty" ? isNull : Expression.Not(isNull);
+        }
+
+        if (!TryConstant(raw, body.Type, out var constant))
+        {
+            return null;
+        }
+
+        return op switch
+        {
+            "eq" => Expression.Equal(body, constant),
+            "neq" => Expression.NotEqual(body, constant),
+            "lt" => Expression.LessThan(body, constant),
+            "lte" => Expression.LessThanOrEqual(body, constant),
+            "gt" => Expression.GreaterThan(body, constant),
+            "gte" => Expression.GreaterThanOrEqual(body, constant),
+            _ => null
+        };
+    }
+
+    private static bool TryConstant(string? raw, Type type, out Expression constant)
+    {
+        constant = Expression.Constant(null);
+        if (string.IsNullOrWhiteSpace(raw))
+        {
+            return false;
+        }
+
+        var target = Nullable.GetUnderlyingType(type) ?? type;
+        try
+        {
+            object converted = target == typeof(DateOnly)
+                ? DateOnly.Parse(raw, CultureInfo.InvariantCulture)
+                : target == typeof(DateTime)
+                    ? DateTime.Parse(raw, CultureInfo.InvariantCulture)
+                    : Convert.ChangeType(raw, target, CultureInfo.InvariantCulture)!;
+            constant = Expression.Constant(converted, type);
+            return true;
+        }
+        catch (FormatException)
+        {
+            return false;
+        }
+        catch (InvalidCastException)
+        {
+            return false;
+        }
+        catch (OverflowException)
+        {
+            return false;
+        }
+    }
+
+    private static string? MemberName(LambdaExpression? expression)
+    {
+        if (expression is null)
+        {
+            return null;
+        }
+
+        Expression body = expression.Body;
+        if (body is UnaryExpression unary)
+        {
+            body = unary.Operand;
+        }
+
+        return body is MemberExpression member ? member.Member.Name : null;
+    }
+
+    private sealed class ParameterSwap : ExpressionVisitor
+    {
+        private readonly ParameterExpression _from;
+        private readonly ParameterExpression _to;
+
+        public ParameterSwap(ParameterExpression from, ParameterExpression to)
+        {
+            _from = from;
+            _to = to;
+        }
+
+        protected override Expression VisitParameter(ParameterExpression node)
+            => node == _from ? _to : base.VisitParameter(node);
+    }
+}

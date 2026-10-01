@@ -1,0 +1,20 @@
+@namespace TDComponents.Components
+
+<div class="td-toolbar @(Dark ? "td-toolbar--dark" : null)" role="toolbar" aria-label="@AriaLabel">
+    <div class="td-toolbar__start">@Start</div>
+    <div class="td-toolbar__center">@Center</div>
+    <div class="td-toolbar__end">@End</div>
+</div>
+
+@code {
+    /// <summary>Nombre accesible de la barra.</summary>
+    [Parameter] public string AriaLabel { get; set; } = "Acciones";
+    /// <summary>Barra oscura.</summary>
+    [Parameter] public bool Dark { get; set; }
+    /// <summary>Acciones del inicio. En Razor se entregan con Start.</summary>
+    [Parameter] public RenderFragment? Start { get; set; }
+    /// <summary>Contenido del centro.</summary>
+    [Parameter] public RenderFragment? Center { get; set; }
+    /// <summary>Acciones del final.</summary>
+    [Parameter] public RenderFragment? End { get; set; }
+}

@@ -1,0 +1,32 @@
+@switch (Id)
+{
+    case "chline":
+    case "chcol":
+    case "chpie":
+    case "chscatter":
+    case "chgauge":
+    case "chspark":
+    case "chheat":
+    case "chwf":
+    case "chfunnel":
+    case "chpareto":
+    case "chtree":
+    case "chradar":
+    case "chsankey":
+    case "chbullet":
+    case "chgantt":
+    case "chforecast":
+    case "chvariance":
+    case "chquadrant":
+    case "chcohort":
+    case "chmekko":
+    case "chslope":
+    case "chdumbbell":
+    case "chcontrol":
+        <TDChart Kind="@Id" />
+        break;
+}
+
+@code {
+    [Parameter] public string Id { get; set; } = "chline";
+}

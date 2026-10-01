@@ -1,0 +1,22 @@
+@namespace TDComponents.Components
+
+<td-inplace>
+    <button type="button"
+            class="td-inplace__trigger"
+            data-td-inplace-open
+            aria-expanded="false">
+        @Trigger
+    </button>
+    <div class="td-inplace__panel" hidden data-td-inplace-panel>
+        <div class="td-inplace__body">@ChildContent</div>
+        <button type="button" class="td-inplace__x" data-td-inplace-close aria-label="Ocultar">×</button>
+    </div>
+</td-inplace>
+
+@code {
+    /// <summary>Lo que se ve antes de editar. En Razor se entrega con <c>&lt;Trigger&gt;</c>.</summary>
+    [Parameter] public RenderFragment? Trigger { get; set; }
+
+    /// <summary>Editor que aparece al pulsar el disparador. Este componente no lo guarda.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

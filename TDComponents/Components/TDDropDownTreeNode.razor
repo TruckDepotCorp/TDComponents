@@ -1,0 +1,45 @@
+@namespace TDComponents.Components
+
+<div class="td-ddtree__node" data-td-ddtree-node data-label="@Node.Label" style="@($"--d:{Depth}")">
+    <div class="td-ddtree__row">
+        @if (HasChildren)
+        {
+            <button type="button" class="td-ddtree__twist" aria-expanded="true" data-td-ddtree-twist aria-label="@($"Contraer {Node.Label}")">▾</button>
+        }
+        else
+        {
+            <span class="td-ddtree__twist is-empty"></span>
+        }
+        @if (CanPick)
+        {
+            <button type="button" class="td-ddtree__pick @(Selected.Contains(Node.Value) ? "is-on" : null)" data-td-ddtree-pick="@Node.Value" data-label="@Node.Label">@Node.Label</button>
+        }
+        else
+        {
+            <span class="td-ddtree__pick is-off">@Node.Label</span>
+        }
+    </div>
+    @if (HasChildren)
+    {
+        <div class="td-ddtree__kids" data-td-ddtree-kids>
+            @foreach (var child in Node.Children!)
+            {
+                <TDDropDownTreeNode Node="child" Depth="Depth + 1" Selected="Selected" LeavesOnly="LeavesOnly" />
+            }
+        </div>
+    }
+</div>
+
+@code {
+    /// <summary>Nodo que se pinta. Lo asigna TDDropDownTree.</summary>
+    [Parameter] public TDTreeOption Node { get; set; } = new("", "");
+    /// <summary>Nivel de sangría. Lo asigna el padre.</summary>
+    [Parameter] public int Depth { get; set; }
+    /// <summary>Valores elegidos en el desplegable.</summary>
+    [Parameter] public IReadOnlyList<string> Selected { get; set; } = [];
+    /// <summary>Impide elegir nodos que tienen hijos.</summary>
+    [Parameter] public bool LeavesOnly { get; set; }
+
+    private bool HasChildren => Node.Children is { Count: > 0 };
+    private bool CanPick => !Node.Disabled && (!LeavesOnly || !HasChildren);
+}

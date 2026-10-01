@@ -1,0 +1,6 @@
+/* ============================================================
+   TRUCK DEPOT — Design System entry stylesheet
+   Link this single file to pull in the foundation
+   (brand tokens, color scales, type families & classes).
+   ============================================================ */
+@import url("colors_and_type.css");

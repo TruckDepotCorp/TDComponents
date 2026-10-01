@@ -1,0 +1,508 @@
+@inject IRepuestoCatalogo Catalogo
+@using WebAppSSR.Interfaces
+@using WebAppSSR.Models
+
+@switch (Id)
+{
+    case "stack":
+        <p class="td-section-title">Horizontal · espacio entre</p>
+        <TDStack Orientation="TDOrientation.Horizontal" Gap="12px" Align="TDAlignItems.Center" Justify="TDJustify.Between" Wrap="true">
+            <TDButton ButtonType="TDButtonType.Button">Nuevo pedido</TDButton>
+            <span class="td-home__note">OC-00481 · 3 líneas</span>
+            <TDButton ButtonType="TDButtonType.Button" Variant="TDVariant.Secondary">Exportar</TDButton>
+        </TDStack>
+        break;
+
+    case "row":
+        <div data-td-row-playground>
+            <p class="td-home__note">TDRow es una grilla de 12 columnas; cada TDCol declara cuántas ocupa. Size aplica siempre; SizeMd desde 768 px de ancho del contenedor y SizeLg desde 1024 px.</p>
+            <div class="td-row-controls">
+                <label class="td-row-width">Ancho del contenedor
+                    <input type="range" min="280" max="960" value="960" data-td-row-width aria-valuemin="280" aria-valuemax="960" aria-valuenow="960" />
+                </label>
+                <div>
+                    <span class="td-section-title">Gap</span>
+                    <div class="td-selectbar__row" role="group" aria-label="Gap">
+                        <button type="button" class="td-selectbar__item" data-td-row-gap="8px">8</button>
+                        <button type="button" class="td-selectbar__item" data-td-row-gap="16px" aria-pressed="true">16</button>
+                        <button type="button" class="td-selectbar__item" data-td-row-gap="24px">24</button>
+                    </div>
+                </div>
+                <div>
+                    <span class="td-section-title">AlignItems</span>
+                    <div class="td-selectbar__row" role="group" aria-label="AlignItems">
+                        <button type="button" class="td-selectbar__item" data-td-row-align="flex-start">Start</button>
+                        <button type="button" class="td-selectbar__item" data-td-row-align="center">Center</button>
+                        <button type="button" class="td-selectbar__item" data-td-row-align="stretch" aria-pressed="true">Stretch</button>
+                    </div>
+                </div>
+            </div>
+            <p class="td-section-title">3 · 6 · 3</p>
+            <div class="td-row-stage" data-td-row-stage>
+            <TDRow>
+                <TDCol Size="12" SizeMd="3"><div class="td-demo-tile">Size 3</div></TDCol>
+                <TDCol Size="12" SizeMd="6"><div class="td-demo-tile">Size 6</div></TDCol>
+                <TDCol Size="12" SizeMd="3"><div class="td-demo-tile">Size 3</div></TDCol>
+            </TDRow>
+            <p class="td-section-title">Offset 2 · Size 8</p>
+            <TDRow>
+                <TDCol Size="12" SizeMd="8" Offset="2"><div class="td-demo-tile">Size 8 · Offset 2</div></TDCol>
+            </TDRow>
+            <p class="td-section-title">Order</p>
+            <TDRow>
+                <TDCol Size="12" SizeMd="4" Order="2"><div class="td-demo-tile">Orden 2 · ficha</div></TDCol>
+                <TDCol Size="12" SizeMd="8" Order="1"><div class="td-demo-tile">Orden 1 · listado</div></TDCol>
+            </TDRow>
+            </div>
+        </div>
+        break;
+
+    case "column":
+        <p class="td-section-title">Ancho del contenedor</p>
+        <TDRow>
+            <TDCol Size="12" SizeMd="6" SizeLg="4"><div class="td-demo-tile">12 / 6 / 4</div></TDCol>
+            <TDCol Size="12" SizeMd="6" SizeLg="4"><div class="td-demo-tile">12 / 6 / 4</div></TDCol>
+            <TDCol Size="12" SizeMd="12" SizeLg="4"><div class="td-demo-tile">12 / 12 / 4</div></TDCol>
+        </TDRow>
+        <p class="td-row-note">Size aplica siempre; SizeMd desde 768 px del contenedor y SizeLg desde 1024 px. Offset y Order también cambian de lugar.</p>
+        break;
+
+    case "layout":
+        <TDLayout>
+            <div class="td-row12">
+                <div class="td-appshell__kpi"><span>Pedidos</span><strong>18</strong></div>
+                <div class="td-appshell__kpi"><span>En ruta</span><strong>6</strong></div>
+                <div class="td-appshell__kpi"><span>Agotados</span><strong>2</strong></div>
+            </div>
+        </TDLayout>
+        break;
+
+    case "popup":
+        <TDStack Orientation="TDOrientation.Horizontal" Gap="12px" Wrap="true">
+            <TDPopup Trigger="Filtrar stock" AriaLabel="Filtro de stock">
+                <TDCheckBoxList Name="stock" Label="" Options="@(new TDOption[] { new("ok", "En stock"), new("low", "Bajo"), new("out", "Agotado") })" />
+            </TDPopup>
+            <TDPopup Trigger="Arriba" Placement="TDPlacement.Top" AriaLabel="Ayuda">
+                <p>Cierra con clic fuera o Esc.</p>
+            </TDPopup>
+        </TDStack>
+        break;
+
+    case "splitter":
+        <p class="td-section-title">Horizontal</p>
+        <TDSplitter>
+            <TDSplitterPane Flex="0 0 28%"><strong>Categorías</strong><span>Frenos · Motor · Eléctrico</span></TDSplitterPane>
+            <TDSplitterPane Flex="1 1 44%"><strong>Resultados</strong><span>Pastilla BR-4521-AD</span></TDSplitterPane>
+            <TDSplitterPane Flex="0 0 28%" ShowHandle="false"><strong>Detalle</strong><span>18 u. Santiago</span></TDSplitterPane>
+        </TDSplitter>
+        <p class="td-section-title">Vertical</p>
+        <TDSplitter Orientation="TDOrientation.Vertical">
+            <TDSplitterPane><strong>Pedido</strong><span>OC-00481 con 3 líneas.</span></TDSplitterPane>
+            <TDSplitterPane ShowHandle="false"><strong>Historial</strong><span>Cambios de estado y comentarios.</span></TDSplitterPane>
+        </TDSplitter>
+        break;
+
+    case "dropzone":
+        <TDDropZone Zones="@(new TDOption[] { new("pend", "Pendiente"), new("prep", "En preparación"), new("ship", "Despachado") })"
+                    Items="_drops" />
+        break;
+
+    case "tilelayout":
+        <TDTileLayout Items="_tiles" />
+        break;
+
+    case "toc":
+        <TDToc Items="@(new TDOption[] {
+            new("antes", "Antes de empezar"),
+            new("pasadores", "Pasadores y resortes", Hint: "h3"),
+            new("torque", "Torque"),
+            new("prueba", "Prueba en ruta")
+        })">
+            <h2 id="antes">Antes de empezar</h2>
+            <p>Inmoviliza el vehículo, corta el contacto y deja enfriar el disco. Ten a mano el juego BR-4521-AD y el líquido DOT 4.</p>
+            <h3 id="pasadores">Pasadores y resortes</h3>
+            <p>Retira los pasadores con alicate de punta. Si el resorte está ovalado, cámbialo: no se reutiliza.</p>
+            <h2 id="torque">Torque</h2>
+            <p>Aprieta en cruz a 180 Nm. Vuelve a chequear a los 50 km.</p>
+            <h2 id="prueba">Prueba en ruta</h2>
+            <p>Tres frenadas suaves a 40 km/h. Si vibra, revisa el disco antes de entregar la unidad.</p>
+        </TDToc>
+        break;
+
+    case "toolbar":
+        <p class="td-section-title">Start · Center · End</p>
+        <TDToolbar AriaLabel="Acciones de pedidos">
+            <Start>
+                <TDButton ButtonType="TDButtonType.Button"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg> Nuevo</TDButton>
+                <TDButton ButtonType="TDButtonType.Button" Variant="TDVariant.Secondary"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3v12"></path><path d="m7 10 5 5 5-5"></path><path d="M5 21h14"></path></svg> Importar</TDButton>
+                <span class="td-toolbar__sep" aria-hidden="true"></span>
+                <TDSelectBar Name="vista" Selected="@(new[] { "lista" })" Options="@(new TDOption[] { new("lista", "Lista"), new("kanban", "Kanban") })" />
+            </Start>
+            <Center>
+                <label class="td-toolbar__search">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+                    <input placeholder="Buscar pedido…" aria-label="Buscar pedido" data-td-toolbar-q />
+                </label>
+            </Center>
+            <End>
+                <TDSplitButton Label="Exportar">
+                    <button type="button">Excel</button>
+                    <button type="button">CSV</button>
+                    <button type="button">PDF</button>
+                </TDSplitButton>
+            </End>
+        </TDToolbar>
+        <p class="td-section-title">Barra oscura del pedido</p>
+        <TDToolbar Dark="true" AriaLabel="Pedido OC-00481">
+            <Start>
+                <span class="td-toolbar__title"><strong>Pedido OC-00481</strong><em>Transportes del Sur · 3 repuestos</em></span>
+            </Start>
+            <End>
+                <TDButton ButtonType="TDButtonType.Button" Variant="TDVariant.Secondary">Reservar</TDButton>
+                <TDButton ButtonType="TDButtonType.Button">Despachar</TDButton>
+            </End>
+        </TDToolbar>
+        <p class="td-home__note" data-td-toolbar-status>Vista: Lista</p>
+        break;
+
+    case "navmenu":
+        <TDNavigationMenu Items="_nav" />
+        break;
+
+    case "pmenu":
+        <section class="td-doc__variant">
+            <p class="td-section-title">Layout con iconos</p>
+            <p class="td-home__note">El botón deja el menú en iconos. La búsqueda está en la barra y no aparece en pantallas de 760 px o menos.</p>
+            <TDMenuAppShell Title="Panel de flota" Modules="_app" ActivePath="/ventas/pedidos" Mode="TDMenuShellMode.Icons" ShowSearch="true" ShowSearchOnSmall="false" />
+            <CatalogCodeBlock Code="@Pmenu("Layout/Iconos.razor")" />
+        </section>
+        <section class="td-doc__variant">
+            <p class="td-section-title">Layout con iconos, sin búsqueda</p>
+            <p class="td-home__note">ShowSearch quita el campo de la barra de la app.</p>
+            <TDMenuAppShell Title="Panel de flota" Modules="_app" ActivePath="/ventas/pedidos" Mode="TDMenuShellMode.Icons" ShowSearch="false" />
+            <CatalogCodeBlock Code="@Pmenu("Layout/IconosSinBusqueda.razor")" />
+        </section>
+        <section class="td-doc__variant">
+            <p class="td-section-title">Menú flotante</p>
+            <p class="td-home__note">El menú flota sobre el contenido y se oculta al elegir una opción. La búsqueda no aparece en pantallas pequeñas.</p>
+            <TDMenuAppShell Title="Panel de flota" Modules="_app" ActivePath="/ventas/pedidos" Mode="TDMenuShellMode.Float" ShowSearch="true" ShowSearchOnSmall="false" />
+            <CatalogCodeBlock Code="@Pmenu("Layout/Flotante.razor")" />
+        </section>
+        <section class="td-doc__variant">
+            <p class="td-section-title">Menú flotante, sin búsqueda</p>
+            <p class="td-home__note">El mismo menú flotante, sin el campo de búsqueda en la barra.</p>
+            <TDMenuAppShell Title="Panel de flota" Modules="_app" ActivePath="/ventas/pedidos" Mode="TDMenuShellMode.Float" ShowSearch="false" />
+            <CatalogCodeBlock Code="@Pmenu("Layout/FlotanteSinBusqueda.razor")" />
+        </section>
+        <section class="td-doc__variant">
+            <p class="td-section-title">Búsqueda también en pantalla pequeña</p>
+            <p class="td-home__note">ShowSearchOnSmall mantiene el campo de la barra también por debajo de 760 px.</p>
+            <TDMenuAppShell Title="Panel de flota" Modules="_app" ActivePath="/ventas/pedidos" Mode="TDMenuShellMode.Icons" ShowSearch="true" ShowSearchOnSmall="true" />
+            <CatalogCodeBlock Code="@Pmenu("Layout/BusquedaEnPequeno.razor")" />
+        </section>
+        <section class="td-doc__variant">
+            <p class="td-section-title">Menú y fuente JSON</p>
+            <p class="td-home__note">El menú solo, con la fuente que lo alimenta.</p>
+            <div class="td-menuapp-demo">
+                <TDMenuApp Modules="_app" ActivePath="/ventas/pedidos" ExpandActive="true" RememberExpanded="true" Stay="true" ShowSource="true" />
+            </div>
+            <CatalogCodeBlock Code="@Pmenu("Shared/MenuApp.razor")" />
+        </section>
+        <section class="td-doc__variant">
+            <p class="td-section-title">Módulos usados por los ejemplos</p>
+            <CatalogCodeBlock Code="@Pmenu("Shared/MenuModules.cs")" />
+        </section>
+        break;
+
+    case "econtent":
+        <TDContent Shortcuts="@(new TDOption[] { new("Ctrl K", "Buscar"), new("N", "Nuevo pedido"), new("Esc", "Cerrar") })">
+            <p>Enfoca esta zona y usa los atajos. El contenedor es un div que escucha el teclado en su área, sin SignalR.</p>
+        </TDContent>
+        break;
+
+    case "timespan":
+        <TDTimeSpanPicker Name="InstallTime" Label="Tiempo de instalación" />
+        break;
+
+    case "knob":
+        <div class="td-row">
+            <TDKnob Name="presion" Label="Presión" Value="4" Min="0" Max="10" Step="0.5" Suffix="bar" />
+            <TDKnob Name="temp" Label="Temperatura" Value="88" Min="60" Max="110" Suffix="°C" />
+            <TDKnob Name="vol" Label="Volumen" Value="40" Step="5" ShowButtons="true" Size="110" />
+            <TDKnob Name="ro" Label="Solo lectura" Value="64" ReadOnly="true" Size="110" />
+            <TDKnob Name="off" Label="Deshabilitado" Value="30" Disabled="true" Size="110" />
+        </div>
+        break;
+
+    case "speech":
+        <EditForm Model="_need" Enhance>
+            <TDTextBox @bind-Value="_need.Text" name="Need" Label="Describe el repuesto que necesitas" Multiline="true" Rows="4" Placeholder="Pastilla delantera para Volvo FH…" />
+            <TDSpeechToTextButton Target="Need" />
+        </EditForm>
+        break;
+
+    case "markdown":
+        <TDMarkdown Name="Description" Label="Descripción técnica" Value="@_md" />
+        break;
+
+    case "chat":
+        <TDChat Messages="_chat" ShowTyping="true" />
+        break;
+
+    case "aichat":
+        <TDAIChat Catalog="@_catalog" />
+        break;
+
+    case "aos":
+        <p class="td-home__note" data-td-aos-count>Desplázate dentro del recuadro. Con movimiento reducido el contenido aparece sin animar.</p>
+        <div class="td-aos-box" data-td-aos-box>
+            <TDAnimateOnScroll Enter="fade-up"><div class="td-aos-card"><strong>Despacho en 24 h</strong><span>A todo Chile desde tres bodegas.</span></div></TDAnimateOnScroll>
+            <TDAnimateOnScroll Enter="slide-left" Once="false"><div class="td-aos-card"><strong>Garantía 12 meses</strong><span>En todos los repuestos originales.</span></div></TDAnimateOnScroll>
+            <TDAnimateOnScroll Enter="slide-right"><div class="td-aos-card"><strong>Talleres asociados</strong><span>Más de 40 talleres para instalar.</span></div></TDAnimateOnScroll>
+            <TDAnimateOnScroll Enter="zoom"><div class="td-aos-card"><strong>Crédito de flota</strong><span>Paga a 30 días con cuenta aprobada.</span></div></TDAnimateOnScroll>
+            <TDAnimateOnScroll Enter="flip"><div class="td-aos-card"><strong>Cotiza en minutos</strong><span>Un asesor responde en horario hábil.</span></div></TDAnimateOnScroll>
+            <TDAnimateOnScroll Enter="fade"><div class="td-aos-card"><strong>Stock en línea</strong><span>Disponibilidad real por bodega.</span></div></TDAnimateOnScroll>
+            <TDAnimateOnScroll Enter="fade-up" Delay="240"><div class="td-aos-card"><strong>Retiro en tienda</strong><span>El mismo día si compras antes de las 13:00.</span></div></TDAnimateOnScroll>
+        </div>
+        break;
+
+    case "terminal":
+        <TDTerminal PartsJson="@_partsJson" />
+        <div class="td-term-chips">
+            <button type="button" class="td-btn td-btn--secondary td-btn--sm" data-td-term-chip="help">help</button>
+            <button type="button" class="td-btn td-btn--secondary td-btn--sm" data-td-term-chip="stock BR-4521-AD">stock BR-4521-AD</button>
+            <button type="button" class="td-btn td-btn--secondary td-btn--sm" data-td-term-chip="buscar filtro">buscar filtro</button>
+            <button type="button" class="td-btn td-btn--secondary td-btn--sm" data-td-term-chip="pedido 481">pedido 481</button>
+            <button type="button" class="td-btn td-btn--secondary td-btn--sm" data-td-term-chip="imprimir BR-4521-AD 3">imprimir BR-4521-AD 3</button>
+        </div>
+        break;
+
+    case "orgchart":
+        <section class="td-doc__variant">
+            <p class="td-section-title">Equipo Truck Depot · 10 personas</p>
+            <p class="td-home__note">El nombre abre la ficha. El correo abre el cliente de correo. La píldora con el número pliega o muestra el equipo.</p>
+            @if (!string.IsNullOrWhiteSpace(Persona) && Ficha is null)
+            {
+                <p class="td-home__note" role="status">No hay una ficha para ese colaborador. <a href="/c/orgchart">Volver al organigrama</a></p>
+            }
+            else if (Ficha is { } ficha)
+            {
+                <article class="td-org-ficha">
+                    <p class="td-section-title">Ficha</p>
+                    <h2>@ficha.Person.Name</h2>
+                    <p>@ficha.Person.Role</p>
+                    @if (!string.IsNullOrWhiteSpace(ficha.Person.Email))
+                    {
+                        <p><a href="@($"mailto:{ficha.Person.Email}")">@ficha.Person.Email</a></p>
+                    }
+                    <p class="td-org-ficha__meta">
+                        @if (ficha.Manager is { } manager)
+                        {
+                            <span>Reporta a <a href="@manager.Href">@manager.Name</a>, @manager.Role.</span>
+                        }
+                        else
+                        {
+                            <span>Cabeza del organigrama.</span>
+                        }
+                    </p>
+                    @if (ficha.Person.Children is { Count: > 0 } team)
+                    {
+                        <p class="td-org-ficha__meta">Equipo directo, @(team.Count == 1 ? "1 persona" : $"{team.Count} personas")</p>
+                        <ul class="td-org-ficha__team">
+                            @foreach (var member in team)
+                            {
+                                <li><a href="@member.Href">@member.Name</a> <span class="td-org-ficha__meta">@member.Role</span></li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p class="td-org-ficha__meta">Sin equipo a cargo.</p>
+                    }
+                    <p><a href="/c/orgchart">Cerrar ficha</a></p>
+                </article>
+            }
+            <TDOrganizationChart Root="_org" SelectedId="@Persona" />
+            <CatalogSampleList Id="orgchart" />
+        </section>
+        break;
+
+    case "ddgrid":
+        <TDDropDownDataGrid Name="PartId" Label="Repuesto" AllowFiltering="true" Clearable="true"
+                            Value="@Catalogo.Repuestos.FirstOrDefault()?.Id.ToString()"
+                            Columns="@(new[] { "Código", "Repuesto", "Marca", "Stock", "Precio" })"
+                            Rows="_ddRows" />
+        break;
+}
+
+@code {
+    [Parameter] public string Id { get; set; } = "";
+
+    private readonly NeedForm _need = new();
+    private const string _md = "# Pastilla delantera\n\nJuego de **4** para Volvo FH.\n\n- Material cerámico\n- Retiro hoy en Santiago\n";
+
+    private static readonly TDDropCard[] _drops =
+    [
+        new("1", "OC-00481", "3 líneas · Santiago", "pend"),
+        new("2", "OC-00490", "Filtro de aceite", "pend"),
+        new("3", "OC-00472", "Disco ventilado", "prep"),
+        new("4", "OC-00460", "Entregado a ruta", "ship")
+    ];
+
+    private static readonly TDTileItem[] _tiles =
+    [
+        new("v", "Ventas del mes", "$76 M", "+8 % vs abril", 2),
+        new("s", "OTIF", "94 %", "Meta 95 %"),
+        new("a", "Agotados", "2", "BR-4521 y SU-1180"),
+        new("p", "Pedidos hoy", "18", "6 en ruta")
+    ];
+
+    private static readonly TDNavMega[] _nav =
+    [
+        new("Catálogo", Groups:
+        [
+            new("Frenos", [new("/c/grid", "Pastillas y balatas"), new("/c/grid", "Discos y tambores"), new("/c/grid", "Sistema neumático"), new("/c/grid", "Sensores")]),
+            new("Motor", [new("/c/grid", "Filtros"), new("/c/grid", "Refrigeración"), new("/c/grid", "Turbo"), new("/c/grid", "Correas")]),
+            new("Suspensión", [new("/c/grid", "Amortiguadores"), new("/c/grid", "Muelles"), new("/c/grid", "Bujes"), new("/c/grid", "Barras")])
+        ], Featured: "Discos, pastillas y sensores en un pedido.", FeaturedEyebrow: "Temporada de frenos", FeaturedTitle: "Kits completos con 15% menos"),
+        new("Marcas", Panel: "brands", Groups:
+        [
+            new("", [new("/c/dropdown", "Volvo"), new("/c/dropdown", "Scania"), new("/c/dropdown", "Mercedes-Benz"), new("/c/dropdown", "MAN"), new("/c/dropdown", "Iveco"), new("/c/dropdown", "Hino"), new("/c/dropdown", "Freightliner"), new("/c/dropdown", "International")])
+        ]),
+        new("Servicios", Panel: "desc", Groups:
+        [
+            new("", [
+                new("/c/elocator", "Cotizar con un asesor", Hint: "Respuesta en horario hábil"),
+                new("/c/etrack", "Talleres asociados", Hint: "Más de 40 en todo Chile"),
+                new("/c/etrack", "Rastrear pedido", Hint: "Estado en tiempo real"),
+                new("/c/einvoice", "Crédito de flota", Hint: "Paga a 30 días")
+            ])
+        ]),
+        new("Ofertas", "/c/eflash")
+    ];
+
+    private static CatalogCode Pmenu(string file) =>
+        CatalogSamples.For("pmenu").First(code => code.File == file);
+
+    private static readonly TDMenuItem[] _app =
+    [
+        new("Ventas", Icon: "cart", Children:
+        [
+            new("Cotizaciones", "/ventas/cotizaciones"),
+            new("Pedidos", Children:
+            [
+                new("Nuevo pedido", "/ventas/pedidos/nuevo"),
+                new("Mis pedidos", "/ventas/pedidos", Shortcut: "3"),
+                new("Devoluciones", "/ventas/devoluciones")
+            ]),
+            new("Clientes", Children:
+            [
+                new("Flotas", "/ventas/clientes/flotas"),
+                new("Talleres", "/ventas/clientes/talleres"),
+                new("Condiciones comerciales", Children:
+                [
+                    new("Listas de precio", "/ventas/clientes/precios"),
+                    new("Crédito", "/ventas/clientes/credito")
+                ])
+            ])
+        ]),
+        new("Inventario", Icon: "box", Children:
+        [
+            new("Catálogo de repuestos", "/inventario/catalogo"),
+            new("Bodegas", Children:
+            [
+                new("Quilicura", "/inventario/bodegas/quilicura"),
+                new("Concepción", "/inventario/bodegas/concepcion"),
+                new("Antofagasta", "/inventario/bodegas/antofagasta")
+            ]),
+            new("Recepción", "/inventario/recepcion")
+        ]),
+        new("Despacho", Icon: "truck", Children:
+        [
+            new("Rutas del día", "/despacho/rutas", Shortcut: "12"),
+            new("Etiquetas", "/despacho/etiquetas")
+        ]),
+        new("Finanzas", Icon: "file", Children:
+        [
+            new("Facturación", Children:
+            [
+                new("Emitir factura", "/finanzas/facturas/nueva"),
+                new("Notas de crédito", "/finanzas/notas")
+            ]),
+            new("Cobranza", "/finanzas/cobranza")
+        ]),
+        new("Configuración", Icon: "gear", Children:
+        [
+            new("Usuarios y roles", "/config/usuarios"),
+            new("Temas", "/config/temas")
+        ])
+    ];
+
+    private static readonly TDChatMessage[] _chat =
+    [
+        new("Camila", "¿Tienen pastillas para Volvo FH 460?", false, "10:12"),
+        new("Tú", "Sí. BR-4521-AD, 18 unidades en Santiago. ¿Las reservo?", true, "10:13")
+    ];
+
+    private IReadOnlyList<TDDdRow> _ddRows =>
+        Catalogo.Repuestos.Take(12).Select(p => new TDDdRow(
+            p.Id.ToString(),
+            p.Name,
+            [p.Code, p.Name, p.Brand, p.Stock.ToString(), $"${p.Price:N0}"])).ToArray();
+
+    private string _partsJson => System.Text.Json.JsonSerializer.Serialize(
+        Catalogo.Repuestos.Take(24).Select(p => new { code = p.Code, name = p.Name, brand = p.Brand, stock = p.Stock, price = p.Price }),
+        new System.Text.Json.JsonSerializerOptions { PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase });
+
+    [SupplyParameterFromQuery(Name = "persona")]
+    public string? Persona { get; set; }
+
+    private static TDOrgNode Person(string id, string name, string role, string initials, string email, params TDOrgNode[] team) =>
+        new(id, name, role, initials, team.Length == 0 ? null : team, $"/c/orgchart?persona={id}", email);
+
+    private static readonly TDOrgNode _org = Person("gg", "María Reyes", "Gerente general", "MR", "maria.reyes@truckdepot.cl",
+        Person("op", "Jorge Soto", "Operaciones", "JS", "jorge.soto@truckdepot.cl",
+            Person("bq", "Paula Lagos", "Bodega Quilicura", "PL", "paula.lagos@truckdepot.cl"),
+            Person("de", "Raúl Vera", "Despacho", "RV", "raul.vera@truckdepot.cl"),
+            Person("ta", "Carla Muñoz", "Taller", "CM", "carla.munoz@truckdepot.cl")),
+        Person("co", "Andrés Fuentes", "Comercial", "AF", "andres.fuentes@truckdepot.cl",
+            Person("vf", "Camila Rojas", "Ventas flota", "CR", "camila.rojas@truckdepot.cl"),
+            Person("ec", "Diego Torres", "E-commerce", "DT", "diego.torres@truckdepot.cl")),
+        Person("fi", "Lucía Bravo", "Finanzas", "LB", "lucia.bravo@truckdepot.cl",
+            Person("cb", "Tomás Núñez", "Cobranza", "TN", "tomas.nunez@truckdepot.cl")));
+
+    private (TDOrgNode Person, TDOrgNode? Manager)? Ficha =>
+        string.IsNullOrWhiteSpace(Persona) ? null : Locate(_org, Persona, null);
+
+    private static (TDOrgNode Person, TDOrgNode? Manager)? Locate(TDOrgNode node, string id, TDOrgNode? manager)
+    {
+        if (node.Id == id)
+        {
+            return (node, manager);
+        }
+
+        if (node.Children is null)
+        {
+            return null;
+        }
+
+        foreach (var child in node.Children)
+        {
+            var hit = Locate(child, id, node);
+            if (hit is not null)
+            {
+                return hit;
+            }
+        }
+
+        return null;
+    }
+
+    private string _catalog => string.Join('\n', Catalogo.Repuestos.Take(8).Select(p =>
+        $"{p.Code}|{p.Name}|{p.Brand}|{p.Model}|{p.Stock}|${p.Price:N0}"));
+
+    private sealed class NeedForm
+    {
+        public string? Text { get; set; }
+    }
+}

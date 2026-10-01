@@ -1,0 +1,37 @@
+@namespace TDComponents.Components
+
+<td-context-menu class="td-ctx" data-td-ctx>
+    <div class="td-ctx__target" data-td-ctx-target>
+        @ChildContent
+    </div>
+    <div class="td-ctx__menu" hidden role="menu" data-td-ctx-menu>
+        @foreach (var item in Items)
+        {
+            if (item.Text == "-")
+            {
+                <hr class="td-menu__sep" />
+            }
+            else if (item.Disabled)
+            {
+                <span class="td-menu__opt is-off" role="menuitem" aria-disabled="true">@item.Text</span>
+            }
+            else
+            {
+                <a class="td-menu__opt" role="menuitem" href="@(item.Href ?? "#")">
+                    <span>@item.Text</span>
+                    @if (!string.IsNullOrWhiteSpace(item.Shortcut))
+                    {
+                        <kbd>@item.Shortcut</kbd>
+                    }
+                </a>
+            }
+        }
+    </div>
+</td-context-menu>
+
+@code {
+    /// <summary>Acciones del menú. Text es la etiqueta, Href el destino y Shortcut el atajo visible.</summary>
+    [Parameter] public IReadOnlyList<TDMenuItem> Items { get; set; } = [];
+    /// <summary>Zona que abre el menú con el clic derecho.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

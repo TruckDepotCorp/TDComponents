@@ -1,0 +1,14 @@
+@namespace TDComponents.Components
+
+<div class="td-tabs__pane" role="tabpanel" id="@($"{Name}-panel")" data-td-tab-panel="@Name" hidden="@(!Active)">
+    @ChildContent
+</div>
+
+@code {
+    /// <summary>Tiene que coincidir con el Value de la pestaña.</summary>
+    [Parameter] public string Name { get; set; } = "";
+    /// <summary>Lo marca activo en el primer render. La pestaña seleccionada manda después.</summary>
+    [Parameter] public bool Active { get; set; }
+    /// <summary>Contenido de la pestaña.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

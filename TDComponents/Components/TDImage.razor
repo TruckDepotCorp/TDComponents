@@ -1,0 +1,46 @@
+@namespace TDComponents.Components
+
+<figure class="td-image" data-td-image>
+    <button type="button" class="td-image__frame" style="@($"background:{Background}")" data-td-image-open aria-label="@($"Ampliar {Alt}")">
+        <span>@Alt</span>
+    </button>
+    @if (!string.IsNullOrWhiteSpace(Caption))
+    {
+        <figcaption>
+            <span>@Caption</span>
+            @if (Download)
+            {
+                <button type="button" class="td-btn td-btn--secondary td-btn--sm" data-td-image-dl>Descargar</button>
+            }
+        </figcaption>
+    }
+    @if (Preview)
+    {
+        <dialog class="td-image__dlg" data-td-image-dlg>
+            <form method="dialog" class="td-image__zoom">
+                <div class="td-image__canvas" data-td-image-canvas style="@($"background:{Background};--z:1;--r:0deg")">
+                    <span>@Alt</span>
+                </div>
+                <div class="td-image__tools">
+                    <button type="button" data-td-image-zoom="-0.2" aria-label="Alejar">−</button>
+                    <button type="button" data-td-image-zoom="0.2" aria-label="Acercar">+</button>
+                    <button type="button" data-td-image-rot aria-label="Girar">↻</button>
+                    <button type="submit" aria-label="Cerrar">Cerrar</button>
+                </div>
+            </form>
+        </dialog>
+    }
+</figure>
+
+@code {
+    /// <summary>Texto alternativo. Describe la imagen, no repitas el pie.</summary>
+    [Parameter] public string Alt { get; set; } = "Imagen";
+    /// <summary>Pie visible bajo la imagen.</summary>
+    [Parameter] public string Caption { get; set; } = "";
+    /// <summary>Color de respaldo mientras no hay imagen.</summary>
+    [Parameter] public string Background { get; set; } = "#1F2327";
+    /// <summary>Permite abrir la vista ampliada. El defecto es verdadero.</summary>
+    [Parameter] public bool Preview { get; set; } = true;
+    /// <summary>Muestra la descarga. El defecto es verdadero.</summary>
+    [Parameter] public bool Download { get; set; } = true;
+}

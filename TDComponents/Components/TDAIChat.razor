@@ -1,0 +1,37 @@
+@namespace TDComponents.Components
+
+<td-aichat class="td-chat td-chat--ai" data-catalog="@Catalog">
+    <header class="td-chat__head">
+        <span class="td-chat__av">AI</span>
+        <div>
+            <strong>Asistente de catálogo</strong>
+            <em>Responde solo con repuestos. Sin SignalR.</em>
+        </div>
+    </header>
+    <div class="td-chat__log" data-td-chat-log>
+        <div class="td-chat__bubble is-in">
+            <p>Pregúntame por un código, una marca o qué está agotado.</p>
+        </div>
+    </div>
+    <div class="td-chat__suggest">
+        @foreach (var tip in Suggestions)
+        {
+            <button type="button" data-td-ai-tip>@tip</button>
+        }
+    </div>
+    <form class="td-chat__composer" data-td-ai-form>
+        <input type="text" name="q" placeholder="@Placeholder" autocomplete="off" aria-label="@Placeholder" />
+        <button type="submit" class="td-btn td-btn--primary td-btn--md">Preguntar</button>
+    </form>
+</td-aichat>
+
+@code {
+    /// <summary>Texto de la caja vacía.</summary>
+    [Parameter] public string Placeholder { get; set; } = "Pregunta por un repuesto…";
+
+    /// <summary>Preguntas de un clic. Cada una rellena la caja.</summary>
+    [Parameter] public IReadOnlyList<string> Suggestions { get; set; } = ["Pastillas para Volvo", "¿Qué está agotado?"];
+
+    /// <summary>Recorte del catálogo. Una línea por repuesto, columnas separadas por <c>|</c>: código, nombre, marca, modelo, stock y precio. Sin este texto el asistente no tiene con qué responder.</summary>
+    [Parameter] public string Catalog { get; set; } = "";
+}

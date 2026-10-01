@@ -1,0 +1,219 @@
+/* ============================================================
+   TRUCK DEPOT — Colors & Type foundation
+   Repuestos para camiones y buses
+   ------------------------------------------------------------
+   Primary: rojo (#ED2A24) + negro (#0A0B0C)
+   Secondary: escala de grises neutros
+   ============================================================ */
+
+/* --- Fonts (Google Fonts substitutes — see README font note) --- */
+@import url('https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@500;600;700;800;900&family=Saira:ital,wght@0,400;0,500;0,600;0,700;1,600;1,700&family=Barlow:ital,wght@0,400;0,500;0,600;0,700;1,500&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+:root {
+  /* ---------- BRAND CORE ---------- */
+  --td-red:        #ED2A24;   /* Depot Red — sampled from logo */
+  --td-red-press:  #C4140F;   /* pressed / active */
+  --td-ink:        #0A0B0C;   /* Truck Black — near-pure black */
+
+  /* ---------- RED SCALE ---------- */
+  --red-50:  #FEF2F1;
+  --red-100: #FDE0DE;
+  --red-200: #FBBDB9;
+  --red-300: #F78B85;
+  --red-400: #F25750;
+  --red-500: #ED2A24;   /* brand */
+  --red-600: #D11A14;   /* hover */
+  --red-700: #AE120D;   /* press / strong */
+  --red-800: #8C1410;
+  --red-900: #5C0D0A;
+
+  /* ---------- NEUTRAL / GREY SCALE (secondary) ---------- */
+  --n-0:   #FFFFFF;
+  --n-50:  #F6F7F8;
+  --n-100: #ECEEF0;
+  --n-200: #DCDFE3;
+  --n-300: #C2C7CD;
+  --n-400: #9CA3AB;
+  --n-500: #6E757D;
+  --n-600: #4B5158;
+  --n-700: #33383D;
+  --n-800: #1F2327;
+  --n-900: #14171A;
+  --n-950: #0A0B0C;
+
+  /* ---------- SEMANTIC (status / stock) ---------- */
+  --success:      #1E9E54;   /* En stock */
+  --success-bg:   #E7F6ED;
+  --warning:      #E8920C;   /* Pocas unidades */
+  --warning-bg:   #FDF3E2;
+  --danger:       #D11A14;   /* Agotado / error */
+  --danger-bg:    #FDE0DE;
+  --info:         #2A6FDB;   /* Info / envío */
+  --info-bg:      #E8F0FC;
+
+  /* ---------- SEMANTIC ROLES (light surface) ---------- */
+  --bg:           var(--n-0);
+  --bg-subtle:    var(--n-50);
+  --bg-sunken:    var(--n-100);
+  --surface:      var(--n-0);
+  --surface-2:    var(--n-50);
+  --border:       var(--n-200);
+  --border-strong:var(--n-300);
+  --divider:      var(--n-100);
+
+  --fg:           var(--n-950);   /* primary text */
+  --fg-2:         var(--n-600);   /* secondary text */
+  --fg-3:         var(--n-500);   /* muted / meta */
+  --fg-on-red:    #FFFFFF;
+  --fg-on-dark:   #F6F7F8;
+
+  --accent:       var(--td-red);
+  --accent-hover: var(--red-600);
+  --accent-press: var(--red-700);
+  --focus-ring:   color-mix(in srgb, var(--td-red) 45%, transparent);
+
+  /* ---------- TYPE FAMILIES ---------- */
+  --font-display: 'Saira Condensed', 'Arial Narrow', sans-serif; /* headline / wordmark voice */
+  --font-ui:      'Barlow', 'Segoe UI', system-ui, sans-serif;   /* UI + body */
+  --font-body:    'Barlow', 'Segoe UI', system-ui, sans-serif;
+  --font-mono:    'JetBrains Mono', ui-monospace, 'SF Mono', monospace; /* SKU / part numbers */
+
+  /* ---------- TYPE SCALE (px) ---------- */
+  --fs-display: 64px;
+  --fs-h1:      44px;
+  --fs-h2:      32px;
+  --fs-h3:      24px;
+  --fs-h4:      19px;
+  --fs-lg:      18px;
+  --fs-base:    16px;
+  --fs-sm:      14px;
+  --fs-xs:      12px;
+  --fs-2xs:     11px;
+
+  /* ---------- RADIUS ---------- */
+  --r-xs: 3px;
+  --r-sm: 5px;
+  --r-md: 8px;
+  --r-lg: 12px;
+  --r-xl: 16px;
+  --r-pill: 999px;
+
+  /* ---------- SPACING (4px base) ---------- */
+  --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px; --sp-4: 16px;
+  --sp-5: 20px; --sp-6: 24px; --sp-8: 32px; --sp-10: 40px;
+  --sp-12: 48px; --sp-16: 64px; --sp-20: 80px;
+
+  /* ---------- SHADOWS / ELEVATION ---------- */
+  --shadow-xs: 0 1px 2px rgba(10,11,12,.06);
+  --shadow-sm: 0 1px 3px rgba(10,11,12,.10), 0 1px 2px rgba(10,11,12,.06);
+  --shadow-md: 0 4px 12px rgba(10,11,12,.10), 0 2px 4px rgba(10,11,12,.06);
+  --shadow-lg: 0 12px 28px rgba(10,11,12,.14), 0 4px 10px rgba(10,11,12,.08);
+  --shadow-red: 0 6px 18px rgba(237,42,36,.32);
+
+  /* ---------- MOTION ---------- */
+  --ease: cubic-bezier(.2,.7,.2,1);      /* @kind other */
+  --ease-out: cubic-bezier(.16,1,.3,1);  /* @kind other */
+  --dur-fast: 120ms;                     /* @kind other */
+  --dur: 180ms;                          /* @kind other */
+  --dur-slow: 280ms;                     /* @kind other */
+}
+
+/* ============================================================
+   SEMANTIC TYPE CLASSES
+   ============================================================ */
+.td-display {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-style: italic;
+  font-size: var(--fs-display);
+  line-height: .92;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  color: var(--fg);
+}
+.td-h1 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--fs-h1);
+  line-height: 1.0;
+  letter-spacing: -0.005em;
+  text-transform: uppercase;
+  color: var(--fg);
+}
+.td-h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-h2);
+  line-height: 1.05;
+  text-transform: uppercase;
+  color: var(--fg);
+}
+.td-h3 {
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: var(--fs-h3);
+  line-height: 1.2;
+  color: var(--fg);
+}
+.td-h4 {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: var(--fs-h4);
+  line-height: 1.3;
+  color: var(--fg);
+}
+.td-body {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: var(--fs-base);
+  line-height: 1.55;
+  color: var(--fg);
+}
+.td-body-sm {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: var(--fs-sm);
+  line-height: 1.5;
+  color: var(--fg-2);
+}
+.td-label {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: var(--fs-sm);
+  line-height: 1.2;
+  color: var(--fg);
+}
+/* Eyebrow / kicker — small uppercase tracked label, very on-brand */
+.td-eyebrow {
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: var(--fs-xs);
+  line-height: 1;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--td-red);
+}
+.td-meta {
+  font-family: var(--font-ui);
+  font-weight: 500;
+  font-size: var(--fs-xs);
+  line-height: 1.3;
+  color: var(--fg-3);
+}
+/* SKU / part numbers / specs */
+.td-mono {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: var(--fs-sm);
+  letter-spacing: 0.01em;
+  color: var(--fg-2);
+}
+.td-price {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--fs-h2);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+  font-variant-numeric: tabular-nums;
+}

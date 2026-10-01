@@ -1,0 +1,30 @@
+@namespace TDComponents.Components
+
+<nav class="td-breadcrumb" aria-label="Ruta">
+    <ol>
+        @if (ShowHome)
+        {
+            <li><a href="/">Inicio</a></li>
+        }
+        @foreach (var crumb in Items)
+        {
+            <li>
+                @if (string.IsNullOrEmpty(crumb.Value))
+                {
+                    <span aria-current="page">@crumb.Label</span>
+                }
+                else
+                {
+                    <a href="@crumb.Value">@crumb.Label</a>
+                }
+            </li>
+        }
+    </ol>
+</nav>
+
+@code {
+    /// <summary>Tramos de la ruta. Label es el texto y Hint el destino. El último es la página actual.</summary>
+    [Parameter] public IReadOnlyList<TDOption> Items { get; set; } = [];
+    /// <summary>Muestra el enlace de inicio. El defecto es verdadero.</summary>
+    [Parameter] public bool ShowHome { get; set; } = true;
+}

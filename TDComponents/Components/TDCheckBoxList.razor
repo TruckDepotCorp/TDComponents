@@ -1,0 +1,49 @@
+@namespace TDComponents.Components
+
+<div class="td-choice @(Orientation == TDOrientation.Horizontal ? "td-choice--row" : null)">
+    @if (!string.IsNullOrWhiteSpace(Label))
+    {
+        <p class="td-section-title">@Label</p>
+    }
+    @if (ShowSelectAll)
+    {
+        <TDCheckBox Name="@($"{Name}__all")"
+                    Label="Seleccionar todo"
+                    TriState="true"
+                    Indeterminate="IsPartial"
+                    Checked="IsAll"
+                    data-td-check-all="@Name" />
+    }
+    @foreach (var option in Options)
+    {
+        <TDCheckBox Name="@Name"
+                    Value="@option.Value"
+                    Label="@(option.Count is int count ? $"{option.Label} ({count})" : option.Label)"
+                    Checked="Selected.Contains(option.Value)"
+                    Disabled="option.Disabled"
+                    data-td-check-group="@Name" />
+    }
+</div>
+
+@code {
+    /// <summary>Nombre repetido en cada casilla. Cada opción marcada se envía por separado.</summary>
+    [Parameter] public string Name { get; set; } = "opciones";
+
+    /// <summary>Título del grupo.</summary>
+    [Parameter] public string? Label { get; set; }
+
+    /// <summary>Opciones. <c>Disabled</c> desactiva una casilla.</summary>
+    [Parameter] public IReadOnlyList<TDOption> Options { get; set; } = [];
+
+    /// <summary>Valores iniciales. Se comparan con <c>TDOption.Value</c>.</summary>
+    [Parameter] public IReadOnlyList<string> Selected { get; set; } = [];
+
+    /// <summary>Agrega una casilla para marcar todas. Úsala cuando marcar todo es una tarea real.</summary>
+    [Parameter] public bool ShowSelectAll { get; set; }
+
+    /// <summary><see cref="TDOrientation.Vertical"/> las apila. <see cref="TDOrientation.Horizontal"/> las pone en fila.</summary>
+    [Parameter] public TDOrientation Orientation { get; set; } = TDOrientation.Vertical;
+
+    private bool IsAll => Options.Where(o => !o.Disabled).All(o => Selected.Contains(o.Value));
+    private bool IsPartial => !IsAll && Options.Any(o => Selected.Contains(o.Value));
+}

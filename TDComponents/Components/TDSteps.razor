@@ -1,0 +1,29 @@
+@namespace TDComponents.Components
+
+<ol class="td-steps @(Vertical ? "td-steps--vertical" : null)" aria-label="@AriaLabel">
+    @foreach (var (step, index) in Steps.Select((s, i) => (s, i)))
+    {
+        var state = index < Current ? "is-done" : index == Current ? "is-current" : "";
+        <li class="td-steps__item @state">
+            <span class="td-steps__dot" aria-hidden="true">@(index < Current ? "✓" : (index + 1).ToString())</span>
+            <span class="td-steps__meta">
+                <span class="td-steps__title">@step.Label</span>
+                @if (!string.IsNullOrWhiteSpace(step.Hint))
+                {
+                    <span class="td-steps__hint">@step.Hint</span>
+                }
+            </span>
+        </li>
+    }
+</ol>
+
+@code {
+    /// <summary>Nombre accesible del proceso.</summary>
+    [Parameter] public string AriaLabel { get; set; } = "Pasos";
+    /// <summary>Pasos. Label es el nombre de cada uno.</summary>
+    [Parameter] public IReadOnlyList<TDOption> Steps { get; set; } = [];
+    /// <summary>Índice del paso activo, desde cero.</summary>
+    [Parameter] public int Current { get; set; }
+    /// <summary>Los apila en columna.</summary>
+    [Parameter] public bool Vertical { get; set; }
+}

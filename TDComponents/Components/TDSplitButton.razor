@@ -1,0 +1,33 @@
+@namespace TDComponents.Components
+
+<td-split class="td-split">
+    <span class="td-split__bar">
+        <TDButton Variant="Variant" ButtonType="TDButtonType.Button">@Label</TDButton>
+        <button type="button" class="td-split__more td-btn td-btn--@VariantToken" aria-expanded="false" aria-haspopup="menu" data-td-split-open aria-label="Más opciones">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg>
+        </button>
+        <div class="td-split__menu" hidden role="menu" data-td-split-menu>
+            @ChildContent
+        </div>
+    </span>
+    <span class="td-split__status" data-td-split-status></span>
+</td-split>
+
+@code {
+    /// <summary>Texto de la acción principal. Ese botón no envía el formulario.</summary>
+    [Parameter] public string Label { get; set; } = "Acción";
+
+    /// <summary>Cara de la barra. Usa <see cref="TDVariant.Secondary"/> cuando esta no es la acción primaria de la página.</summary>
+    [Parameter] public TDVariant Variant { get; set; } = TDVariant.Primary;
+
+    /// <summary>Botones <c>type="button"</c> del menú de alternativas.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private string VariantToken => Variant switch
+    {
+        TDVariant.Secondary => "secondary",
+        TDVariant.Ghost => "ghost",
+        TDVariant.Danger => "danger",
+        _ => "primary"
+    };
+}

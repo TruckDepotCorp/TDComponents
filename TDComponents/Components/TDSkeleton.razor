@@ -1,0 +1,16 @@
+@namespace TDComponents.Components
+
+<span class="td-skel @(Circle ? "td-skel--circle" : null)"
+      style="@Style"
+      aria-hidden="true"></span>
+
+@code {
+    /// <summary>Ancho CSS. El defecto es 100%.</summary>
+    [Parameter] public string Width { get; set; } = "100%";
+    /// <summary>Alto CSS. El defecto es 16px.</summary>
+    [Parameter] public string Height { get; set; } = "16px";
+    /// <summary>Lo dibuja redondo. Úsalo para reservar el lugar de un avatar.</summary>
+    [Parameter] public bool Circle { get; set; }
+
+    private string Style => $"width:{Width};height:{Height}";
+}

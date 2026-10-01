@@ -1,0 +1,72 @@
+@namespace TDComponents.Components
+
+<td-knob class="td-knob @(Disabled ? "is-off" : null)"
+         data-min="@Min"
+         data-max="@Max"
+         data-step="@Step"
+         data-value="@Value"
+         data-suffix="@Suffix"
+         data-readonly="@(ReadOnly ? "true" : null)"
+         style="--size:@(Size)px">
+    @if (!string.IsNullOrWhiteSpace(Label))
+    {
+        <TDLabel>@Label</TDLabel>
+    }
+    <button type="button"
+            class="td-knob__dial"
+            data-td-knob
+            disabled="@(Disabled || ReadOnly)"
+            aria-valuemin="@Min"
+            aria-valuemax="@Max"
+            aria-valuenow="@Value"
+            aria-label="@(Label ?? "Valor")">
+        <svg viewBox="0 0 100 100" aria-hidden="true">
+            <circle cx="50" cy="50" r="40" class="td-knob__track"></circle>
+            <circle cx="50" cy="50" r="40" class="td-knob__arc" data-td-knob-arc></circle>
+        </svg>
+        <span data-td-knob-out>@Value.ToString("0.##") @Suffix</span>
+    </button>
+    @if (ShowButtons)
+    {
+        <div class="td-knob__btns">
+            <button type="button" data-td-knob-step="-1" aria-label="Bajar">−</button>
+            <button type="button" data-td-knob-step="1" aria-label="Subir">+</button>
+        </div>
+    }
+    <input type="hidden" name="@Name" value="@Value" data-td-knob-value />
+</td-knob>
+
+@code {
+    /// <summary>Nombre del número que se envía.</summary>
+    [Parameter] public string Name { get; set; } = "knob";
+
+    /// <summary>Etiqueta del control.</summary>
+    [Parameter] public string? Label { get; set; }
+
+    /// <summary>Valor inicial.</summary>
+    [Parameter] public double Value { get; set; }
+
+    /// <summary>Mínimo. El defecto es 0.</summary>
+    [Parameter] public double Min { get; set; }
+
+    /// <summary>Máximo. El defecto es 100.</summary>
+    [Parameter] public double Max { get; set; } = 100;
+
+    /// <summary>Paso del teclado y de los botones.</summary>
+    [Parameter] public double Step { get; set; } = 1;
+
+    /// <summary>Unidad pintada en el centro, por ejemplo <c>%</c>.</summary>
+    [Parameter] public string Suffix { get; set; } = "";
+
+    /// <summary>Diámetro en píxeles. El defecto es 140.</summary>
+    [Parameter] public int Size { get; set; } = 140;
+
+    /// <summary>Muestra botones de menos y más además del arrastre.</summary>
+    [Parameter] public bool ShowButtons { get; set; }
+
+    /// <summary>Se ve y no se puede editar.</summary>
+    [Parameter] public bool ReadOnly { get; set; }
+
+    /// <summary>El control no responde.</summary>
+    [Parameter] public bool Disabled { get; set; }
+}

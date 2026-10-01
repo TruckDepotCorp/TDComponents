@@ -1,0 +1,13 @@
+@namespace TDComponents.Components
+
+<span class="td-tip" data-td-tip>
+    @ChildContent
+    <span class="td-tip__bubble" role="tooltip">@Text</span>
+</span>
+
+@code {
+    /// <summary>Ayuda que aparece sobre el contenido. No dejes aquí la única explicación.</summary>
+    [Parameter] public string Text { get; set; } = "";
+    /// <summary>Elemento que dispara la ayuda.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

@@ -1,0 +1,65 @@
+@namespace TDComponents.Components
+
+<td-tabs class="td-tabs td-tabs--@VariantToken" data-closable="@(Closable ? "true" : null)" data-add="@(AllowAdd ? "true" : null)">
+    <div class="td-tabs__list" role="tablist" aria-label="@AriaLabel" aria-orientation="@(Variant == TDTabsVariant.Vertical ? "vertical" : "horizontal")">
+        @foreach (var tab in Tabs)
+        {
+            var on = tab.Value == Selected;
+            <button type="button"
+                    class="td-tabs__tab @(on ? "is-on" : null)"
+                    role="tab"
+                    id="@($"{_id}-{tab.Value}")"
+                    aria-selected="@(on ? "true" : "false")"
+                    aria-controls="@($"{tab.Value}-panel")"
+                    tabindex="@(on ? 0 : -1)"
+                    data-td-tab="@tab.Value">
+                @if (!string.IsNullOrWhiteSpace(tab.Icon))
+                {
+                    <span class="td-tabs__icon" aria-hidden="true">@((MarkupString)tab.Icon)</span>
+                }
+                <span>@tab.Label</span>
+                @if (tab.Count is int count)
+                {
+                    <span class="td-tabs__badge">@count</span>
+                }
+                @if (Closable)
+                {
+                    <span class="td-tabs__x" data-td-tab-close aria-label="@($"Cerrar {tab.Label}")">×</span>
+                }
+            </button>
+        }
+        @if (AllowAdd)
+        {
+            <button type="button" class="td-tabs__add" data-td-tab-add aria-label="Nueva pestaña">+</button>
+        }
+    </div>
+    <div class="td-tabs__panel" data-td-tab-panels>
+        @ChildContent
+    </div>
+</td-tabs>
+
+@code {
+    private readonly string _id = $"td-tabs-{Guid.NewGuid():N}";
+
+    /// <summary>Nombre accesible del grupo de pestañas.</summary>
+    [Parameter] public string AriaLabel { get; set; } = "Pestañas";
+    /// <summary>Pestañas. Value es la clave y Label el texto.</summary>
+    [Parameter] public IReadOnlyList<TDOption> Tabs { get; set; } = [];
+    /// <summary>Value de la pestaña activa.</summary>
+    [Parameter] public string? Selected { get; set; }
+    /// <summary>Underline, Pills o Vertical. El defecto es Underline.</summary>
+    [Parameter] public TDTabsVariant Variant { get; set; } = TDTabsVariant.Underline;
+    /// <summary>Cada pestaña se puede cerrar.</summary>
+    [Parameter] public bool Closable { get; set; }
+    /// <summary>Muestra el control para agregar una pestaña.</summary>
+    [Parameter] public bool AllowAdd { get; set; }
+    /// <summary>Paneles TDTabPanel.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private string VariantToken => Variant switch
+    {
+        TDTabsVariant.Pills => "pills",
+        TDTabsVariant.Vertical => "vertical",
+        _ => "underline"
+    };
+}

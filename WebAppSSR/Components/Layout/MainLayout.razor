@@ -1,0 +1,50 @@
+﻿@inherits LayoutComponentBase
+
+<div class="td-shell">
+    <header class="td-header">
+        <div class="td-header__bar">
+            <a class="td-brand" href="">
+                <span class="td-mark" aria-hidden="true">T</span>
+                <span class="td-brand__text">
+                    <span class="td-brand__name">TDComponents</span>
+                    <span class="td-brand__meta">v1.0.0 · Cero SignalR · <span class="td-theme-name">Modern</span></span>
+                </span>
+            </a>
+            <div class="td-header__tools">
+                <span class="td-header__note">.NET 10 SSR · Custom Elements · 0 SignalR</span>
+                <label class="td-header__theme">
+                    Tema
+                    <select class="td-header__select" data-td-theme-select aria-label="Tema visual">
+                        <option value="modern">Modern</option>
+                        <option value="material">Material</option>
+                        <option value="expressive">Material Expressive</option>
+                        <option value="fluent">Fluent 3</option>
+                    </select>
+                </label>
+                <TDButton ButtonType="TDButtonType.Button"
+                          Variant="TDVariant.Ghost"
+                          aria-label="Cambiar tema"
+                          data-td-theme-toggle="true"
+                          data-label-dark="Oscuro"
+                          data-label-light="Claro">
+                    <svg class="td-theme-icon td-theme-icon--moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path></svg>
+                    <svg class="td-theme-icon td-theme-icon--sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>
+                    <span class="td-btn__text">Oscuro</span>
+                </TDButton>
+            </div>
+        </div>
+    </header>
+
+    <div class="td-docs">
+        <CatalogMenu />
+        <main class="td-docs__main">
+            @Body
+        </main>
+    </div>
+</div>
+
+<div id="blazor-error-ui" data-nosnippet>
+    Ocurrió un error no controlado.
+    <a href="." class="reload">Recargar</a>
+    <span class="dismiss" role="button" tabindex="0">Cerrar</span>
+</div>

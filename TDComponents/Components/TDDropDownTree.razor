@@ -1,0 +1,93 @@
+@namespace TDComponents.Components
+
+<td-ddtree class="td-select" data-td-ddtree data-multiple="@(Multiple ? "true" : null)">
+    @if (!string.IsNullOrWhiteSpace(Label))
+    {
+        <TDLabel For="@_id" Required="Required">@Label</TDLabel>
+    }
+    @foreach (var value in Selected)
+    {
+        <input type="hidden" name="@Name" value="@value" data-td-ddtree-value />
+    }
+    <button type="button"
+            id="@_id"
+            class="td-select__trigger"
+            aria-expanded="false"
+            aria-haspopup="listbox"
+            data-td-ddtree-open>
+        <span class="td-select__text @(Selected.Count == 0 ? "is-placeholder" : null)">
+            @(Selected.Count == 0 ? Placeholder : Multiple ? $"{Selected.Count} seleccionadas" : LabelOf(Selected[0]))
+        </span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"></path></svg>
+    </button>
+    <div class="td-select__panel" hidden data-td-ddtree-panel>
+        <div class="td-select__search">
+            <input type="search" placeholder="Buscar" aria-label="Buscar en el árbol" data-td-ddtree-query />
+        </div>
+        <div class="td-ddtree__list" role="tree">
+            @foreach (var node in Options)
+            {
+                <TDDropDownTreeNode Node="node" Depth="0" Selected="Selected" LeavesOnly="LeavesOnly" />
+            }
+        </div>
+    </div>
+    @if (!string.IsNullOrWhiteSpace(Hint))
+    {
+        <p class="td-field__hint">@Hint</p>
+    }
+</td-ddtree>
+
+@code {
+    private readonly string _id = $"td-ddt-{Guid.NewGuid():N}";
+
+    /// <summary>Nombre de los nodos enviados.</summary>
+    [Parameter] public string Name { get; set; } = "nodo";
+
+    /// <summary>Etiqueta del desplegable.</summary>
+    [Parameter] public string? Label { get; set; }
+
+    /// <summary>Ayuda bajo el control.</summary>
+    [Parameter] public string? Hint { get; set; }
+
+    /// <summary>Texto que se ve cuando no hay selección.</summary>
+    [Parameter] public string Placeholder { get; set; } = "Elegir categoría";
+
+    /// <summary>Árbol de nodos. Cada nodo puede tener hijos.</summary>
+    [Parameter] public IReadOnlyList<TDTreeOption> Options { get; set; } = [];
+
+    /// <summary>Valores iniciales.</summary>
+    [Parameter] public IReadOnlyList<string> Selected { get; set; } = [];
+
+    /// <summary>Permite elegir varios nodos, con casillas.</summary>
+    [Parameter] public bool Multiple { get; set; }
+
+    /// <summary>Solo se pueden elegir nodos sin hijos. El padre queda como carpeta.</summary>
+    [Parameter] public bool LeavesOnly { get; set; }
+
+    /// <summary>Marca la etiqueta como obligatoria.</summary>
+    [Parameter] public bool Required { get; set; }
+
+    private string LabelOf(string value) => Find(Options, value)?.Label ?? value;
+
+    internal static TDTreeOption? Find(IReadOnlyList<TDTreeOption> nodes, string value)
+    {
+        foreach (var node in nodes)
+        {
+            if (node.Value == value)
+            {
+                return node;
+            }
+
+            if (node.Children is { Count: > 0 } children)
+            {
+                var found = Find(children, value);
+                if (found is not null)
+                {
+                    return found;
+                }
+            }
+        }
+
+        return null;
+    }
+}

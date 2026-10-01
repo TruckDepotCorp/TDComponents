@@ -1,0 +1,47 @@
+@namespace TDComponents.Components
+
+<td-chat class="td-chat" data-user="@CurrentUser">
+    <header class="td-chat__head">
+        <span class="td-chat__av">@Avatar</span>
+        <div>
+            <strong>@Title</strong>
+            <em data-td-chat-sub>@(ShowTyping ? "escribiendo…" : Status)</em>
+        </div>
+    </header>
+    <div class="td-chat__log" data-td-chat-log>
+        @foreach (var message in Messages)
+        {
+            <div class="td-chat__bubble @(message.Mine ? "is-out" : "is-in")">
+                <p>@message.Text</p>
+                <time>@message.Time</time>
+            </div>
+        }
+    </div>
+    <form class="td-chat__composer" data-td-chat-form>
+        <input type="text" name="message" placeholder="@Placeholder" autocomplete="off" aria-label="@Placeholder" />
+        <button type="submit" class="td-btn td-btn--primary td-btn--md">Enviar</button>
+    </form>
+</td-chat>
+
+@code {
+    /// <summary>Nombre de la otra persona en el encabezado.</summary>
+    [Parameter] public string Title { get; set; } = "Camila Rojas";
+
+    /// <summary>Iniciales del avatar.</summary>
+    [Parameter] public string Avatar { get; set; } = "CR";
+
+    /// <summary>Bajada del encabezado. Se reemplaza por «escribiendo…» cuando <see cref="ShowTyping"/> es verdadero.</summary>
+    [Parameter] public string Status { get; set; } = "En línea · responde en minutos";
+
+    /// <summary>Nombre de quien escribe desde este lado.</summary>
+    [Parameter] public string CurrentUser { get; set; } = "Tú";
+
+    /// <summary>Texto de la caja vacía.</summary>
+    [Parameter] public string Placeholder { get; set; } = "Escribe un mensaje…";
+
+    /// <summary>Anuncia que la otra parte está escribiendo.</summary>
+    [Parameter] public bool ShowTyping { get; set; }
+
+    /// <summary>Historial inicial. <c>Mine</c> en verdadero alinea la burbuja como mensaje propio.</summary>
+    [Parameter] public IReadOnlyList<TDChatMessage> Messages { get; set; } = [];
+}

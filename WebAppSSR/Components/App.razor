@@ -1,0 +1,44 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <base href="/" />
+    <script>
+        (function () {
+            try {
+                var stored = localStorage.getItem("td-theme");
+                var theme = stored === "dark" || stored === "light"
+                    ? stored
+                    : (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+                document.documentElement.setAttribute("data-theme", theme);
+                var family = localStorage.getItem("td-theme-family");
+                if (family === "material" || family === "expressive" || family === "fluent") {
+                    document.documentElement.setAttribute("data-td-theme", family);
+                }
+            } catch (e) {
+                document.documentElement.setAttribute("data-theme", "light");
+            }
+        })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Roboto+Flex:opsz,wght@8..144,400..900&family=Roboto+Mono:wght@400;500&family=Roboto:wght@400;500;700&family=Saira+Condensed:ital,wght@0,700;0,800;1,800;1,900&display=swap" />
+    <ResourcePreloader />
+    <link rel="stylesheet" href="@Assets["lib/bootstrap/dist/css/bootstrap.min.css"]" />
+    <link rel="stylesheet" href="@Assets["app.css"]" />
+    <link rel="stylesheet" href="@Assets["WebAppSSR.styles.css"]" />
+    <link rel="stylesheet" href="@Assets["TDComponents/css/td.css"]" />
+    <ImportMap />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <HeadOutlet />
+</head>
+
+<body>
+    <Routes />
+    <script src="@Assets["_framework/blazor.web.js"]"></script>
+    <script type="module" src="@Assets["TDComponents/js/td.js"]"></script>
+</body>
+
+</html>

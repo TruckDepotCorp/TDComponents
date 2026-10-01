@@ -1,0 +1,8 @@
+@namespace TDComponents.Components
+
+<td-ecom class="td-ecom" data-kind="@Kind" data-td-ecom></td-ecom>
+
+@code {
+    /// <summary>Variante de Ecommerce. ecard es el defecto y también el valor de cualquier texto desconocido.</summary>
+    [Parameter] public string Kind { get; set; } = "ecard";
+}

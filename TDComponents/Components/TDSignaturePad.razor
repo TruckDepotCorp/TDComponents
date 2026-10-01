@@ -1,0 +1,28 @@
+@namespace TDComponents.Components
+
+<td-signature class="td-field" data-td-sign>
+    @if (!string.IsNullOrWhiteSpace(Label))
+    {
+        <label class="td-field__label">@Label</label>
+    }
+    <div class="td-sign">
+        <canvas width="640" height="180" data-td-sign-canvas></canvas>
+        <button type="button" class="td-sign__clear" data-td-sign-clear>Limpiar</button>
+    </div>
+    <input type="hidden" name="@Name" data-td-sign-value />
+    @if (!string.IsNullOrWhiteSpace(Hint))
+    {
+        <p class="td-field__hint">@Hint</p>
+    }
+</td-signature>
+
+@code {
+    /// <summary>Nombre del campo oculto. Sin este valor la firma no viaja en el formulario. El contenido es una data URL PNG.</summary>
+    [Parameter] public string? Name { get; set; }
+
+    /// <summary>Etiqueta sobre el lienzo.</summary>
+    [Parameter] public string? Label { get; set; }
+
+    /// <summary>Ayuda bajo el lienzo. Cámbiala si el texto por defecto no corresponde al trámite.</summary>
+    [Parameter] public string Hint { get; set; } = "Firma con mouse, lápiz o dedo. Se envía como data URL.";
+}

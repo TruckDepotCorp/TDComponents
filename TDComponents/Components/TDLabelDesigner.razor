@@ -1,0 +1,30 @@
+@namespace TDComponents.Components
+
+<td-studio class="td-studio" data-kind="labeldesigner" data-td-studio
+           data-width="@Width" data-height="@Height" data-dpi="@Dpi" data-copies="@Copies"
+           data-template="@Template" data-record="@RecordJson"></td-studio>
+
+@code {
+    /// <summary>Ancho de la etiqueta, en milímetros. El defecto es 62.</summary>
+    [Parameter] public int Width { get; set; } = 62;
+    /// <summary>Alto de la etiqueta, en milímetros. El defecto es 40.</summary>
+    [Parameter] public int Height { get; set; } = 40;
+    /// <summary>Resolución de impresión. El defecto es 203.</summary>
+    [Parameter] public int Dpi { get; set; } = 203;
+    /// <summary>Copias a imprimir. El defecto es 1.</summary>
+    [Parameter] public int Copies { get; set; } = 1;
+    /// <summary>Nombre de la plantilla inicial.</summary>
+    [Parameter] public string? Template { get; set; }
+    /// <summary>Datos de repuesto que la etiqueta puede insertar.</summary>
+    [Parameter] public TDLabelRecord? Record { get; set; }
+
+    private string? RecordJson => Record is null ? null : JsonSerializer.Serialize(new Dictionary<string, string>
+    {
+        ["code"] = Record.Code,
+        ["name"] = Record.Name,
+        ["brand"] = Record.Brand,
+        ["price"] = Record.Price,
+        ["stock"] = Record.Stock,
+        ["url"] = Record.Url
+    });
+}

@@ -1,0 +1,55 @@
+@namespace TDComponents.Components
+
+<td-timespan class="td-field" data-step="@MinutesStep">
+    @if (!string.IsNullOrWhiteSpace(Label))
+    {
+        <TDLabel For="@_id">@Label</TDLabel>
+    }
+    <div class="td-timespan" id="@_id">
+        @if (ShowDays)
+        {
+            <label>Días<input type="number" min="0" max="30" value="@Days" data-td-ts="d" aria-label="Días" /></label>
+        }
+        <label>Horas<input type="number" min="0" max="23" value="@Hours" data-td-ts="h" aria-label="Horas" /></label>
+        <label>Minutos<input type="number" min="0" max="59" step="@MinutesStep" value="@Minutes" data-td-ts="m" aria-label="Minutos" /></label>
+    </div>
+    <div class="td-timespan__presets">
+        @foreach (var preset in Presets)
+        {
+            <button type="button" data-td-ts-preset="@((int)preset.TotalMinutes)">@Format(preset)</button>
+        }
+    </div>
+    <input type="hidden" name="@Name" value="@Iso" data-td-ts-iso />
+    <span class="td-field__hint" data-td-ts-out>@Iso</span>
+</td-timespan>
+
+@code {
+    private readonly string _id = $"td-ts-{Guid.NewGuid():N}";
+
+    /// <summary>Nombre del campo. El valor viaja como <c>d.hh:mm:ss</c>.</summary>
+    [Parameter] public string Name { get; set; } = "duracion";
+
+    /// <summary>Etiqueta de la duración.</summary>
+    [Parameter] public string? Label { get; set; }
+
+    /// <summary>Muestra el campo de días. En falso quedan solo horas y minutos.</summary>
+    [Parameter] public bool ShowDays { get; set; } = true;
+
+    /// <summary>Salto de los minutos. El defecto es 5.</summary>
+    [Parameter] public int MinutesStep { get; set; } = 5;
+
+    /// <summary>Duración inicial. El defecto es 30 minutos.</summary>
+    [Parameter] public TimeSpan Value { get; set; } = TimeSpan.FromMinutes(30);
+
+    /// <summary>Atajos visibles. El defecto es 30 minutos, 1 hora y 2 horas.</summary>
+    [Parameter] public IReadOnlyList<TimeSpan> Presets { get; set; } =
+        [TimeSpan.FromMinutes(30), TimeSpan.FromHours(1), TimeSpan.FromHours(2)];
+
+    private int Days => Value.Days;
+    private int Hours => Value.Hours;
+    private int Minutes => Value.Minutes;
+    private string Iso => Value.ToString(@"d\.hh\:mm\:ss");
+
+    private static string Format(TimeSpan value) =>
+        value.TotalHours >= 1 ? $"{value.TotalHours:0} h" : $"{value.TotalMinutes:0} min";
+}

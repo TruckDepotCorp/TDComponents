@@ -1,0 +1,53 @@
+@namespace TDComponents.Components
+
+<td-slider class="td-field">
+    @if (!string.IsNullOrWhiteSpace(Label))
+    {
+        <div class="td-field__label-row">
+            <TDLabel For="@_id">@Label</TDLabel>
+            <span class="td-slider__value" data-td-slider-out>@Format(Value)</span>
+        </div>
+    }
+    <input id="@_id"
+           class="td-slider"
+           type="range"
+           name="@Name"
+           value="@Value"
+           min="@Min"
+           max="@Max"
+           step="@Step"
+           disabled="@Disabled"
+           data-td-slider
+           aria-valuetext="@Format(Value)" />
+</td-slider>
+
+@code {
+    private readonly string _id = $"td-sld-{Guid.NewGuid():N}";
+
+    /// <summary>Nombre del número que se envía. El control tiene una sola manija.</summary>
+    [Parameter] public string Name { get; set; } = "rango";
+
+    /// <summary>Etiqueta de la barra.</summary>
+    [Parameter] public string? Label { get; set; }
+
+    /// <summary>Valor inicial.</summary>
+    [Parameter] public double Value { get; set; }
+
+    /// <summary>Mínimo. El defecto es 0.</summary>
+    [Parameter] public double Min { get; set; }
+
+    /// <summary>Máximo. El defecto es 100.</summary>
+    [Parameter] public double Max { get; set; } = 100;
+
+    /// <summary>Incremento permitido.</summary>
+    [Parameter] public double Step { get; set; } = 1;
+
+    /// <summary>Unidad junto al valor inicial, por ejemplo <c>%</c>. Al arrastrar, el cliente muestra el número sin esta unidad.</summary>
+    [Parameter] public string? Suffix { get; set; }
+
+    /// <summary>La persona no puede mover la manija.</summary>
+    [Parameter] public bool Disabled { get; set; }
+
+    private string Format(double value) =>
+        string.IsNullOrEmpty(Suffix) ? value.ToString("0.##") : $"{value:0.##} {Suffix}";
+}

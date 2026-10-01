@@ -1,0 +1,966 @@
+@using WebAppSSR.Interfaces
+@using WebAppSSR.Models
+@inject IRepuestoCatalogo Catalogo
+
+<div class="td-panel td-stack">
+    @switch (Id)
+    {
+        case "tokens":
+            <TDThemePicker />
+            break;
+
+        case "grid":
+        case "coltemplate":
+        case "colresize":
+        case "colpicker":
+        case "colreorder":
+        case "colfooter":
+        case "colfrozen":
+        case "colcomposite":
+        case "colconditional":
+        case "fltsimple":
+        case "fltmenu":
+        case "fltadv":
+        case "fltcbl":
+        case "fltmixed":
+        case "fltapi":
+        case "selsingle":
+        case "selmulti":
+        case "sortsingle":
+        case "sortmulti":
+        case "cellmenu":
+        case "inlineedit":
+        case "incelledit":
+        case "cascade":
+        case "condfmt":
+        case "exportx":
+        case "pager":
+            <CatalogGridDemo Id="@Id" />
+            break;
+
+        case "datatable":
+            <TDDataTable Data="Catalogo.Inventario()" AriaLabel="Inventario por bodega" SearchPlaceholder="Buscar en el inventario" />
+            break;
+
+        case "tree":
+            <TDTree TItem="CategoriaNodo" Items="Catalogo.Categorias(null, null)"
+                    Text="n => n.Name"
+                    Children="n => n.Children"
+                    Count="n => n.Count"
+                    Href="n => n.Href"
+                    Expanded="n => n.Expanded"
+                    Active="n => n.Active" />
+            break;
+
+        case "button":
+            <p class="td-section-title">Variantes</p>
+            <div class="td-row">
+                <TDButton ButtonType="TDButtonType.Button">Agregar al carrito</TDButton>
+                <TDButton ButtonType="TDButtonType.Button" Variant="TDVariant.Secondary">Ver ficha</TDButton>
+                <TDButton ButtonType="TDButtonType.Button" Variant="TDVariant.Ghost">Cotizar</TDButton>
+                <TDButton ButtonType="TDButtonType.Button" Variant="TDVariant.Danger">Eliminar</TDButton>
+                <TDButton ButtonType="TDButtonType.Button" Disabled="true">Agotado</TDButton>
+            </div>
+            <p class="td-section-title">Tamaños e íconos</p>
+            <div class="td-row">
+                <TDButton ButtonType="TDButtonType.Button" Size="TDSize.Small">Pequeño</TDButton>
+                <TDButton ButtonType="TDButtonType.Button">Mediano</TDButton>
+                <TDButton ButtonType="TDButtonType.Button" Size="TDSize.Large">Grande</TDButton>
+                <TDButton ButtonType="TDButtonType.Button">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="21" r="1"></circle><circle cx="19" cy="21" r="1"></circle><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"></path></svg>
+                    Con ícono
+                </TDButton>
+            </div>
+            <p class="td-section-title">Estado de carga</p>
+            <div class="td-row">
+                <TDButton ButtonType="TDButtonType.Button" PendingText="Enviando…" data-td-busy-demo>Enviar</TDButton>
+            </div>
+            break;
+
+        case "textbox":
+            <p class="td-section-title">Con botones de ícono al inicio y al final</p>
+            <div class="td-searchbar">
+                <button type="button" aria-label="Escanear código de barras">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M8 7v10M12 7v10M17 7v10"></path></svg>
+                </button>
+                <button type="button" aria-label="Cambiar campo de búsqueda">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"></path></svg>
+                </button>
+                <span class="td-searchbar__mode">Código</span>
+                <input placeholder="Código o nombre" />
+                <button type="button" aria-label="Dictar">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3"></path></svg>
+                </button>
+                <button type="button" class="td-searchbar__go" aria-label="Buscar">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+                </button>
+            </div>
+            <EditForm Model="_form" FormName="demo-textbox" OnSubmit="Ignore" Enhance>
+                <div class="td-demo-grid">
+                    <TDTextBox @bind-Value="_form.Fleet" Label="Básico" Placeholder="Escribe aquí…" />
+                    <TDTextBox @bind-Value="_form.Request" Label="Contador" MaxLength="40" ShowCounter="true" />
+                    <TDTextBox @bind-Value="_form.Password" Label="Contraseña" InputType="password" ShowSecretText="Mostrar contraseña" HideSecretText="Ocultar contraseña" />
+                </div>
+            </EditForm>
+            break;
+
+        case "textarea":
+        case "password":
+        case "form":
+            <EditForm Model="_form" FormName="@($"demo-{Id}")" OnSubmit="Ignore" Enhance>
+                <TDTextBox @bind-Value="_form.Fleet" Label="Nombre de la flota" Placeholder="Transportes del Sur" Hint="Nombre con el que aparece en el despacho." />
+                <TDTextBox @bind-Value="_form.Request" Label="Solicitud" Multiline="true" Rows="4" MaxLength="280" ShowCounter="true" Hint="Qué necesitas que hagamos." />
+                <TDTextBox @bind-Value="_form.Password" Label="Contraseña de acceso" InputType="password" ShowSecretText="Mostrar contraseña" HideSecretText="Ocultar contraseña" />
+            </EditForm>
+            break;
+
+        case "label":
+            <EditForm Model="_form" FormName="demo-label" OnSubmit="Ignore" Enhance>
+                <TDLabel For="part-code" Required="true">Número de parte</TDLabel>
+                <TDTextBox @bind-Value="_form.Fleet" Label="" />
+                <TDLabel For="ref-interna" Optional="true">Referencia interna</TDLabel>
+                <TDTextBox @bind-Value="_form.Request" Label="" />
+            </EditForm>
+            break;
+
+        case "checkbox":
+            <div class="td-demo-grid">
+                <div class="td-demo-block">
+                    <p class="td-section-title">Simple</p>
+                    <TDCheckBox Name="terminos" Label="Acepto los términos de despacho" Checked="true" />
+                    <TDCheckBox Name="factura" Label="Emitir factura electrónica" Disabled="true" />
+                </div>
+                <div class="td-demo-block">
+                    <p class="td-section-title">Tres estados</p>
+                    <TDCheckBox Name="todas" Label="Todas las bodegas" TriState="true" Indeterminate="true" />
+                    <TDCheckBox Name="santiago" Label="Santiago" Checked="true" />
+                    <TDCheckBox Name="conce" Label="Concepción" />
+                </div>
+            </div>
+            break;
+
+        case "checkboxlist":
+            <TDCheckBoxList Name="sistemas"
+                            ShowSelectAll="true"
+                            Selected="@(new[] { "frenos" })"
+                            Options="@(new TDOption[] { new("frenos", "Frenos"), new("suspension", "Suspensión"), new("motor", "Motor") })" />
+            break;
+
+        case "switch":
+            <TDSwitch Name="stock" Label="Avisarme cuando vuelva el stock" Checked="true" />
+            <TDSwitch Name="whatsapp" Label="Seguimiento por WhatsApp" LabelPosition="TDLabelPosition.Start" />
+            <TDSwitch Name="sms" Label="Alertas por SMS" Size="TDSize.Small" Disabled="true" />
+            break;
+
+        case "radiolist":
+            <TDRadioList Name="entrega" Label="Entrega" Cards="true" Selected="retiro"
+                         Options="@(new TDOption[] {
+                             new("retiro", "Retiro en bodega", Hint: "Hoy, sin costo"),
+                             new("santiago", "Despacho Santiago", Hint: "24 horas hábiles"),
+                             new("region", "Despacho a regiones", Hint: "2 a 5 días", Disabled: true)
+                         })" />
+            break;
+
+        case "dropdown":
+        case "select":
+            <div class="td-demo-grid">
+                <TDSelect Name="basica" Label="Básica" Value="volvo" Options="_brands" />
+                <TDSelect Name="busca" Label="Con búsqueda" Searchable="true" Value="scania" Options="_brands" />
+                <TDSelect Name="grupo" Label="Agrupada" Value="pastilla" Options="_groupedParts" />
+                <TDSelect Name="plantilla" Label="Con plantilla" Value="retiro" Options="_delivery" />
+                <TDSelect Name="borrar" Label="Con borrar" Clearable="true" Value="mercedes" Options="_brands" />
+                <TDSelect Name="off" Label="Opciones deshabilitadas" Value="volvo" Options="_brandsOff" />
+                <TDSelect Name="propio" Label="Valor propio" Value="FH-460" Options="_brands" Placeholder="Escribe o elige" />
+                <TDSelect Name="virtual" Label="Lista larga" Searchable="true" Value="p01" Options="_manyParts" />
+                <TDSelect Name="disabled" Label="Deshabilitada" Disabled="true" Value="volvo" Options="_brands" />
+            </div>
+            break;
+
+        case "ddmulti":
+            <div class="td-demo-grid">
+                <TDSelect Name="cats" Label="Chips, todas y filtro" Multiple="true" Searchable="true" SelectAll="true" Clearable="true"
+                          Values="@(new[] { "frenos", "motor" })" Options="_systems" Placeholder="Elige categorías" />
+                <TDSelect Name="resumen" Label="Texto resumen" Multiple="true" Chips="false" Summary="{0} categorías" Clearable="true"
+                          Values="@(new[] { "frenos", "filtros" })" Options="_systems" />
+                <TDSelect Name="tope" Label="Límite de 3" Multiple="true" MaxSelected="3" Clearable="true"
+                          Values="@(new[] { "frenos" })" Options="_systems" />
+                <TDSelect Name="mas" Label="Chips con desborde" Multiple="true" MaxChips="2" Clearable="true"
+                          Values="@(new[] { "frenos", "motor", "filtros", "cabina" })" Options="_systems" />
+                <TDSelect Name="grupo" Label="Agrupado" Multiple="true" GroupSelect="true" Searchable="true" Clearable="true"
+                          Values="@(new[] { "pastilla" })" Options="_groupedParts" />
+            </div>
+            break;
+
+        case "ddtree":
+            <div class="td-demo-grid">
+                <TDDropDownTree Name="cat" Label="Categoría" Selected="@(new[] { "pastillas" })" Options="_tree" />
+                <TDDropDownTree Name="hoja" Label="Solo hojas" LeavesOnly="true" Selected="@(new[] { "aceite" })" Options="_tree" Hint="Los nodos padre no se eligen." />
+                <TDDropDownTree Name="multi" Label="Múltiple" Multiple="true" Selected="@(new[] { "pastillas", "discos" })" Options="_tree" />
+            </div>
+            break;
+
+        case "htmleditor":
+            <TDHtmlEditor Name="nota" Label="Barra completa" MaxLength="480" Value="@_html" />
+            <TDHtmlEditor Name="min" Label="Barra mínima" Minimal="true" Value="<p>Retiro hoy en <b>Santiago centro</b>.</p>" />
+            <div class="td-demo-grid">
+                <div>
+                    <span class="td-section-title">Solo lectura · HTML saneado</span>
+                    <div class="td-rte-preview">@((MarkupString)_html)</div>
+                </div>
+            </div>
+            break;
+
+        case "signature":
+            <TDSignaturePad Name="firma" Label="Firma del receptor" />
+            break;
+
+        case "numeric":
+            <TDNumeric Name="unidades" Label="Unidades a despachar" Value="4" Min="1" Max="48" Hint="Mínimo 1 · máximo 48" />
+            break;
+
+        case "slider":
+            <TDSlider Name="precio" Label="Precio máximo" Value="180000" Min="0" Max="500000" Step="10000" Suffix="CLP" />
+            break;
+
+        case "colorpicker":
+            <TDColorPicker Name="acento" Label="Color de etiqueta" Value="#ED2A24" />
+            break;
+
+        case "date":
+            <div class="td-demo-stack">
+                <div>
+                    <p class="td-section-title">Fecha</p>
+                    <TDDatePicker Name="despacho" Label="Fecha de despacho" Hint="No se pueden elegir fechas pasadas." Min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                </div>
+                <div>
+                    <p class="td-section-title">Fecha y hora</p>
+                    <TDDatePicker Mode="TDDateMode.DateTime" Name="cita" Label="Fecha y hora de la cita" Hint="Elige el día y la hora. Las fechas pasadas quedan fuera." Min="@DateTime.Today.ToString("yyyy-MM-ddTHH:mm")" />
+                </div>
+                <div>
+                    <p class="td-section-title">Solo hora</p>
+                    <TDDatePicker Mode="TDDateMode.Time" Name="retiro" Label="Hora de retiro" Hint="Solo la hora, en formato de 24 horas." />
+                </div>
+            </div>
+            break;
+
+        case "mask":
+            <TDMask Name="patente" Label="Patente" Pattern="XXXX-00" Placeholder="ABCD-12" Hint="Formato chileno de patente." />
+            <TDMask Name="telefono" Label="Teléfono" Pattern="00 0000 0000" Placeholder="09 1234 5678" InputMode="tel" />
+            break;
+
+        case "rating":
+            <TDRating Name="calidad" Label="Calidad del repuesto" Value="4" />
+            <TDRating Name="lectura" Label="Promedio de reseñas" Value="5" ReadOnly="true" />
+            break;
+
+        case "chip":
+            <div class="td-demo-stack">
+                <div>
+                    <p class="td-section-title">Filtro (alternable)</p>
+                    <div class="td-chip-row">
+                        <TDChip Selectable="true" On="true">En stock</TDChip>
+                        <TDChip Selectable="true">Originales</TDChip>
+                        <TDChip Selectable="true">Despacho 24 h</TDChip>
+                        <TDChip Selectable="true">Ofertas</TDChip>
+                    </div>
+                </div>
+                <div>
+                    <p class="td-section-title">Removibles</p>
+                    <div class="td-chip-row">
+                        <div class="td-chip-row" data-td-chip-box>
+                            <TDChip Removable="true" Avatar="VO">Volvo</TDChip>
+                            <TDChip Removable="true" Avatar="SC">Scania</TDChip>
+                            <TDChip Removable="true" Avatar="F">Frenos</TDChip>
+                        </div>
+                        <button type="button" class="td-btn td-btn--ghost" data-td-chip-reset>Restablecer</button>
+                    </div>
+                </div>
+                <div>
+                    <p class="td-section-title">Tamaños</p>
+                    <div class="td-chip-row">
+                        <TDChip Size="TDSize.Small">Pequeño</TDChip>
+                        <TDChip Size="TDSize.Medium">Mediano</TDChip>
+                        <TDChip Size="TDSize.Large">Grande</TDChip>
+                    </div>
+                </div>
+            </div>
+            break;
+
+        case "selectbar":
+            <div class="td-demo-stack">
+                <TDSelectBar Name="vehiculo" Label="Selección simple" Selected="@(new[] { "camion" })"
+                             Options="@(new TDOption[] { new("camion", "Camión"), new("bus", "Bus"), new("remolque", "Remolque") })" />
+                <TDSelectBar Name="cats" Label="Selección múltiple" Multiple="true" Selected="@(new[] { "frenos", "motor" })"
+                             Options="_systems" />
+                <TDSelectBar Name="tipo" Label="Con íconos · pequeño" Size="TDSize.Small" Selected="@(new[] { "camion" })"
+                             Options="_vehicleIcons" />
+            </div>
+            break;
+
+        case "togglebutton":
+            <div class="td-row">
+                <TDToggleButton Name="vista" Value="grilla" Group="vista" Pressed="true">Grilla</TDToggleButton>
+                <TDToggleButton Name="vista" Value="lista" Group="vista">Lista</TDToggleButton>
+            </div>
+            break;
+
+        case "message":
+        case "alert":
+            <TDMessage Severity="TDSeverity.Success" Title="Pedido recibido" Closable="true">Guardamos OC-00481. Te avisamos cuando salga de bodega.</TDMessage>
+            <TDMessage Severity="TDSeverity.Warning" Title="Stock bajo">Quedan 3 pastillas BR-4521-AD.</TDMessage>
+            <TDMessage Severity="TDSeverity.Danger" Title="No pudimos emitir la guía">El servidor de facturación no respondió.</TDMessage>
+            break;
+
+        case "seccode":
+            <TDSecurityCode Name="otp"
+                            Label="Ingresa el código que enviamos al +56 9 •••• 4567"
+                            Hint="Prueba 246810 · admite pegar el código completo"
+                            Expected="246810" />
+            break;
+
+        case "fileinput":
+        case "upload":
+            <TDFileInput Name="guia" Label="Guía de despacho" Accept="image/*,.pdf" Hint="PDF o foto de la guía firmada." />
+            break;
+
+        case "listbox":
+            <div class="td-demo-grid">
+                <TDListBox Name="marca" Label="Simple" Selected="@(new[] { "volvo" })" Options="_brands" />
+                <TDListBox Name="cats" Label="Múltiple con búsqueda" Multiple="true" AllowFiltering="true"
+                           FilterPlaceholder="Filtrar categorías…"
+                           Selected="@(new[] { "frenos", "filtros" })" Options="_systems" />
+            </div>
+            break;
+
+        case "fieldset":
+        case "formfield":
+            <EditForm Model="_form" FormName="demo-fieldset" OnSubmit="Ignore" Enhance>
+                <TDFieldset Legend="Datos de la flota">
+                    <TDTextBox @bind-Value="_form.Fleet" Label="Nombre de la flota" />
+                    <TDMask Name="patente-flota" Label="Patente principal" Pattern="XXXX-00" Placeholder="ABCD-12" />
+                </TDFieldset>
+            </EditForm>
+            break;
+
+        case "splitbtn":
+            <div class="td-demo-stack">
+                <TDSplitButton Label="Cotizar">
+                    <button type="button">Descargar cotización PDF</button>
+                    <button type="button">Enviar por correo</button>
+                    <button type="button">Duplicar pedido anterior</button>
+                </TDSplitButton>
+                <TDSplitButton Label="Exportar" Variant="TDVariant.Secondary">
+                    <button type="button">Excel</button>
+                    <button type="button">CSV</button>
+                    <button type="button">PDF</button>
+                </TDSplitButton>
+            </div>
+            break;
+
+        case "fab":
+            <div class="td-fab-stage">
+                <p class="td-section-title">Catálogo · 24 repuestos</p>
+                <p class="td-home__note">El botón queda fijo en la esquina del contenedor.</p>
+                <TDFab Href="/c/quote" AriaLabel="Nueva cotización">
+                    <Icon>
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+                    </Icon>
+                </TDFab>
+            </div>
+            <div class="td-chip-row">
+                <TDFab Size="TDSize.Small" AriaLabel="Agregar">
+                    <Icon>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+                    </Icon>
+                </TDFab>
+                <TDFab Extended="true" Dark="true" Label="Rastrear pedido" AriaLabel="Rastrear pedido">
+                    <Icon>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 7h11v8H3z"></path><path d="M14 10h4l3 3v2h-7z"></path><circle cx="7" cy="17" r="2"></circle><circle cx="17" cy="17" r="2"></circle></svg>
+                    </Icon>
+                </TDFab>
+            </div>
+            break;
+
+        case "fabmenu":
+            <p class="td-home__note">Esc cierra el menú y devuelve el foco al botón.</p>
+            <TDFab AriaLabel="Acciones rápidas">
+                <Icon>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+                </Icon>
+                <ChildContent>
+                    <button type="button">Nueva cotización</button>
+                    <button type="button">Pedido rápido</button>
+                    <button type="button">Llamar a un asesor</button>
+                </ChildContent>
+            </TDFab>
+            break;
+
+        case "speeddial":
+            <div class="td-speed-grid">
+                <div>
+                    <p class="td-section-title">Lineal · arriba</p>
+                    <TDSpeedDial Type="linear" AriaLabel="Acciones rápidas" Items="_dial" />
+                </div>
+                <div>
+                    <p class="td-section-title">Lineal · derecha</p>
+                    <TDSpeedDial Type="right" AriaLabel="Acciones hacia la derecha" Items="_dial" />
+                </div>
+                <div>
+                    <p class="td-section-title">Círculo</p>
+                    <TDSpeedDial Type="circle" AriaLabel="Acciones en círculo" Items="_dial" />
+                </div>
+                <div>
+                    <p class="td-section-title">Semicírculo</p>
+                    <TDSpeedDial Type="semi" AriaLabel="Acciones en semicírculo" Items="_dial" />
+                </div>
+                <div>
+                    <p class="td-section-title">Cuarto de círculo</p>
+                    <TDSpeedDial Type="quarter" AriaLabel="Acciones en cuarto" Items="_dial" />
+                </div>
+                <div>
+                    <p class="td-section-title">Con máscara</p>
+                    <TDSpeedDial Type="mask" Mask="true" AriaLabel="Acciones con máscara" Items="_dial" />
+                </div>
+            </div>
+            break;
+
+        case "tabsx":
+            <div class="td-demo-stack">
+                <div>
+                    <p class="td-section-title">Subrayado · íconos y contadores</p>
+                    <TDTabs AriaLabel="Detalle del repuesto" Selected="desc"
+                            Tabs="@(new TDOption[] {
+                                new("desc", "Descripción", Icon: _icoBox),
+                                new("fit", "Compatibilidad", Count: 12),
+                                new("stock", "Stock", Count: 3),
+                                new("app", "Aplicaciones")
+                            })">
+                        <TDTabPanel Name="desc" Active="true">Pastilla de freno delantera para Volvo FH. Material cerámico, juego de 4.</TDTabPanel>
+                        <TDTabPanel Name="fit">FH 460, FH 500 y FM 450. También FM 420 con disco de 45 mm.</TDTabPanel>
+                        <TDTabPanel Name="stock">Santiago 18 u. · Concepción 9 u. · Temuco 4 u.</TDTabPanel>
+                        <TDTabPanel Name="app">Camión y bus. No aplica a remolque.</TDTabPanel>
+                    </TDTabs>
+                </div>
+                <div>
+                    <p class="td-section-title">Píldoras</p>
+                    <TDTabs Variant="TDTabsVariant.Pills" Selected="lista" AriaLabel="Vista"
+                            Tabs="@(new TDOption[] { new("lista", "Lista"), new("ficha", "Ficha"), new("stock", "Stock") })">
+                        <TDTabPanel Name="lista" Active="true">24 repuestos coinciden con el filtro.</TDTabPanel>
+                        <TDTabPanel Name="ficha">BR-4521-AD · Pastilla de freno delantera.</TDTabPanel>
+                        <TDTabPanel Name="stock">18 unidades listas para retiro.</TDTabPanel>
+                    </TDTabs>
+                </div>
+                <div>
+                    <p class="td-section-title">Vertical</p>
+                    <TDTabs Variant="TDTabsVariant.Vertical" Selected="pedido" AriaLabel="Pedido"
+                            Tabs="@(new TDOption[] { new("pedido", "Pedido"), new("despacho", "Despacho"), new("pago", "Pago") })">
+                        <TDTabPanel Name="pedido" Active="true">OC-00481 · 3 líneas.</TDTabPanel>
+                        <TDTabPanel Name="despacho">Retiro en Santiago centro antes de las 14 h.</TDTabPanel>
+                        <TDTabPanel Name="pago">Crédito a 30 días.</TDTabPanel>
+                    </TDTabs>
+                </div>
+                <div>
+                    <p class="td-section-title">Con cierre y nueva pestaña</p>
+                    <TDTabs Closable="true" AllowAdd="true" Selected="p481" AriaLabel="Pedidos abiertos"
+                            Tabs="@(new TDOption[] { new("p481", "Pedido 481"), new("p490", "Pedido 490") })">
+                        <TDTabPanel Name="p481" Active="true">Pastilla BR-4521-AD · 4 u.</TDTabPanel>
+                        <TDTabPanel Name="p490">Filtro de aceite · 2 u.</TDTabPanel>
+                    </TDTabs>
+                </div>
+            </div>
+            break;
+
+        case "breadcrumb":
+            <TDBreadcrumb Items="@(new TDOption[] { new("/", "Inicio"), new("/c/grid", "Repuestos"), new("", "Pastilla de freno delantera") })" />
+            break;
+
+        case "stepsx":
+            <TDSteps Current="1" Steps="@(new TDOption[] {
+                new("datos", "Datos", Hint: "Flota y patente"),
+                new("despacho", "Despacho", Hint: "Bodega y horario"),
+                new("pago", "Pago", Hint: "Transferencia o crédito"),
+                new("ok", "Confirmación", Hint: "Guía emitida")
+            })" />
+            break;
+
+        case "accordion":
+            <TDAccordion Single="true">
+                <TDAccordionItem Title="Despacho y retiro" Badge="3" Open="true">Retiro en bodega el mismo día. Despacho Santiago en 24 horas hábiles.</TDAccordionItem>
+                <TDAccordionItem Title="Garantía" Badge="12 meses">Garantía de fábrica de 12 meses contra defectos.</TDAccordionItem>
+                <TDAccordionItem Title="Devoluciones">30 días con guía y embalaje original.</TDAccordionItem>
+            </TDAccordion>
+            break;
+
+        case "card":
+        case "cardgroup":
+            <div class="td-demo-grid">
+                <TDCard Title="Pastilla delantera" Eyebrow="BR-4521-AD" Media="Frenos">
+                    <ChildContent>Juego de 4. Volvo FH. $86.900</ChildContent>
+                    <Footer><TDButton ButtonType="TDButtonType.Button" Size="TDSize.Small">Agregar</TDButton></Footer>
+                </TDCard>
+                <TDCard Variant="TDCardVariant.Elevated" Header="Pedido OC-00481" Title="En bodega">
+                    <ChildContent>3 repuestos · despacho mañana 09:00.</ChildContent>
+                </TDCard>
+            </div>
+            break;
+
+        case "panel":
+            <TDPanel Title="Vehículo" Collapsible="true">
+                <ChildContent>
+                    <EditForm Model="_form" FormName="demo-panel" OnSubmit="Ignore" Enhance>
+                        <TDTextBox @bind-Value="_form.Fleet" Label="Marca" />
+                        <TDTextBox @bind-Value="_form.Request" Label="Modelo" />
+                    </EditForm>
+                </ChildContent>
+            </TDPanel>
+            break;
+
+        case "dialog":
+        case "modal":
+            <TDButton ButtonType="TDButtonType.Button" data-td-dialog-open="demo-dialog">Abrir diálogo</TDButton>
+            <TDDialog Id="demo-dialog" Title="Nueva flota" ConfirmText="Guardar">
+                <p>El diálogo se abre en el navegador. Guardar sigue siendo un POST.</p>
+            </TDDialog>
+            break;
+
+        case "drawer":
+            <TDDrawer Id="demo-drawer" Trigger="Filtros del catálogo" Title="Filtros">
+                <TDSelect Name="marca-filtro" Label="Marca" Value="volvo" Options="_brands" />
+                <TDSelect Name="sistema-filtro" Label="Sistema" Value="frenos" Options="@(new TDOption[] { new("frenos", "Frenos"), new("motor", "Motor") })" />
+                <p class="td-field__hint">El conteo de resultados se recalcula en el servidor al aplicar.</p>
+            </TDDrawer>
+            break;
+
+        case "link":
+            <div class="td-stack">
+                <TDLink Href="/c/grid">Ver ficha técnica</TDLink>
+                <TDLink Href="/c/exportx">Descargar catálogo</TDLink>
+            </div>
+            break;
+
+        case "badge":
+            <div class="td-row">
+                <TDBadge Variant="TDBadgeVariant.Success" Dot="true">En stock</TDBadge>
+                <TDBadge Variant="TDBadgeVariant.Warning" Dot="true">Bajo</TDBadge>
+                <TDBadge Variant="TDBadgeVariant.Danger" Dot="true">Agotado</TDBadge>
+                <TDBadge Variant="TDBadgeVariant.Primary">18</TDBadge>
+                <TDBadge>Premium</TDBadge>
+            </div>
+            break;
+
+        case "tip":
+            <div class="td-row">
+                <TDTooltip Text="Retiro el mismo día en Santiago centro">
+                    <TDButton ButtonType="TDButtonType.Button" Variant="TDVariant.Secondary">Stock en bodega</TDButton>
+                </TDTooltip>
+                <TDTooltip Text="Cierra con Esc. También aparece al enfocar.">
+                    <TDLink Href="/c/grid">¿Cómo se reserva?</TDLink>
+                </TDTooltip>
+            </div>
+            break;
+
+        case "progress":
+            <p class="td-section-title">Determinado</p>
+            <TDProgress Label="Frenos" Value="72" ShowValue="true" Suffix="%" />
+            <TDProgress Label="Motor" Value="48" ShowValue="true" Suffix="%" />
+            <TDProgress Label="Eléctrico" Value="31" Size="TDSize.Small" ShowValue="true" Suffix="%" />
+            <p class="td-section-title">Loader</p>
+            <TDLoader />
+            break;
+
+        case "skel":
+            <div class="td-row" style="align-items:center">
+                <TDSkeleton Circle="true" Width="48px" Height="48px" />
+                <div style="flex:1;display:flex;flex-direction:column;gap:8px">
+                    <TDSkeleton Width="40%" Height="14px" />
+                    <TDSkeleton Width="70%" Height="14px" />
+                    <TDSkeleton Width="55%" Height="14px" />
+                </div>
+            </div>
+            break;
+
+        case "toast":
+            <TDToast Items="@(new TDToastItem[] {
+                new("Pedido recibido", "OC-00481 salió de bodega.", TDSeverity.Success),
+                new("Stock bajo", "Quedan 3 pastillas BR-4521-AD.", TDSeverity.Warning)
+            })" />
+            break;
+
+        case "autocomplete":
+            <TDAutoComplete Name="part"
+                            Label="Repuesto"
+                            Placeholder="Escribe pastilla o filtro…"
+                            Options="@(new TDOption[] {
+                                new("br", "Pastilla de freno delantera"),
+                                new("at", "Pastilla de freno trasera"),
+                                new("fi", "Filtro de aceite"),
+                                new("am", "Amortiguador de cabina")
+                            })" />
+            break;
+
+        case "chiplist":
+            <TDChipList Name="tags"
+                        Label="Etiquetas"
+                        Values="@(new[] { "Volvo", "Frenos" })"
+                        Suggestions="@(new[] { "Scania", "Motor", "En stock" })" />
+            break;
+
+        case "inplace":
+            <div class="td-demo-stack">
+                <div>
+                    <p class="td-section-title">Básico · mostrar contenido</p>
+                    <TDInplace>
+                        <Trigger>Ver datos del cliente</Trigger>
+                        <ChildContent>
+                            <strong>Transportes del Sur</strong>
+                            <span class="td-home__note">RUT 76.482.190-3 · Flota 42</span>
+                            <span class="td-home__note">Crédito a 30 días · 128 pedidos</span>
+                        </ChildContent>
+                    </TDInplace>
+                </div>
+                <div>
+                    <p class="td-section-title">Clic · editar con confirmar</p>
+                    <TDInplaceEdit Name="cliente" Field="Cliente" Label="Cliente" Value="Transportes del Sur" />
+                </div>
+                <div>
+                    <p class="td-section-title">Doble clic · se guarda solo</p>
+                    <TDInplaceEdit Name="pedidos" Field="Pedidos" Label="Pedidos" Value="128 pedidos" AutoCommit="true" />
+                </div>
+                <div>
+                    <p class="td-section-title">Ficha técnica · doble clic en cualquier valor</p>
+                    <p class="td-home__note">Tab guarda y pasa al siguiente campo. En Notas, Ctrl + Enter guarda.</p>
+                    <div class="td-ficha">
+                        <TDInplaceEdit Name="titulo" Field="Título" Label="Título" Value="Pastilla de freno delantera" AutoCommit="true" />
+                        <TDInplaceEdit Name="marca" Field="Marca" Label="Marca" Value="Volvo" AutoCommit="true" Options="_brands" />
+                        <TDInplaceEdit Name="precio" Field="Precio" Label="Precio" Value="42990" Numeric="true" AutoCommit="true" />
+                        <TDInplaceEdit Name="notas" Field="Notas" Label="Notas" Value="Juego de 4. Retiro en Santiago." Multiline="true" AutoCommit="true" />
+                    </div>
+                </div>
+                <div>
+                    <p class="td-section-title">Eventos ux-change</p>
+                    <div class="td-inplace-log" data-td-inplace-log>
+                        <p>Aún no hay cambios.</p>
+                    </div>
+                </div>
+            </div>
+            break;
+
+        case "carousel":
+        case "pcarousel":
+            <p class="td-section-title">Banner · rotación automática</p>
+            <TDCarousel Slides="@(new TDSlide[] {
+                new("Oferta de flota", "Pastillas Volvo FH", "Juego de 4, retiro hoy en Santiago. Precio de convenio.", "Ver ficha", "#0A0B0C", "#ED2A24"),
+                new("Despacho", "Llega mañana a regiones", "Pedidos antes de las 14 h salen el mismo día.", "Armar pedido", "#14171A", "#F2B04A"),
+                new("Bodega", "Stock en tres sucursales", "Santiago, Concepción y Temuco con reserva inmediata.", "Ver stock", "#1F2327", "#4CC47F")
+            })" />
+            break;
+
+        case "compare":
+            <div class="td-demo-grid">
+                <TDCompare />
+                <TDCompare Label="Vertical" Vertical="true" />
+                <TDCompare Label="Sigue al mouse" FollowMouse="true" />
+            </div>
+            <p class="td-field__hint">Las fotos son marcadores de posición; en producción van dos imágenes del mismo encuadre.</p>
+            break;
+
+        case "gallery":
+            <TDGallery Items="_gallery" />
+            break;
+
+        case "imageview":
+            <div class="td-demo-grid">
+                <TDImage Alt="Disco de freno" Caption="Disco ventilado 45 mm · clic para ampliar" Background="linear-gradient(135deg,#6E757D,#1F2327)" />
+                <TDImage Alt="Pastilla BR-4521-AD" Caption="Juego de 4 · Volvo FH" Background="linear-gradient(135deg,#ED2A24,#3A0A0A)" />
+            </div>
+            break;
+
+        case "barcode":
+            <TDBarcode Value="BR-4521-AD" Format="code128" BarWidth="2" Height="80" ShowText="true" Name="BarcodePng" />
+            <CatalogSampleList Id="barcode" />
+            break;
+
+        case "qrcode":
+            <TDQrCode Value="https://truckdepot.cl/p/BR-4521-AD" Ecc="M" Module="6" Color="#0A0B0C" QuietZone="true" Name="QrPng" />
+            <CatalogSampleList Id="qrcode" />
+            break;
+
+        case "menu":
+            <p class="td-section-title">Oscura</p>
+            <TDMenu Items="_menu" />
+            <p class="td-section-title">Clara</p>
+            <TDMenu Items="_menu" Dark="false" />
+            break;
+
+        case "ctxmenu":
+            <TDContextMenu Items="_ctx">
+                <p class="td-section-title" style="margin:0">Clic derecho en esta zona</p>
+                <p>Pastilla de freno delantera BR-4521-AD · Volvo FH 460</p>
+            </TDContextMenu>
+            break;
+
+        case "panelmenu":
+            <div class="td-pmenu-demo" data-td-pmenu-demo>
+                <TDPanelMenu Active="Mis pedidos" Open="Pedidos" Sections="_panel" />
+                <div class="td-pmenu-side">
+                    <button type="button" class="td-switch" role="switch" aria-checked="false" data-td-pmenu-multi><i></i>Permitir varias secciones abiertas</button>
+                    <button type="button" class="td-switch" role="switch" aria-checked="false" data-td-pmenu-icons><i></i>Colapsado · solo íconos</button>
+                    <span data-td-pmenu-msg>Elige una opción del menú.</span>
+                </div>
+            </div>
+            break;
+
+        case "profilemenu":
+            <TDProfileMenu />
+            break;
+
+        case "chart":
+            <div class="td-preview-bars">
+                <div class="td-preview-bar" style="--w:88%"><span>Marzo $88 M</span></div>
+                <div class="td-preview-bar" style="--w:64%"><span>Abril $64 M</span></div>
+                <div class="td-preview-bar" style="--w:76%"><span>Mayo $76 M</span></div>
+            </div>
+            break;
+
+        case "chline":
+        case "chcol":
+        case "chpie":
+        case "chscatter":
+        case "chgauge":
+        case "chspark":
+        case "chheat":
+        case "chwf":
+        case "chfunnel":
+        case "chpareto":
+        case "chtree":
+        case "chradar":
+        case "chsankey":
+        case "chbullet":
+        case "chgantt":
+        case "chforecast":
+        case "chvariance":
+        case "chquadrant":
+        case "chcohort":
+        case "chmekko":
+        case "chslope":
+        case "chdumbbell":
+        case "chcontrol":
+            <CatalogChartsDemo Id="@Id" />
+            break;
+
+        case "stack":
+        case "row":
+        case "column":
+        case "layout":
+        case "popup":
+        case "splitter":
+        case "dropzone":
+        case "tilelayout":
+        case "toc":
+        case "toolbar":
+        case "navmenu":
+        case "pmenu":
+        case "econtent":
+        case "timespan":
+        case "knob":
+        case "speech":
+        case "markdown":
+        case "chat":
+        case "aichat":
+        case "ddgrid":
+        case "aos":
+        case "terminal":
+        case "orgchart":
+            <CatalogExtraDemo Id="@Id" />
+            break;
+
+        case "ecard":
+        case "edetail":
+        case "ecart":
+        case "echeckout":
+        case "efacets":
+        case "esearch":
+        case "ecompare":
+        case "eflash":
+        case "ereviews":
+        case "efinder":
+        case "equote":
+        case "ebulk":
+        case "erecent":
+        case "estock":
+        case "ewishmulti":
+        case "etrack":
+        case "efbt":
+        case "elocator":
+        case "ecredit":
+        case "ereturns":
+            <CatalogEcomDemo Id="@Id" />
+            break;
+
+        case "labeldesigner":
+        case "reportdesigner":
+        case "printers":
+        case "ehid":
+        case "scanner":
+        case "scheduler":
+            <CatalogStudioDemo Id="@Id" />
+            break;
+
+        default:
+            <CatalogPreview Id="@Id" />
+            break;
+    }
+</div>
+
+@code {
+    [Parameter] public string Id { get; set; } = "";
+
+    private readonly DemoForm _form = new() { Fleet = "Transportes del Sur" };
+
+    private const string _html = "<h2>Nota de despacho</h2><p>Retiro en bodega <b>Santiago centro</b> antes de las 14 h. Pedido <a href=\"/c/grid\">OC-00481</a>.</p><ul><li>Pastilla BR-4521-AD</li><li>Disco ventilado 45 mm</li></ul>";
+
+    private static readonly TDOption[] _systems =
+    [
+        new("frenos", "Frenos"),
+        new("motor", "Motor"),
+        new("electrico", "Eléctrico"),
+        new("suspension", "Suspensión"),
+        new("filtros", "Filtros"),
+        new("cabina", "Cabina")
+    ];
+
+    private static readonly TDOption[] _vehicleIcons =
+    [
+        new("camion", "Camión", Icon: "<svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M3 7h11v8H3z\"/><path d=\"M14 10h4l3 3v2h-7z\"/><circle cx=\"7\" cy=\"17\" r=\"2\"/><circle cx=\"17\" cy=\"17\" r=\"2\"/></svg>"),
+        new("bus", "Bus", Icon: "<svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><rect x=\"4\" y=\"3\" width=\"16\" height=\"16\" rx=\"2\"/><path d=\"M4 11h16M8 19v2M16 19v2\"/></svg>"),
+        new("remolque", "Remolque", Icon: "<svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M2 8h13v7H2zM15 11h5l2 3v1h-7z\"/><circle cx=\"6\" cy=\"18\" r=\"2\"/><circle cx=\"18\" cy=\"18\" r=\"2\"/></svg>")
+    ];
+
+    private static readonly TDMenuItem[] _dial =
+    [
+        new("Llamar", "tel:+56912345678"),
+        new("WhatsApp", "https://wa.me/56912345678"),
+        new("Cotizar", "/c/splitbtn"),
+        new("Rastrear", "/c/etrack")
+    ];
+
+    private static readonly TDOption[] _brands =
+    [
+        new("volvo", "Volvo"),
+        new("scania", "Scania"),
+        new("mercedes", "Mercedes-Benz"),
+        new("man", "MAN")
+    ];
+
+    private static readonly TDOption[] _brandsOff =
+    [
+        new("volvo", "Volvo"),
+        new("scania", "Scania", Disabled: true),
+        new("mercedes", "Mercedes-Benz")
+    ];
+
+    private static readonly TDOption[] _groupedParts =
+    [
+        new("pastilla", "Pastilla delantera", Group: "Frenos"),
+        new("disco", "Disco ventilado", Group: "Frenos"),
+        new("filtro", "Filtro de aceite", Group: "Motor"),
+        new("correa", "Correa auxiliar", Group: "Motor")
+    ];
+
+    private static readonly TDOption[] _delivery =
+    [
+        new("retiro", "Retiro en bodega", Hint: "Hoy, sin costo"),
+        new("santiago", "Despacho Santiago", Hint: "24 horas hábiles"),
+        new("region", "Despacho a regiones", Hint: "2 a 5 días")
+    ];
+
+    private static readonly TDOption[] _manyParts =
+        Enumerable.Range(1, 48).Select(i => new TDOption($"p{i:00}", $"Repuesto {i:00} · lote {200 + i}")).ToArray();
+
+    private static readonly TDTreeOption[] _tree =
+    [
+        new("frenos", "Frenos",
+        [
+            new("pastillas", "Pastillas"),
+            new("discos", "Discos"),
+            new("liquido", "Líquido", Disabled: true)
+        ]),
+        new("motor", "Motor",
+        [
+            new("aceite", "Filtro de aceite"),
+            new("aire", "Filtro de aire")
+        ])
+    ];
+
+    private static readonly TDGalleryItem[] _gallery =
+    [
+        new("Pastilla delantera", "BR-4521-AD", "linear-gradient(135deg,#ED2A24,#3A0A0A)"),
+        new("Disco ventilado", "DC-8841", "linear-gradient(135deg,#6E757D,#1F2327)"),
+        new("Filtro de aceite", "FO-2210", "linear-gradient(135deg,#1A4B8C,#0A0B0C)"),
+        new("Amortiguador cabina", "AM-1102", "linear-gradient(135deg,#177A41,#0A0B0C)")
+    ];
+
+    private static readonly TDMenuItem[] _menu =
+    [
+        new("Catálogo", "/c/grid"),
+        new("Pedidos", null,
+        [
+            new("Nuevo pedido", "/c/grid"),
+            new("Borradores", "/c/toast"),
+            new("-"),
+            new("Exportar Excel", "/c/exportx", Shortcut: "⇧E")
+        ]),
+        new("Bodega", null,
+        [
+            new("Santiago", "/c/gallery"),
+            new("Concepción", "/c/gallery"),
+            new("Temuco", "/c/gallery", Disabled: true)
+        ]),
+        new("Ayuda", "/c/tokens")
+    ];
+
+    private static readonly TDMenuItem[] _ctx =
+    [
+        new("Abrir ficha", "/c/grid"),
+        new("Copiar código", Shortcut: "Ctrl C"),
+        new("Filtrar por este valor"),
+        new("-"),
+        new("Reservar stock", Disabled: true),
+        new("Agregar al pedido", "/c/toast")
+    ];
+
+    private const string _icoBox = "<svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M21 8 12 3 3 8l9 5 9-5Z\"></path><path d=\"M3 8v8l9 5 9-5V8\"></path></svg>";
+
+    private static readonly TDMenuItem[] _panel =
+    [
+        new("Catálogo", Icon: "grid", Children:
+        [
+            new("Frenos", Shortcut: "124"),
+            new("Suspensión", Shortcut: "86"),
+            new("Motor"),
+            new("Eléctrico")
+        ]),
+        new("Pedidos", Icon: "box", Children:
+        [
+            new("Mis pedidos", Shortcut: "3"),
+            new("Cotizaciones"),
+            new("Devoluciones")
+        ]),
+        new("Mi cuenta", Icon: "user", Children:
+        [
+            new("Perfil"),
+            new("Direcciones"),
+            new("Facturación")
+        ]),
+        new("Soporte", Icon: "help")
+    ];
+
+    private static void Ignore() { }
+
+    private sealed class DemoForm
+    {
+        public string? Fleet { get; set; }
+        public string? Request { get; set; }
+        public string? Password { get; set; }
+    }
+}

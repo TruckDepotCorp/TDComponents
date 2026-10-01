@@ -1,0 +1,52 @@
+@namespace TDComponents.Components
+
+@if (Selectable)
+{
+    <button type="button"
+            class="td-chip td-chip--@SizeToken @(On ? "is-on" : null)"
+            data-td-chip-toggle
+            aria-pressed="@(On ? "true" : "false")">
+        @ChildContent
+    </button>
+}
+else
+{
+    <span class="td-chip td-chip--@SizeToken @(Removable ? "td-chip--removable" : null) @(On ? "is-on" : null)">
+        @if (!string.IsNullOrWhiteSpace(Avatar))
+        {
+            <span class="td-chip__avatar">@Avatar</span>
+        }
+        @ChildContent
+        @if (Removable)
+        {
+            <button type="button" class="td-chip__remove" aria-label="Quitar" data-td-chip-remove>×</button>
+        }
+    </span>
+}
+
+@code {
+    /// <summary>Tamaño de la etiqueta: <see cref="TDSize.Small"/>, <see cref="TDSize.Medium"/> o <see cref="TDSize.Large"/>.</summary>
+    [Parameter] public TDSize Size { get; set; } = TDSize.Medium;
+
+    /// <summary>Muestra el botón de quitar. No se pinta si <see cref="Selectable"/> es verdadero.</summary>
+    [Parameter] public bool Removable { get; set; }
+
+    /// <summary>Convierte la etiqueta en un botón que queda presionado. En ese modo no se pintan <see cref="Avatar"/> ni el botón de quitar.</summary>
+    [Parameter] public bool Selectable { get; set; }
+
+    /// <summary>Estado activo inicial.</summary>
+    [Parameter] public bool On { get; set; }
+
+    /// <summary>Iniciales dentro de la etiqueta. Se ignoran cuando <see cref="Selectable"/> es verdadero.</summary>
+    [Parameter] public string? Avatar { get; set; }
+
+    /// <summary>Texto visible de la etiqueta.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private string SizeToken => Size switch
+    {
+        TDSize.Small => "sm",
+        TDSize.Large => "lg",
+        _ => "md"
+    };
+}

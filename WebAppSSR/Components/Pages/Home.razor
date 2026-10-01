@@ -1,0 +1,68 @@
+@page "/"
+
+<PageTitle>TDComponents · Truck Depot</PageTitle>
+
+<div class="td-home" lang="es">
+    <div class="td-home__hero">
+        <p class="td-home__owner"><strong>Propiedad de Truck Depot Corporation.</strong> Esta arquitectura de componentes pertenece a Truck Depot Corporation.</p>
+        <span class="td-eyebrow">Arquitectura de componentes · @ComponentCatalog.Count componentes · Cero SignalR</span>
+        <h1>Super rápida.<br>Sin circuito por usuario.<br>Segura en el servidor.</h1>
+        <p class="td-lead">Cada pantalla sale lista del servidor y la interacción —filtrar, abrir, arrastrar, validar— ocurre en el navegador al instante. No hay SignalR ni una conexión abierta por persona: el servidor entrega la página y libera esa memoria. Guardar sigue siendo un POST de Blazor Server, con antiforgery, validación y la lógica de negocio en C#.</p>
+        <div class="td-home__stats">
+            <div class="td-home__stat"><strong>0</strong><span>Conexiones SignalR por sesión</span></div>
+            <div class="td-home__stat"><strong>0</strong><span>Circuitos abiertos por usuario</span></div>
+            <div class="td-home__stat"><strong>1 petición</strong><span>La RAM del servidor vuelve al terminar</span></div>
+            <div class="td-home__stat"><strong>Blazor</strong><span>Seguridad del servidor en cada guardado</span></div>
+        </div>
+    </div>
+
+    <div class="td-home__points">
+        <article>
+            <h2>Velocidad sin SignalR</h2>
+            <p>Menús, grillas y diálogos responden en el navegador. Un clic no espera un socket ni un viaje al servidor: la página ya está viva.</p>
+        </article>
+        <article>
+            <h2>La RAM se queda en la petición</h2>
+            <p>Blazor Server clásico conserva en memoria el estado de cada persona mientras la pestaña sigue abierta. Aquí ese circuito no existe. Al terminar el render, el servidor suelta esa memoria y atiende a la siguiente.</p>
+        </article>
+        <article>
+            <h2>La seguridad de Blazor Server, al máximo</h2>
+            <p>La fuente de verdad permanece en el servidor. Cada guardado lleva antiforgery, se valida en C# y la interfaz no publica una API propia. El navegador muestra; el servidor decide qué es válido.</p>
+        </article>
+    </div>
+
+    @foreach (var group in ComponentCatalog.HomeCardGroups)
+    {
+        <section class="td-home__section">
+            <span class="td-eyebrow">@(group == "Charts" ? "Visualización" : group)</span>
+            <div class="td-home__cards">
+                @foreach (var item in ComponentCatalog.HomeCards(group))
+                {
+                    <a class="td-home__card" href="@item.Href">
+                        <strong>@item.Title</strong>
+                        <span>@item.Summary</span>
+                    </a>
+                }
+            </div>
+        </section>
+    }
+
+    <section class="td-home__section">
+        <span class="td-eyebrow">Forms · @ComponentCatalog.Forms.Count componentes</span>
+        <div class="td-home__chips">
+            @foreach (var item in ComponentCatalog.Forms)
+            {
+                <a class="td-home__chip" href="@item.Href">@item.Title</a>
+            }
+        </div>
+    </section>
+
+    <section class="td-home__section">
+        <span class="td-eyebrow">Instalación</span>
+        @foreach (var code in ComponentCatalog.InstallCodes)
+        {
+            <CatalogCodeBlock Code="code" />
+        }
+        <p class="td-home__note">API del RCL de TDComponents. Los nombres de parámetros siguen la implementación real.</p>
+    </section>
+</div>

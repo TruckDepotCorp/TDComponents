@@ -1,0 +1,20 @@
+@namespace TDComponents.Components
+
+<div class="td-content" data-td-content tabindex="0" aria-label="@AriaLabel">
+    <div class="td-content__keys">
+        @foreach (var key in Shortcuts)
+        {
+            <span><kbd>@key.Value</kbd> @key.Label</span>
+        }
+    </div>
+    @ChildContent
+</div>
+
+@code {
+    /// <summary>Nombre accesible de la región.</summary>
+    [Parameter] public string AriaLabel { get; set; } = "Área con atajos";
+    /// <summary>Atajos visibles. Label es la acción y Value la tecla.</summary>
+    [Parameter] public IReadOnlyList<TDOption> Shortcuts { get; set; } = [];
+    /// <summary>Contenido de la región.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

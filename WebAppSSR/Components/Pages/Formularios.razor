@@ -1,0 +1,222 @@
+@page "/formularios"
+
+<PageTitle>Formularios</PageTitle>
+
+<div class="td-page td-page--wide" lang="es">
+    <p class="td-eyebrow">Forms</p>
+    <h1>Formularios</h1>
+    <p class="td-lead">Los campos viven en el HTML. El custom element solo hidrata la interacción: casillas, desplegables, máscaras y códigos. Guardar sigue siendo un POST.</p>
+
+    <nav class="td-module-nav" aria-label="Módulos de Forms">
+        <a href="#boton">Button</a>
+        <a href="#texto">TextBox</a>
+        <a href="#casilla">CheckBox</a>
+        <a href="#switch">Switch</a>
+        <a href="#radio">Radio</a>
+        <a href="#desplegable">DropDown</a>
+        <a href="#numero">Numeric</a>
+        <a href="#fecha">Date</a>
+        <a href="#mascara">Mask</a>
+        <a href="#nota">Rating</a>
+        <a href="#deslizador">Slider</a>
+        <a href="#chips">Chip</a>
+        <a href="#barra">SelectBar</a>
+        <a href="#mensaje">Message</a>
+        <a href="#otp">SecurityCode</a>
+    </nav>
+
+    <section class="td-panel td-stack" id="boton">
+        <p class="td-section-title">Variantes</p>
+        <div class="td-row">
+            <TDButton ButtonType="TDButtonType.Button">Agregar al carrito</TDButton>
+            <TDButton ButtonType="TDButtonType.Button" Variant="TDVariant.Secondary">Ver ficha</TDButton>
+            <TDButton ButtonType="TDButtonType.Button" Variant="TDVariant.Ghost">Cotizar</TDButton>
+            <TDButton ButtonType="TDButtonType.Button" Variant="TDVariant.Danger">Eliminar</TDButton>
+            <TDButton ButtonType="TDButtonType.Button" Disabled="true">Agotado</TDButton>
+        </div>
+        <p class="td-section-title">Tamaños</p>
+        <div class="td-row">
+            <TDButton ButtonType="TDButtonType.Button" Size="TDSize.Small">Pequeño</TDButton>
+            <TDButton ButtonType="TDButtonType.Button">Mediano</TDButton>
+            <TDButton ButtonType="TDButtonType.Button" Size="TDSize.Large">Grande</TDButton>
+        </div>
+    </section>
+
+    <section class="td-panel td-stack" id="texto">
+        <p class="td-section-title">TextBox y contraseña</p>
+        <EditForm Model="_form" FormName="demo-texto" OnSubmit="Ignore" Enhance>
+            <TDTextBox @bind-Value="_form.Fleet" Label="Nombre de la flota" Placeholder="Transportes del Sur" Hint="Nombre con el que aparece en el despacho." />
+            <TDTextBox @bind-Value="_form.Request" Label="Solicitud" Multiline="true" Rows="4" MaxLength="280" ShowCounter="true" Hint="Qué necesitas que hagamos." />
+            <TDTextBox @bind-Value="_form.Password" Label="Contraseña de acceso" InputType="password" ShowSecretText="Mostrar contraseña" HideSecretText="Ocultar contraseña" Hint="Pulsa Mostrar contraseña. Este valor no se guarda." />
+        </EditForm>
+    </section>
+
+    <section class="td-panel" id="casilla">
+        <div class="td-demo-grid">
+            <div class="td-demo-block">
+                <p class="td-section-title">Simple</p>
+                <TDCheckBox Name="terminos" Label="Acepto los términos de despacho" Checked="true" />
+                <TDCheckBox Name="factura" Label="Emitir factura electrónica" Disabled="true" />
+            </div>
+            <div class="td-demo-block">
+                <p class="td-section-title">Tres estados</p>
+                <TDCheckBoxList Name="sistemas"
+                                ShowSelectAll="true"
+                                Selected="@(new[] { "frenos" })"
+                                Options="@(new TDOption[] {
+                                    new("frenos", "Frenos"),
+                                    new("suspension", "Suspensión"),
+                                    new("motor", "Motor")
+                                })" />
+            </div>
+        </div>
+    </section>
+
+    <section class="td-panel td-stack" id="switch">
+        <p class="td-section-title">Switch</p>
+        <TDSwitch Name="stock" Label="Avisarme cuando vuelva el stock" Checked="true" />
+        <TDSwitch Name="whatsapp" Label="Seguimiento por WhatsApp" LabelPosition="TDLabelPosition.Start" />
+        <TDSwitch Name="sms" Label="Alertas por SMS" Size="TDSize.Small" Disabled="true" />
+    </section>
+
+    <section class="td-panel td-stack" id="radio">
+        <TDRadioList Name="entrega"
+                     Label="Entrega"
+                     Cards="true"
+                     Selected="retiro"
+                     Options="@(new TDOption[] {
+                         new("retiro", "Retiro en bodega", Hint: "Hoy, sin costo"),
+                         new("santiago", "Despacho Santiago", Hint: "24 horas hábiles"),
+                         new("region", "Despacho a regiones", Hint: "2 a 5 días", Disabled: true)
+                     })" />
+    </section>
+
+    <section class="td-panel" id="desplegable">
+        <div class="td-demo-grid">
+            <TDSelect Name="marca"
+                      Label="Marcas compatibles"
+                      Multiple="true"
+                      Searchable="true"
+                      Hint="2 seleccionadas"
+                      Values="@(new[] { "volvo", "scania" })"
+                      Options="_marcas" />
+            <TDSelect Name="categoria"
+                      Label="Categoría"
+                      Searchable="true"
+                      Hint="Selección simple"
+                      Value="frenos"
+                      Options="@(new TDOption[] {
+                          new("frenos", "Frenos"),
+                          new("suspension", "Suspensión"),
+                          new("motor", "Motor"),
+                          new("electrico", "Eléctrico"),
+                          new("transmision", "Transmisión")
+                      })" />
+            <TDSelect Name="bodega"
+                      Label="Bodega"
+                      Hint="Agrupada"
+                      Value="stgo"
+                      Options="@(new TDOption[] {
+                          new("stgo", "Santiago centro", Group: "Metropolitana"),
+                          new("maipu", "Maipú", Group: "Metropolitana"),
+                          new("conce", "Concepción", Group: "Sur"),
+                          new("temuco", "Temuco", Group: "Sur")
+                      })" />
+        </div>
+    </section>
+
+    <section class="td-panel" id="numero">
+        <div class="td-demo-grid">
+            <TDNumeric Name="unidades" Label="Unidades a despachar" Value="4" Min="1" Max="48" Hint="Mínimo 1 · máximo 48" />
+            <TDSlider Name="precio" Label="Precio máximo" Value="180000" Min="0" Max="500000" Step="10000" Suffix="CLP" />
+            <TDColorPicker Name="acento" Label="Color de etiqueta" Value="#ED2A24" />
+        </div>
+    </section>
+
+    <section class="td-panel" id="fecha">
+        <div class="td-demo-grid">
+            <TDDatePicker Name="despacho" Label="Fecha de despacho" Hint="No se pueden elegir fechas pasadas." Min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+            <TDMask Name="patente" Label="Patente" Pattern="XXXX-00" Placeholder="ABCD-12" Hint="Formato chileno de patente." InputMode="text" />
+            <TDMask Name="telefono" Label="Teléfono" Pattern="00 0000 0000" Placeholder="09 1234 5678" Hint="Celular de contacto." InputMode="tel" />
+        </div>
+    </section>
+
+    <section class="td-panel td-stack" id="nota">
+        <TDRating Name="calidad" Label="Calidad del repuesto" Value="4" />
+        <TDRating Name="lectura" Label="Promedio de reseñas" Value="5" ReadOnly="true" />
+    </section>
+
+    <section class="td-panel td-stack" id="chips">
+        <p class="td-section-title">Chip</p>
+        <div class="td-row">
+            <TDChip>Volvo</TDChip>
+            <TDChip Removable="true">Scania</TDChip>
+            <TDChip On="true" Avatar="F">Frenos</TDChip>
+            <TDChip Size="TDSize.Small">En stock</TDChip>
+        </div>
+        <TDSelectBar Name="aplicacion"
+                     Label="Aplicación"
+                     Selected="@(new[] { "camion" })"
+                     Options="@(new TDOption[] { new("todos", "Todos"), new("camion", "Camión"), new("bus", "Bus") })" />
+        <div class="td-row" id="barra">
+            <TDToggleButton Name="vista" Value="grilla" Group="vista" Pressed="true">Grilla</TDToggleButton>
+            <TDToggleButton Name="vista" Value="lista" Group="vista">Lista</TDToggleButton>
+        </div>
+    </section>
+
+    <section class="td-panel td-stack" id="mensaje">
+        <TDMessage Severity="TDSeverity.Success" Title="Pedido recibido" Closable="true">Guardamos OC-00481. Te avisamos cuando salga de bodega.</TDMessage>
+        <TDMessage Severity="TDSeverity.Warning" Title="Stock bajo">Quedan 3 pastillas BR-4521-AD. Reserva antes de cotizar otra flota.</TDMessage>
+        <TDMessage Severity="TDSeverity.Danger" Title="No pudimos emitir la guía">El servidor de facturación no respondió. Tu carrito sigue guardado. <TDLink Href="mailto:soporte@tdcomponents.local">Escribe a soporte</TDLink>.</TDMessage>
+    </section>
+
+    <section class="td-panel td-stack" id="otp">
+        <TDSecurityCode Name="otp" Label="Código de un solo uso" Hint="Avanza solo, retrocede con retroceso y admite pegar." />
+        <TDFileInput Name="guia" Label="Guía de despacho" Accept="image/*,.pdf" Hint="PDF o foto de la guía firmada." />
+        <TDListBox Name="repuesto"
+                   Label="Repuestos recientes"
+                   Selected="@(new[] { "br" })"
+                   Options="@(new TDOption[] {
+                       new("br", "Pastilla de freno delantera"),
+                       new("am", "Amortiguador de cabina"),
+                       new("fi", "Filtro de aceite")
+                   })" />
+        <EditForm Model="_form" FormName="demo-flota" OnSubmit="Ignore" Enhance>
+            <TDFieldset Legend="Datos de la flota">
+                <TDTextBox @bind-Value="_form.Fleet" Label="Nombre de la flota" Placeholder="Transportes del Sur" />
+                <TDMask Name="patente2" Label="Patente principal" Pattern="XXXX-00" Placeholder="ABCD-12" />
+            </TDFieldset>
+        </EditForm>
+        <div class="td-row">
+            <TDSplitButton Label="Crear pedido">
+                <button type="button">Crear y reservar stock</button>
+                <button type="button">Crear como borrador</button>
+            </TDSplitButton>
+            <TDFab AriaLabel="Agregar al pedido" Extended="true" Label="Agregar">
+                <Icon>+</Icon>
+            </TDFab>
+        </div>
+    </section>
+</div>
+
+@code {
+    private readonly DemoForm _form = new();
+
+    private static void Ignore() { }
+
+    private sealed class DemoForm
+    {
+        public string? Fleet { get; set; }
+        public string? Request { get; set; }
+        public string? Password { get; set; }
+    }
+
+    private static readonly TDOption[] _marcas =
+    [
+        new("volvo", "Volvo"),
+        new("scania", "Scania"),
+        new("mercedes", "Mercedes-Benz"),
+        new("freightliner", "Freightliner"),
+        new("international", "International")
+    ];
+}

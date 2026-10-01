@@ -1,0 +1,184 @@
+@page "/interfaz"
+
+<PageTitle>Interfaz</PageTitle>
+
+<div class="td-page td-page--wide" lang="es">
+    <p class="td-eyebrow">Navegación y Layout</p>
+    <h1>Interfaz</h1>
+    <p class="td-lead">Pestañas, pasos, tarjetas y diálogos del diseño. El foco y el teclado viven en el custom element; el servidor solo pinta el estado inicial.</p>
+
+    <nav class="td-module-nav" aria-label="Módulos de interfaz">
+        <a href="#ruta">Breadcrumb</a>
+        <a href="#pasos">Steps</a>
+        <a href="#pestanas">Tabs</a>
+        <a href="#acordeon">Accordion</a>
+        <a href="#tarjetas">Card</a>
+        <a href="#dialogos">Dialog</a>
+        <a href="#enlaces">Link</a>
+    </nav>
+
+    <section class="td-panel td-stack" id="ruta">
+        <p class="td-section-title">Breadcrumb</p>
+        <TDBreadcrumb Items="@(new TDOption[] { new("/datos", "Repuestos"), new("", "Pastilla de freno delantera") })" />
+    </section>
+
+    <section class="td-panel td-stack" id="pasos">
+        <p class="td-section-title">Steps</p>
+        <TDSteps Current="1" Steps="@(new TDOption[] {
+            new("datos", "Datos", Hint: "Flota y patente"),
+            new("despacho", "Despacho", Hint: "Bodega y horario"),
+            new("pago", "Pago", Hint: "Transferencia o crédito"),
+            new("ok", "Confirmación", Hint: "Guía emitida")
+        })" />
+        <p class="td-section-title">Seguimiento vertical</p>
+        <TDSteps Vertical="true" Current="2" Steps="@(new TDOption[] {
+            new("ok", "Pedido recibido", Hint: "OC-00481"),
+            new("bodega", "En bodega", Hint: "Santiago centro"),
+            new("ruta", "En ruta", Hint: "Camión 14"),
+            new("entrega", "Entregado", Hint: "Pendiente")
+        })" />
+    </section>
+
+    <section class="td-panel td-stack" id="pestanas">
+        <p class="td-section-title">Subrayado · íconos y contadores</p>
+        <TDTabs AriaLabel="Detalle del repuesto"
+                Selected="ficha"
+                Tabs="@(new TDOption[] { new("ficha", "Ficha"), new("aplicaciones", "Aplicaciones", Count: 6), new("stock", "Stock", Count: 3), new("docs", "Documentos") })">
+            <TDTabPanel Name="ficha" Active="true">Pastilla de freno delantera para Volvo FH. Material cerámico, juego de 4, garantía de 12 meses.</TDTabPanel>
+            <TDTabPanel Name="aplicaciones">FH 460, FH 500 y FM 450. Verifica el lado (izquierdo o derecho) antes de reservar.</TDTabPanel>
+            <TDTabPanel Name="stock">Santiago 18 u. · Concepción 9 u. · Temuco 4 u. El retiro en bodega es el mismo día.</TDTabPanel>
+            <TDTabPanel Name="docs">Ficha técnica, certificado de origen y guía de instalación en PDF.</TDTabPanel>
+        </TDTabs>
+
+        <p class="td-section-title">Píldoras</p>
+        <TDTabs Variant="TDTabsVariant.Pills"
+                AriaLabel="Estado de stock"
+                Selected="disponible"
+                Tabs="@(new TDOption[] { new("disponible", "Disponible"), new("bajo", "Bajo"), new("agotado", "Agotado") })">
+            <TDTabPanel Name="disponible" Active="true">42 unidades listas para despacho hoy.</TDTabPanel>
+            <TDTabPanel Name="bajo">Quedan 3 unidades. Reserva antes de cotizar otra flota.</TDTabPanel>
+            <TDTabPanel Name="agotado">Sin stock. Activa el aviso para cuando vuelva.</TDTabPanel>
+        </TDTabs>
+
+        <p class="td-section-title">Vertical</p>
+        <TDTabs Variant="TDTabsVariant.Vertical"
+                AriaLabel="Configuración"
+                Selected="cuenta"
+                Tabs="@(new TDOption[] { new("cuenta", "Cuenta"), new("bodegas", "Bodegas"), new("avisos", "Avisos") })">
+            <TDTabPanel Name="cuenta" Active="true">Nombre, correo y sucursal predeterminada de la flota.</TDTabPanel>
+            <TDTabPanel Name="bodegas">Elige desde qué bodega se reserva el stock.</TDTabPanel>
+            <TDTabPanel Name="avisos">WhatsApp y correo cuando cambia el estado del pedido.</TDTabPanel>
+        </TDTabs>
+    </section>
+
+    <section class="td-panel td-stack" id="acordeon">
+        <p class="td-section-title">Accordion</p>
+        <TDAccordion Single="true">
+            <TDAccordionItem Title="Despacho y retiro" Badge="3" Open="true">
+                Retiro en bodega el mismo día. Despacho Santiago en 24 horas hábiles. Regiones, de 2 a 5 días.
+            </TDAccordionItem>
+            <TDAccordionItem Title="Garantía" Badge="12 meses">
+                12 meses en repuestos originales. La aprobación pide foto de la pieza y número de guía.
+            </TDAccordionItem>
+            <TDAccordionItem Title="Devoluciones">
+                Tienes 10 días hábiles si el empaque sigue cerrado. El crédito queda en la cuenta de la flota.
+            </TDAccordionItem>
+        </TDAccordion>
+    </section>
+
+    <section class="td-stack" id="tarjetas">
+        <p class="td-section-title">Card</p>
+        <div class="td-demo-grid">
+            <TDCard Media="Foto del repuesto" Title="Pastilla de freno delantera" Eyebrow="BR-4521-AD · Volvo">
+                <ChildContent>
+                    <p class="td-note" style="color:var(--td-color-success)">En stock · 42 u.</p>
+                    <p class="td-card__kpi">$ 189.990</p>
+                </ChildContent>
+                <Footer>
+                    <TDButton ButtonType="TDButtonType.Button" Size="TDSize.Small">Agregar</TDButton>
+                </Footer>
+            </TDCard>
+            <TDCard Header="Pedido OC-00481">
+                <ChildContent>
+                    <p>3 repuestos para Transportes del Sur. Despacho programado para el 24/09 entre 12 y 14 h.</p>
+                </ChildContent>
+                <Footer>
+                    <TDButton ButtonType="TDButtonType.Button" Variant="TDVariant.Secondary" Size="TDSize.Small">Detalle</TDButton>
+                    <TDButton ButtonType="TDButtonType.Button" Size="TDSize.Small">Rastrear</TDButton>
+                </Footer>
+            </TDCard>
+            <TDCard Eyebrow="Pedidos del mes">
+                <p class="td-card__kpi">128</p>
+                <p class="td-note" style="color:var(--td-color-success)">+12% vs agosto</p>
+            </TDCard>
+            <TDCard Accent="true" Eyebrow="Tarjeta enlace" Title="Buscar por patente">
+                <p>Toda la tarjeta es el área de clic; el foco la resalta completa.</p>
+            </TDCard>
+        </div>
+        <TDCard Horizontal="true" Media="Imagen" Eyebrow="Horizontal" Title="Kit de embrague Scania R 450">
+            <ChildContent>
+                <p>Disco, plato y rodamiento. Garantía de 12 meses en repuestos originales.</p>
+            </ChildContent>
+            <Footer>
+                <TDButton ButtonType="TDButtonType.Button" Size="TDSize.Small">Cotizar</TDButton>
+                <TDButton ButtonType="TDButtonType.Button" Variant="TDVariant.Secondary" Size="TDSize.Small">Ver ficha</TDButton>
+            </Footer>
+        </TDCard>
+    </section>
+
+    <section class="td-panel td-stack" id="dialogos">
+        <p class="td-section-title">Dialog</p>
+        <div class="td-demo-grid">
+            <div class="td-demo-block">
+                <strong>Confirmar eliminación</strong>
+                <p class="td-note">Pide confirmación antes de borrar un pedido. Esc o Cancelar cierran.</p>
+                <TDButton ButtonType="TDButtonType.Button" Variant="TDVariant.Secondary" data-td-dialog-open="dlg-borrar">Abrir</TDButton>
+            </div>
+            <div class="td-demo-block">
+                <strong>Nueva flota</strong>
+                <p class="td-note">Formulario con validación. El foco queda atrapado en el diálogo.</p>
+                <TDButton ButtonType="TDButtonType.Button" Variant="TDVariant.Secondary" data-td-dialog-open="dlg-flota">Abrir</TDButton>
+            </div>
+            <div class="td-demo-block">
+                <strong>Panel lateral</strong>
+                <p class="td-note">Filtros del catálogo anclados a la derecha.</p>
+                <TDButton ButtonType="TDButtonType.Button" Variant="TDVariant.Secondary" data-td-dialog-open="dlg-filtros">Abrir</TDButton>
+            </div>
+        </div>
+
+        <TDDialog Id="dlg-borrar" Title="Eliminar pedido" ConfirmText="Eliminar pedido" CancelText="Conservar">
+            <p>Vamos a eliminar OC-00481. Esta acción no se puede deshacer. El stock reservado vuelve a bodega.</p>
+        </TDDialog>
+        <TDDialog Id="dlg-flota" Title="Nueva flota" ConfirmText="Crear flota">
+            <div class="td-stack">
+                <label class="td-label" for="flota-nombre">Nombre de la flota</label>
+                <input id="flota-nombre" class="td-input" name="flota" placeholder="Transportes del Sur" />
+                <label class="td-label" for="flota-patente">Patente principal</label>
+                <input id="flota-patente" class="td-input td-input--mono" name="patente" placeholder="ABCD-12" />
+            </div>
+        </TDDialog>
+        <TDDialog Id="dlg-filtros" Title="Filtros" Drawer="true" ConfirmText="Aplicar filtros">
+            <TDSelectBar Name="app" Selected="@(new[] { "todos" })" Options="@(new TDOption[] { new("todos", "Todos"), new("camion", "Camión"), new("bus", "Bus") })" />
+            <TDSwitch Name="conStock" Label="Solo con stock disponible" Checked="true" />
+        </TDDialog>
+    </section>
+
+    <section class="td-panel td-stack" id="enlaces">
+        <p class="td-section-title">Link</p>
+        <p>
+            Consulta la <TDLink Href="/datos">lista de repuestos</TDLink>
+            o el <TDLink Href="https://example.com" External="true">manual de instalación</TDLink>.
+            También puedes <TDLink Href="/contact" Button="true">crear una solicitud</TDLink>
+            o ver un <TDLink Href="/formularios" Quiet="true">enlace discreto</TDLink>.
+        </p>
+        <TDPanel Title="Panel de pedido">
+            <ChildContent>
+                <p>Contenedor con encabezado, cuerpo y pie, como en el diseño de Layout.</p>
+            </ChildContent>
+            <Footer>
+                <TDButton ButtonType="TDButtonType.Button" Variant="TDVariant.Secondary" Size="TDSize.Small">Cerrar</TDButton>
+                <TDButton ButtonType="TDButtonType.Button" Size="TDSize.Small">Guardar pedido</TDButton>
+            </Footer>
+        </TDPanel>
+    </section>
+</div>

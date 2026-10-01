@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/truck-depot-design-system-de84d30e-4ffa-49a5-8cd0-7d755af25dd5/colors_and_type.css">
+<link rel="stylesheet" href="_ds/truck-depot-design-system-de84d30e-4ffa-49a5-8cd0-7d755af25dd5/styles.css">
+<script src="_ds/truck-depot-design-system-de84d30e-4ffa-49a5-8cd0-7d755af25dd5/_ds_bundle.js"></script>
+<style>
+body{margin:0}
+a{color:var(--uiux-color-primary);text-decoration:none}
+a:hover{color:var(--uiux-color-primary-hover);text-decoration:underline}
+:root{--uiux-color-primary:#ED2A24;--uiux-color-primary-hover:#D11A14;--uiux-color-surface:#FFFFFF;--uiux-color-surface-secondary:#F6F7F8;--uiux-color-canvas:#ECEEF0;--uiux-color-text:#0A0B0C;--uiux-color-text-muted:#5A6068;--uiux-color-border:#DCDFE3;--uiux-color-border-strong:#C2C7CD;--uiux-color-focus-ring:rgba(237,42,36,.35);--uiux-color-success:#177A41;--uiux-color-warning:#A05F08;--uiux-color-danger:#C4140F;--uiux-font-family:'Barlow','Segoe UI',system-ui,sans-serif;--uiux-font-display:'Saira Condensed','Arial Narrow',sans-serif;--uiux-font-mono:'JetBrains Mono',ui-monospace,monospace;--uiux-font-size-sm:.875rem;--uiux-font-size-base:1rem;--uiux-font-size-lg:1.125rem;--uiux-radius-sm:5px;--uiux-radius-md:8px;--uiux-radius-lg:12px;--uiux-shadow-sm:0 1px 3px rgba(10,11,12,.10),0 1px 2px rgba(10,11,12,.06);--uiux-shadow-md:0 4px 12px rgba(10,11,12,.10),0 2px 4px rgba(10,11,12,.06);--uiux-shadow-lg:0 12px 28px rgba(10,11,12,.18),0 4px 10px rgba(10,11,12,.08);--uiux-transition-fast:150ms cubic-bezier(.2,.7,.2,1)}
+[data-theme="dark"]{--uiux-color-surface:#14171A;--uiux-color-surface-secondary:#1F2327;--uiux-color-canvas:#0A0B0C;--uiux-color-text:#F6F7F8;--uiux-color-text-muted:#9CA3AB;--uiux-color-border:#33383D;--uiux-color-border-strong:#4B5158;--uiux-color-success:#4CC47F;--uiux-color-warning:#F2B04A;--uiux-color-danger:#F7716B;--uiux-shadow-lg:0 12px 28px rgba(0,0,0,.5)}
+</style>
+</helmet>
+<div data-theme="{{ theme }}" style="min-height:100vh;background:var(--uiux-color-canvas);color:var(--uiux-color-text);font-family:var(--uiux-font-family);transition:background var(--uiux-transition-fast)">
+
+<header style="background:#0A0B0C;color:#F6F7F8;border-bottom:3px solid #ED2A24">
+  <div style="max-width:1320px;margin:0 auto;padding:14px 28px;display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+    <img src="assets/logo-white.png" alt="Truck Depot" style="height:26px;width:auto;display:block">
+    <div style="width:1px;height:26px;background:#33383D"></div>
+    <div style="display:flex;align-items:baseline;gap:10px">
+      <span style="font:italic 800 24px/1 var(--uiux-font-display);text-transform:uppercase;letter-spacing:-.005em">UiuxBlazor</span>
+      <span style="font:500 11px var(--uiux-font-mono);color:#9CA3AB">v1.0.0</span>
+    </div>
+    <div style="flex:1"></div>
+    <span style="font:500 12px var(--uiux-font-mono);color:#9CA3AB">.NET 10 SSR · Custom Elements · 0 SignalR</span>
+    <button onClick="{{ toggleTheme }}" aria-label="Cambiar tema" style="display:flex;align-items:center;gap:8px;height:36px;padding:0 14px;border-radius:5px;border:1px solid #33383D;background:transparent;color:#F6F7F8;font:700 12px var(--uiux-font-family);letter-spacing:.1em;text-transform:uppercase;cursor:pointer" style-hover="background:#1F2327" style-focus="outline:none;box-shadow:0 0 0 3px rgba(237,42,36,.45)">
+      <sc-if value="{{ isDark }}" hint-placeholder-val="{{ false }}">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>
+      </sc-if>
+      <sc-if value="{{ isLight }}" hint-placeholder-val="{{ true }}">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path></svg>
+      </sc-if>
+      {{ themeLabel }}
+    </button>
+  </div>
+</header>
+
+<div style="max-width:1320px;margin:0 auto;padding:32px 28px 80px;display:flex;gap:40px;flex-wrap:wrap;align-items:flex-start">
+
+<nav style="flex:0 0 190px;position:sticky;top:24px;display:flex;flex-direction:column;gap:2px">
+  <span style="font:700 11px var(--uiux-font-family);letter-spacing:.14em;text-transform:uppercase;color:var(--uiux-color-primary);padding:0 12px 10px">Componentes</span>
+  <a href="#tokens" style="padding:8px 12px;border-radius:5px;color:var(--uiux-color-text);font:600 14px var(--uiux-font-family)" style-hover="background:var(--uiux-color-surface);text-decoration:none;color:var(--uiux-color-text)">Tokens</a>
+  <a href="#grid" style="padding:8px 12px;border-radius:5px;color:var(--uiux-color-text);font:600 14px var(--uiux-font-family)" style-hover="background:var(--uiux-color-surface);text-decoration:none;color:var(--uiux-color-text)">DataGrid</a>
+  <a href="#select" style="padding:8px 12px;border-radius:5px;color:var(--uiux-color-text);font:600 14px var(--uiux-font-family)" style-hover="background:var(--uiux-color-surface);text-decoration:none;color:var(--uiux-color-text)">Select</a>
+  <a href="#modal" style="padding:8px 12px;border-radius:5px;color:var(--uiux-color-text);font:600 14px var(--uiux-font-family)" style-hover="background:var(--uiux-color-surface);text-decoration:none;color:var(--uiux-color-text)">Modal</a>
+  <a href="#form" style="padding:8px 12px;border-radius:5px;color:var(--uiux-color-text);font:600 14px var(--uiux-font-family)" style-hover="background:var(--uiux-color-surface);text-decoration:none;color:var(--uiux-color-text)">FormAuto</a>
+  <a href="#drawer" style="padding:8px 12px;border-radius:5px;color:var(--uiux-color-text);font:600 14px var(--uiux-font-family)" style-hover="background:var(--uiux-color-surface);text-decoration:none;color:var(--uiux-color-text)">Drawer</a>
+</nav>
+
+<main style="flex:1 1 480px;min-width:0;display:flex;flex-direction:column;gap:64px">
+
+<div style="display:flex;flex-direction:column;gap:12px">
+  <span style="font:700 12px var(--uiux-font-family);letter-spacing:.14em;text-transform:uppercase;color:var(--uiux-color-primary)">Librería de componentes</span>
+  <h1 style="margin:0;font:italic 900 56px/.92 var(--uiux-font-display);text-transform:uppercase;letter-spacing:-.01em">Interacción local.<br>Persistencia en servidor.</h1>
+  <p style="margin:0;max-width:620px;font-size:17px;line-height:1.55;color:var(--uiux-color-text-muted);text-wrap:pretty">Etiquetas Razor que renderizan en SSR y se hidratan como Custom Elements. Filtrar, abrir y validar ocurre en el navegador; guardar viaja por un form handler con <span style="font-family:var(--uiux-font-mono);font-size:14px">data-enhance</span>.</p>
+</div>
+
+<section id="tokens" style="scroll-margin-top:24px;display:flex;flex-direction:column;gap:16px">
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <span style="font:500 12px var(--uiux-font-mono);color:var(--uiux-color-primary)">uiuxblazor.css</span>
+    <h2 style="margin:0;font:italic 800 34px/1 var(--uiux-font-display);text-transform:uppercase">Tokens</h2>
+    <p style="margin:0;max-width:640px;font-size:15px;line-height:1.5;color:var(--uiux-color-text-muted)">El esquema <span style="font-family:var(--uiux-font-mono);font-size:13px">--uiux-*</span> mapeado a Truck Depot. Cambia el tema arriba: cada componente de esta página lee solo estas variables.</p>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px">
+    <sc-for list="{{ tokens }}" as="t" hint-placeholder-count="8">
+      <div style="background:var(--uiux-color-surface);border:1px solid var(--uiux-color-border);border-radius:var(--uiux-radius-md);overflow:hidden">
+        <div style="height:56px;background:{{ t.v }};border-bottom:1px solid var(--uiux-color-border)"></div>
+        <div style="padding:10px 12px;display:flex;flex-direction:column;gap:3px">
+          <span style="font:600 13px var(--uiux-font-family)">{{ t.label }}</span>
+          <span style="font:400 10.5px var(--uiux-font-mono);color:var(--uiux-color-text-muted);word-break:break-all">{{ t.name }}</span>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+</section>
+
+<section id="grid" style="scroll-margin-top:24px;display:flex;flex-direction:column;gap:16px">
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <span style="font:500 12px var(--uiux-font-mono);color:var(--uiux-color-primary)">&lt;UiuxDataGrid TItem="Part"&gt;</span>
+    <h2 style="margin:0;font:italic 800 34px/1 var(--uiux-font-display);text-transform:uppercase">DataGrid</h2>
+    <p style="margin:0;max-width:640px;font-size:15px;line-height:1.5;color:var(--uiux-color-text-muted);text-wrap:pretty">Filtra filas en el navegador, oculta columnas y edita stock en lote. Solo el botón Guardar llama al servidor.</p>
+  </div>
+
+  <div style="background:var(--uiux-color-surface);border:1px solid var(--uiux-color-border);border-radius:var(--uiux-radius-lg);box-shadow:var(--uiux-shadow-sm)">
+    <div style="padding:14px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--uiux-color-border)">
+      <div style="position:relative;flex:1 1 240px;max-width:340px">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--uiux-color-text-muted)"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+        <input type="text" value="{{ q }}" onChange="{{ onQuery }}" placeholder="Buscar por código, repuesto o aplicación…" aria-label="Filtrar repuestos" style="width:100%;box-sizing:border-box;height:38px;padding:0 12px 0 34px;border-radius:var(--uiux-radius-md);border:1px solid var(--uiux-color-border-strong);background:var(--uiux-color-surface);color:var(--uiux-color-text);font:500 14px var(--uiux-font-family);outline:none;transition:border-color var(--uiux-transition-fast),box-shadow var(--uiux-transition-fast)" style-focus="border-color:var(--uiux-color-primary);box-shadow:0 0 0 3px var(--uiux-color-focus-ring)">
+      </div>
+      <span style="font:500 12px var(--uiux-font-mono);color:var(--uiux-color-text-muted)">{{ gridCount }}</span>
+      <div style="flex:1"></div>
+      <div style="position:relative">
+        <button onClick="{{ toggleCols }}" aria-haspopup="true" aria-expanded="{{ colsExpanded }}" style="display:flex;align-items:center;gap:8px;height:38px;padding:0 14px;border-radius:var(--uiux-radius-sm);border:1px solid var(--uiux-color-border-strong);background:transparent;color:var(--uiux-color-text);font:700 12px var(--uiux-font-family);letter-spacing:.08em;text-transform:uppercase;cursor:pointer" style-hover="background:var(--uiux-color-surface-secondary)" style-focus="outline:none;box-shadow:0 0 0 3px var(--uiux-color-focus-ring)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="M9 3v18M15 3v18"></path></svg>
+          Columnas
+        </button>
+        <sc-if value="{{ colsOpen }}" hint-placeholder-val="{{ false }}">
+          <div role="menu" style="position:absolute;right:0;top:44px;z-index:20;width:210px;padding:6px;background:var(--uiux-color-surface);border:1px solid var(--uiux-color-border);border-radius:var(--uiux-radius-md);box-shadow:var(--uiux-shadow-lg);display:flex;flex-direction:column;gap:2px">
+            <sc-for list="{{ colList }}" as="c" hint-placeholder-count="3">
+              <button role="menuitemcheckbox" aria-checked="{{ c.aria }}" onClick="{{ c.onToggle }}" style="display:flex;align-items:center;gap:10px;padding:8px 10px;border:none;border-radius:5px;background:transparent;color:var(--uiux-color-text);font:500 14px var(--uiux-font-family);text-align:left;cursor:pointer" style-hover="background:var(--uiux-color-surface-secondary)">
+                <span style="width:16px;height:16px;border-radius:3px;border:1.5px solid {{ c.boxBorder }};background:{{ c.boxBg }};display:flex;align-items:center;justify-content:center;color:#fff">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:{{ c.op }}"><path d="M20 6 9 17l-5-5"></path></svg>
+                </span>
+                {{ c.label }}
+              </button>
+            </sc-for>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+
+    <div style="overflow-x:auto">
+      <table style="width:100%;border-collapse:collapse;font-size:14px;text-align:left">
+        <thead>
+          <tr>
+            <th style="padding:10px 16px;background:var(--uiux-color-surface-secondary);border-bottom:1px solid var(--uiux-color-border);font:700 11px var(--uiux-font-family);letter-spacing:.12em;text-transform:uppercase;color:var(--uiux-color-text-muted);white-space:nowrap">Código</th>
+            <th style="padding:10px 16px;background:var(--uiux-color-surface-secondary);border-bottom:1px solid var(--uiux-color-border);font:700 11px var(--uiux-font-family);letter-spacing:.12em;text-transform:uppercase;color:var(--uiux-color-text-muted)">Repuesto</th>
+            <sc-if value="{{ cols.app }}" hint-placeholder-val="{{ true }}"><th style="padding:10px 16px;background:var(--uiux-color-surface-secondary);border-bottom:1px solid var(--uiux-color-border);font:700 11px var(--uiux-font-family);letter-spacing:.12em;text-transform:uppercase;color:var(--uiux-color-text-muted)">Aplicación</th></sc-if>
+            <sc-if value="{{ cols.cat }}" hint-placeholder-val="{{ true }}"><th style="padding:10px 16px;background:var(--uiux-color-surface-secondary);border-bottom:1px solid var(--uiux-color-border);font:700 11px var(--uiux-font-family);letter-spacing:.12em;text-transform:uppercase;color:var(--uiux-color-text-muted)">Categoría</th></sc-if>
+            <th style="padding:10px 16px;background:var(--uiux-color-surface-secondary);border-bottom:1px solid var(--uiux-color-border);font:700 11px var(--uiux-font-family);letter-spacing:.12em;text-transform:uppercase;color:var(--uiux-color-text-muted)">Stock</th>
+            <sc-if value="{{ cols.price }}" hint-placeholder-val="{{ true }}"><th style="padding:10px 16px;background:var(--uiux-color-surface-secondary);border-bottom:1px solid var(--uiux-color-border);font:700 11px var(--uiux-font-family);letter-spacing:.12em;text-transform:uppercase;color:var(--uiux-color-text-muted);text-align:right">Precio</th></sc-if>
+          </tr>
+        </thead>
+        <tbody>
+          <sc-for list="{{ rows }}" as="r" hint-placeholder-count="8">
+            <tr style="background:{{ r.rowBg }};box-shadow:{{ r.rowMark }};transition:background var(--uiux-transition-fast)">
+              <td style="padding:{{ cellPad }};border-bottom:1px solid var(--uiux-color-border);font:500 12.5px var(--uiux-font-mono);color:var(--uiux-color-text-muted);white-space:nowrap">{{ r.code }}</td>
+              <td style="padding:{{ cellPad }};border-bottom:1px solid var(--uiux-color-border);font-weight:600">{{ r.name }}</td>
+              <sc-if value="{{ cols.app }}" hint-placeholder-val="{{ true }}"><td style="padding:{{ cellPad }};border-bottom:1px solid var(--uiux-color-border);color:var(--uiux-color-text-muted);white-space:nowrap">{{ r.app }}</td></sc-if>
+              <sc-if value="{{ cols.cat }}" hint-placeholder-val="{{ true }}"><td style="padding:{{ cellPad }};border-bottom:1px solid var(--uiux-color-border)"><span style="display:inline-block;padding:3px 9px;border-radius:999px;border:1px solid var(--uiux-color-border);font:600 12px var(--uiux-font-family);white-space:nowrap">{{ r.cat }}</span></td></sc-if>
+              <td style="padding:{{ cellPad }};border-bottom:1px solid var(--uiux-color-border)">
+                <div style="display:flex;align-items:center;gap:10px">
+                  <input type="number" min="0" value="{{ r.stock }}" onChange="{{ r.onStock }}" aria-label="Stock {{ r.code }}" style="width:72px;height:32px;box-sizing:border-box;padding:0 8px;border-radius:var(--uiux-radius-sm);border:1px solid {{ r.inputBorder }};background:var(--uiux-color-surface);color:var(--uiux-color-text);font:500 13px var(--uiux-font-mono);outline:none" style-focus="border-color:var(--uiux-color-primary);box-shadow:0 0 0 3px var(--uiux-color-focus-ring)">
+                  <span style="display:inline-flex;align-items:center;gap:6px;font:600 12px var(--uiux-font-family);color:{{ r.stColor }};white-space:nowrap"><span style="width:7px;height:7px;border-radius:50%;background:{{ r.stColor }}"></span>{{ r.stLabel }}</span>
+                </div>
+              </td>
+              <sc-if value="{{ cols.price }}" hint-placeholder-val="{{ true }}"><td style="padding:{{ cellPad }};border-bottom:1px solid var(--uiux-color-border);text-align:right;font:800 17px var(--uiux-font-display);font-variant-numeric:tabular-nums;white-space:nowrap">{{ r.price }}</td></sc-if>
+            </tr>
+          </sc-for>
+        </tbody>
+      </table>
+      <sc-if value="{{ noRows }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:40px 16px;text-align:center;display:flex;flex-direction:column;gap:6px;align-items:center">
+          <span style="font:600 15px var(--uiux-font-family)">Sin resultados para “{{ q }}”</span>
+          <span style="font-size:14px;color:var(--uiux-color-text-muted)">¿No encuentras tu repuesto? Busca por número de parte o cotiza con un asesor.</span>
+        </div>
+      </sc-if>
+    </div>
+
+    <div style="padding:12px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--uiux-color-surface-secondary);border-top:1px solid var(--uiux-color-border);border-radius:0 0 var(--uiux-radius-lg) var(--uiux-radius-lg)">
+      <span style="font:500 13px var(--uiux-font-family);color:{{ saveMsgColor }}">{{ saveMsg }}</span>
+      <div style="flex:1"></div>
+      <button onClick="{{ discard }}" disabled="{{ noDirty }}" style="height:38px;padding:0 16px;border-radius:var(--uiux-radius-sm);border:1px solid var(--uiux-color-border-strong);background:transparent;color:var(--uiux-color-text);font:700 12px var(--uiux-font-family);letter-spacing:.08em;text-transform:uppercase;cursor:pointer;opacity:{{ discardOp }}" style-hover="background:var(--uiux-color-surface)">Descartar</button>
+      <button onClick="{{ save }}" disabled="{{ noDirty }}" style="height:38px;padding:0 18px;border-radius:var(--uiux-radius-sm);border:none;background:{{ saveBg }};color:{{ saveFg }};font:700 12px var(--uiux-font-family);letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:background var(--uiux-transition-fast)" style-active="transform:scale(.98)" style-focus="outline:none;box-shadow:0 0 0 3px var(--uiux-color-focus-ring)">{{ saveLabel }}</button>
+    </div>
+  </div>
+
+  <sc-if value="{{ showCode }}" hint-placeholder-val="{{ true }}">
+    <pre style="margin:0;padding:18px 20px;background:#0A0B0C;color:#DCDFE3;border-radius:var(--uiux-radius-md);font:400 12.5px/1.65 var(--uiux-font-mono);overflow-x:auto">&lt;UiuxDataGrid Context="part" Items="_parts" FormName="save-stock"
+              SearchPlaceholder="Buscar por código…"&gt;
+  &lt;HeaderTemplate&gt;&lt;th&gt;Código&lt;/th&gt;&lt;th&gt;Repuesto&lt;/th&gt;&lt;th&gt;Stock&lt;/th&gt;&lt;/HeaderTemplate&gt;
+  &lt;RowTemplate&gt;
+    &lt;td&gt;@part.Code&lt;/td&gt;&lt;td&gt;@part.Name&lt;/td&gt;
+    &lt;td&gt;&lt;input type="number" name="stock_@part.Id" value="@part.Stock" /&gt;&lt;/td&gt;
+  &lt;/RowTemplate&gt;
+&lt;/UiuxDataGrid&gt;</pre>
+  </sc-if>
+</section>
+
+<section id="select" style="scroll-margin-top:24px;display:flex;flex-direction:column;gap:16px">
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <span style="font:500 12px var(--uiux-font-mono);color:var(--uiux-color-primary)">&lt;UiuxSelect Multiple="true"&gt;</span>
+    <h2 style="margin:0;font:italic 800 34px/1 var(--uiux-font-display);text-transform:uppercase">Select</h2>
+    <p style="margin:0;max-width:640px;font-size:15px;line-height:1.5;color:var(--uiux-color-text-muted)">Combobox con búsqueda local, selección simple o múltiple y navegación completa por teclado.</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:13px;color:var(--uiux-color-text-muted)">
+      <kbd style="font:500 11px var(--uiux-font-mono);padding:2px 7px;border:1px solid var(--uiux-color-border-strong);border-bottom-width:2px;border-radius:4px;color:var(--uiux-color-text)">↑ ↓</kbd>navegar
+      <kbd style="font:500 11px var(--uiux-font-mono);padding:2px 7px;border:1px solid var(--uiux-color-border-strong);border-bottom-width:2px;border-radius:4px;color:var(--uiux-color-text)">Enter</kbd>seleccionar
+      <kbd style="font:500 11px var(--uiux-font-mono);padding:2px 7px;border:1px solid var(--uiux-color-border-strong);border-bottom-width:2px;border-radius:4px;color:var(--uiux-color-text)">Esc</kbd>cerrar
+      <kbd style="font:500 11px var(--uiux-font-mono);padding:2px 7px;border:1px solid var(--uiux-color-border-strong);border-bottom-width:2px;border-radius:4px;color:var(--uiux-color-text)">⌫</kbd>quitar último
+    </div>
+  </div>
+
+  <div style="background:var(--uiux-color-surface);border:1px solid var(--uiux-color-border);border-radius:var(--uiux-radius-lg);box-shadow:var(--uiux-shadow-sm);padding:24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px;min-height:300px;align-items:start">
+    <div style="display:flex;flex-direction:column;gap:6px;position:relative">
+      <label style="font:600 14px var(--uiux-font-family)">Marcas compatibles</label>
+      <div style="min-height:42px;box-sizing:border-box;padding:5px 8px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;border:1px solid {{ brands.border }};box-shadow:{{ brands.ring }};border-radius:var(--uiux-radius-md);background:var(--uiux-color-surface);transition:border-color var(--uiux-transition-fast)">
+        <sc-for list="{{ brands.chips }}" as="ch" hint-placeholder-count="2">
+          <span style="display:inline-flex;align-items:center;gap:4px;height:26px;padding:0 4px 0 10px;border-radius:999px;background:var(--uiux-color-surface-secondary);border:1px solid var(--uiux-color-border);font:600 13px var(--uiux-font-family)">{{ ch.label }}
+            <button onMouseDown="{{ ch.onRemove }}" aria-label="Quitar {{ ch.label }}" style="width:18px;height:18px;border:none;border-radius:50%;background:transparent;color:var(--uiux-color-text-muted);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0" style-hover="background:var(--uiux-color-border);color:var(--uiux-color-text)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"></path></svg></button>
+          </span>
+        </sc-for>
+        <input role="combobox" aria-expanded="{{ brands.aria }}" aria-controls="lb-brands" aria-autocomplete="list" value="{{ brands.q }}" onChange="{{ brands.onInput }}" onKeyDown="{{ brands.onKey }}" onFocus="{{ brands.onFocus }}" onBlur="{{ brands.onBlur }}" placeholder="{{ brands.ph }}" style="flex:1;min-width:90px;height:30px;border:none;outline:none;background:transparent;color:var(--uiux-color-text);font:500 14px var(--uiux-font-family)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--uiux-color-text-muted);flex:none"><path d="m6 9 6 6 6-6"></path></svg>
+      </div>
+      <sc-if value="{{ brands.open }}" hint-placeholder-val="{{ false }}">
+        <div id="lb-brands" role="listbox" aria-multiselectable="true" style="position:absolute;left:0;right:0;top:76px;z-index:10;max-height:232px;overflow-y:auto;padding:6px;background:var(--uiux-color-surface);border:1px solid var(--uiux-color-border);border-radius:var(--uiux-radius-md);box-shadow:var(--uiux-shadow-lg);display:flex;flex-direction:column;gap:1px">
+          <sc-for list="{{ brands.items }}" as="o" hint-placeholder-count="6">
+            <div role="option" aria-selected="{{ o.aria }}" onMouseDown="{{ o.onPick }}" onMouseEnter="{{ o.onHover }}" style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:5px;background:{{ o.bg }};box-shadow:{{ o.bar }};font:500 14px var(--uiux-font-family);cursor:pointer">
+              <span style="width:16px;height:16px;border-radius:3px;border:1.5px solid {{ o.boxBorder }};background:{{ o.boxBg }};display:flex;align-items:center;justify-content:center;color:#fff;flex:none"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:{{ o.op }}"><path d="M20 6 9 17l-5-5"></path></svg></span>
+              {{ o.label }}
+            </div>
+          </sc-for>
+          <sc-if value="{{ brands.empty }}" hint-placeholder-val="{{ false }}"><div style="padding:10px;font-size:14px;color:var(--uiux-color-text-muted)">Sin coincidencias</div></sc-if>
+        </div>
+      </sc-if>
+      <span style="font-size:12.5px;color:var(--uiux-color-text-muted)">{{ brands.meta }}</span>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:6px;position:relative">
+      <label style="font:600 14px var(--uiux-font-family)">Categoría</label>
+      <div style="height:42px;box-sizing:border-box;padding:0 12px;display:flex;gap:8px;align-items:center;border:1px solid {{ cat.border }};box-shadow:{{ cat.ring }};border-radius:var(--uiux-radius-md);background:var(--uiux-color-surface)">
+        <input role="combobox" aria-expanded="{{ cat.aria }}" aria-controls="lb-cat" aria-autocomplete="list" value="{{ cat.q }}" onChange="{{ cat.onInput }}" onKeyDown="{{ cat.onKey }}" onFocus="{{ cat.onFocus }}" onBlur="{{ cat.onBlur }}" placeholder="{{ cat.ph }}" style="flex:1;min-width:0;height:30px;border:none;outline:none;background:transparent;color:var(--uiux-color-text);font:500 14px var(--uiux-font-family)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--uiux-color-text-muted);flex:none"><path d="m6 9 6 6 6-6"></path></svg>
+      </div>
+      <sc-if value="{{ cat.open }}" hint-placeholder-val="{{ false }}">
+        <div id="lb-cat" role="listbox" style="position:absolute;left:0;right:0;top:76px;z-index:10;max-height:232px;overflow-y:auto;padding:6px;background:var(--uiux-color-surface);border:1px solid var(--uiux-color-border);border-radius:var(--uiux-radius-md);box-shadow:var(--uiux-shadow-lg);display:flex;flex-direction:column;gap:1px">
+          <sc-for list="{{ cat.items }}" as="o" hint-placeholder-count="5">
+            <div role="option" aria-selected="{{ o.aria }}" onMouseDown="{{ o.onPick }}" onMouseEnter="{{ o.onHover }}" style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 10px;border-radius:5px;background:{{ o.bg }};box-shadow:{{ o.bar }};font:500 14px var(--uiux-font-family);cursor:pointer">
+              {{ o.label }}
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--uiux-color-primary);opacity:{{ o.op }}"><path d="M20 6 9 17l-5-5"></path></svg>
+            </div>
+          </sc-for>
+          <sc-if value="{{ cat.empty }}" hint-placeholder-val="{{ false }}"><div style="padding:10px;font-size:14px;color:var(--uiux-color-text-muted)">Sin coincidencias</div></sc-if>
+        </div>
+      </sc-if>
+      <span style="font-size:12.5px;color:var(--uiux-color-text-muted)">Selección simple</span>
+    </div>
+  </div>
+
+  <sc-if value="{{ showCode }}" hint-placeholder-val="{{ true }}">
+    <pre style="margin:0;padding:18px 20px;background:#0A0B0C;color:#DCDFE3;border-radius:var(--uiux-radius-md);font:400 12.5px/1.65 var(--uiux-font-mono);overflow-x:auto">&lt;UiuxSelect Name="brands" Multiple="true" Options="_brands"
+            @bind-Values="_filter.Brands" Placeholder="Buscar marca…" /&gt;
+&lt;UiuxSelect Name="category" Options="_categories" @bind-Value="_filter.Category" /&gt;</pre>
+  </sc-if>
+</section>
+
+<section id="modal" style="scroll-margin-top:24px;display:flex;flex-direction:column;gap:16px">
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <span style="font:500 12px var(--uiux-font-mono);color:var(--uiux-color-primary)">&lt;UiuxModal @ref="_dispatch"&gt;</span>
+    <h2 style="margin:0;font:italic 800 34px/1 var(--uiux-font-display);text-transform:uppercase">Modal</h2>
+    <p style="margin:0;max-width:640px;font-size:15px;line-height:1.5;color:var(--uiux-color-text-muted)">Se abre sin ida y vuelta al servidor. Atrapa el foco, cierra con Esc y envía su formulario interno por SSR.</p>
+  </div>
+  <div style="background:var(--uiux-color-surface);border:1px solid var(--uiux-color-border);border-radius:var(--uiux-radius-lg);box-shadow:var(--uiux-shadow-sm);padding:20px 24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+    <div style="display:flex;flex-direction:column;gap:4px;flex:1 1 260px">
+      <span style="font:500 12px var(--uiux-font-mono);color:var(--uiux-color-text-muted)">OC-2026-00481 · 3 ítems</span>
+      <span style="font:600 16px var(--uiux-font-family)">Transportes Andes — Bodega Quilicura</span>
+      <span style="display:inline-flex;align-items:center;gap:6px;font:600 13px var(--uiux-font-family);color:{{ orderColor }}"><span style="width:7px;height:7px;border-radius:50%;background:{{ orderColor }}"></span>{{ orderStatus }}</span>
+    </div>
+    <button onClick="{{ openModal }}" style="height:42px;padding:0 20px;border-radius:var(--uiux-radius-sm);border:none;background:var(--uiux-color-primary);color:#fff;font:700 13px var(--uiux-font-family);letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:background var(--uiux-transition-fast)" style-hover="background:var(--uiux-color-primary-hover)" style-active="transform:scale(.98)" style-focus="outline:none;box-shadow:0 0 0 3px var(--uiux-color-focus-ring)">Confirmar despacho</button>
+  </div>
+  <sc-if value="{{ showCode }}" hint-placeholder-val="{{ true }}">
+    <pre style="margin:0;padding:18px 20px;background:#0A0B0C;color:#DCDFE3;border-radius:var(--uiux-radius-md);font:400 12.5px/1.65 var(--uiux-font-mono);overflow-x:auto">&lt;UiuxModal Id="confirm-dispatch" Title="Confirmar despacho" FormName="dispatch"&gt;
+  &lt;UiuxInput Name="Address" Label="Dirección de entrega" /&gt;
+  &lt;Footer&gt;&lt;button type="submit" class="uiux-btn-primary"&gt;Confirmar&lt;/button&gt;&lt;/Footer&gt;
+&lt;/UiuxModal&gt;</pre>
+  </sc-if>
+</section>
+
+<section id="form" style="scroll-margin-top:24px;display:flex;flex-direction:column;gap:16px">
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <span style="font:500 12px var(--uiux-font-mono);color:var(--uiux-color-primary)">&lt;UiuxFormAuto TModel="FleetAccount"&gt;</span>
+    <h2 style="margin:0;font:italic 800 34px/1 var(--uiux-font-display);text-transform:uppercase">FormAuto</h2>
+    <p style="margin:0;max-width:640px;font-size:15px;line-height:1.5;color:var(--uiux-color-text-muted);text-wrap:pretty">Valida con regex mientras escribes. Al enviar, los errores del servidor vuelven mapeados al campo correcto.</p>
+  </div>
+  <form onSubmit="{{ submitForm }}" noValidate="{{ true }}" style="background:var(--uiux-color-surface);border:1px solid var(--uiux-color-border);border-radius:var(--uiux-radius-lg);box-shadow:var(--uiux-shadow-sm);padding:24px;display:flex;flex-direction:column;gap:20px">
+    <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap">
+      <span style="font:700 19px var(--uiux-font-family)">Crear cuenta de flota</span>
+      <span style="font-size:12.5px;color:var(--uiux-color-text-muted)">Prueba el correo <span style="font-family:var(--uiux-font-mono)">flota@transportesandes.cl</span> para ver un error del servidor.</span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px 20px">
+      <sc-for list="{{ fields }}" as="f" hint-placeholder-count="4">
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <label style="font:600 14px var(--uiux-font-family)">{{ f.label }}</label>
+          <div style="position:relative">
+            <input name="{{ f.name }}" value="{{ f.value }}" onChange="{{ f.onChange }}" onBlur="{{ f.onBlur }}" placeholder="{{ f.ph }}" aria-invalid="{{ f.aria }}" style="width:100%;box-sizing:border-box;height:42px;padding:0 38px 0 12px;border-radius:var(--uiux-radius-md);border:1px solid {{ f.border }};background:var(--uiux-color-surface);color:var(--uiux-color-text);font:500 14px var(--uiux-font-family);outline:none;transition:border-color var(--uiux-transition-fast)" style-focus="box-shadow:0 0 0 3px var(--uiux-color-focus-ring)">
+            <sc-if value="{{ f.ok }}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;right:12px;top:12px;color:var(--uiux-color-success)"><path d="M20 6 9 17l-5-5"></path></svg></sc-if>
+            <sc-if value="{{ f.bad }}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;right:12px;top:12px;color:var(--uiux-color-danger)"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4M12 16h.01"></path></svg></sc-if>
+          </div>
+          <span style="font:500 12.5px var(--uiux-font-family);color:{{ f.msgColor }};min-height:16px">{{ f.msg }}</span>
+        </div>
+      </sc-for>
+    </div>
+    <sc-if value="{{ formDone }}" hint-placeholder-val="{{ false }}">
+      <div role="status" style="display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:var(--uiux-radius-md);border:1px solid var(--uiux-color-success);color:var(--uiux-color-success);font:600 14px var(--uiux-font-family)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
+        Cuenta creada. Te enviamos un correo de confirmación.
+      </div>
+    </sc-if>
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-top:4px;border-top:1px solid var(--uiux-color-border)">
+      <span style="flex:1;font-size:13px;color:var(--uiux-color-text-muted);padding-top:12px">{{ formSummary }}</span>
+      <button type="submit" style="margin-top:12px;height:42px;padding:0 22px;border-radius:var(--uiux-radius-sm);border:none;background:var(--uiux-color-primary);color:#fff;font:700 13px var(--uiux-font-family);letter-spacing:.08em;text-transform:uppercase;cursor:pointer;opacity:{{ sendOp }}" style-hover="background:var(--uiux-color-primary-hover)" style-active="transform:scale(.98)" style-focus="outline:none;box-shadow:0 0 0 3px var(--uiux-color-focus-ring)">{{ sendLabel }}</button>
+    </div>
+  </form>
+  <sc-if value="{{ showCode }}" hint-placeholder-val="{{ true }}">
+    <pre style="margin:0;padding:18px 20px;background:#0A0B0C;color:#DCDFE3;border-radius:var(--uiux-radius-md);font:400 12.5px/1.65 var(--uiux-font-mono);overflow-x:auto">&lt;UiuxFormAuto Model="_account" FormName="fleet-signup" OnValidSubmit="CreateAsync"&gt;
+  &lt;UiuxField For="() =&gt; _account.Email" Pattern="^[^@\s]+@[^@\s]+\.[a-z]{2,}$" /&gt;
+  &lt;UiuxField For="() =&gt; _account.Plate" Pattern="^[A-Z]{2,4}-?\d{2,4}$" /&gt;
+&lt;/UiuxFormAuto&gt;</pre>
+  </sc-if>
+</section>
+
+<section id="drawer" style="scroll-margin-top:24px;display:flex;flex-direction:column;gap:16px">
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <span style="font:500 12px var(--uiux-font-mono);color:var(--uiux-color-primary)">&lt;UiuxDrawer Side="Right"&gt;</span>
+    <h2 style="margin:0;font:italic 800 34px/1 var(--uiux-font-display);text-transform:uppercase">Drawer</h2>
+    <p style="margin:0;max-width:640px;font-size:15px;line-height:1.5;color:var(--uiux-color-text-muted)">Panel lateral con transición CSS para filtros y navegación. El conteo de resultados se recalcula localmente.</p>
+  </div>
+  <div style="background:var(--uiux-color-surface);border:1px solid var(--uiux-color-border);border-radius:var(--uiux-radius-lg);box-shadow:var(--uiux-shadow-sm);padding:16px 20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+    <button onClick="{{ openDrawer }}" aria-expanded="{{ drawerAria }}" style="display:flex;align-items:center;gap:8px;height:38px;padding:0 14px;border-radius:var(--uiux-radius-sm);border:1px solid var(--uiux-color-border-strong);background:transparent;color:var(--uiux-color-text);font:700 12px var(--uiux-font-family);letter-spacing:.08em;text-transform:uppercase;cursor:pointer" style-hover="background:var(--uiux-color-surface-secondary)" style-focus="outline:none;box-shadow:0 0 0 3px var(--uiux-color-focus-ring)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"></path></svg>
+      Filtros
+      <span style="min-width:20px;height:20px;padding:0 6px;box-sizing:border-box;border-radius:999px;background:var(--uiux-color-primary);color:#fff;font:700 11px var(--uiux-font-family);display:flex;align-items:center;justify-content:center">{{ filterCount }}</span>
+    </button>
+    <sc-for list="{{ activeChips }}" as="ac" hint-placeholder-count="2">
+      <span style="display:inline-flex;align-items:center;height:28px;padding:0 10px;border-radius:999px;border:1px solid var(--uiux-color-border);background:var(--uiux-color-surface-secondary);font:600 13px var(--uiux-font-family)">{{ ac }}</span>
+    </sc-for>
+    <div style="flex:1"></div>
+    <span style="font:800 20px var(--uiux-font-display);font-variant-numeric:tabular-nums">{{ resultCount }}</span>
+  </div>
+  <sc-if value="{{ showCode }}" hint-placeholder-val="{{ true }}">
+    <pre style="margin:0;padding:18px 20px;background:#0A0B0C;color:#DCDFE3;border-radius:var(--uiux-radius-md);font:400 12.5px/1.65 var(--uiux-font-mono);overflow-x:auto">&lt;UiuxDrawer Id="catalog-filters" Side="DrawerSide.Right" Width="380px"&gt;
+  &lt;UiuxCheckboxGroup Name="cat" Options="_categories" /&gt;
+&lt;/UiuxDrawer&gt;</pre>
+  </sc-if>
+</section>
+
+</main>
+</div>
+
+<sc-if value="{{ modalOpen }}" hint-placeholder-val="{{ false }}">
+  <div onMouseDown="{{ closeModal }}" style="position:fixed;inset:0;z-index:100;background:rgba(10,11,12,.62);display:flex;align-items:center;justify-content:center;padding:24px">
+    <div role="dialog" aria-modal="true" aria-labelledby="dlg-title" onMouseDown="{{ stop }}" style="width:100%;max-width:520px;background:var(--uiux-color-surface);color:var(--uiux-color-text);border-radius:var(--uiux-radius-lg);box-shadow:var(--uiux-shadow-lg);border-top:3px solid var(--uiux-color-primary);overflow:hidden">
+      <div style="padding:20px 24px 0;display:flex;align-items:flex-start;gap:12px">
+        <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+          <span style="font:700 11px var(--uiux-font-family);letter-spacing:.14em;text-transform:uppercase;color:var(--uiux-color-primary)">OC-2026-00481</span>
+          <h3 id="dlg-title" style="margin:0;font:italic 800 28px/1 var(--uiux-font-display);text-transform:uppercase">Confirmar despacho</h3>
+        </div>
+        <button onClick="{{ closeModal }}" aria-label="Cerrar" style="width:34px;height:34px;border:none;border-radius:5px;background:transparent;color:var(--uiux-color-text-muted);display:flex;align-items:center;justify-content:center;cursor:pointer" style-hover="background:var(--uiux-color-surface-secondary);color:var(--uiux-color-text)" style-focus="outline:none;box-shadow:0 0 0 3px var(--uiux-color-focus-ring)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"></path></svg></button>
+      </div>
+      <div style="padding:18px 24px;display:flex;flex-direction:column;gap:16px">
+        <div style="border:1px solid var(--uiux-color-border);border-radius:var(--uiux-radius-md)">
+          <sc-for list="{{ orderItems }}" as="it" hint-placeholder-count="3">
+            <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid var(--uiux-color-border)">
+              <span style="font:500 12px var(--uiux-font-mono);color:var(--uiux-color-text-muted);width:92px">{{ it.code }}</span>
+              <span style="flex:1;font:600 14px var(--uiux-font-family)">{{ it.name }}</span>
+              <span style="font:500 13px var(--uiux-font-mono);color:var(--uiux-color-text-muted)">×{{ it.qty }}</span>
+            </div>
+          </sc-for>
+          <div style="display:flex;justify-content:space-between;align-items:baseline;padding:10px 14px;background:var(--uiux-color-surface-secondary)">
+            <span style="font:700 11px var(--uiux-font-family);letter-spacing:.12em;text-transform:uppercase;color:var(--uiux-color-text-muted)">Total</span>
+            <span style="font:800 22px var(--uiux-font-display)">$ 1.482.430</span>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <label for="dlg-addr" style="font:600 14px var(--uiux-font-family)">Dirección de entrega</label>
+          <input id="dlg-addr" ref="{{ addrRef }}" defaultValue="Av. Américo Vespucio 1501, Quilicura" style="height:42px;box-sizing:border-box;padding:0 12px;border-radius:var(--uiux-radius-md);border:1px solid var(--uiux-color-border-strong);background:var(--uiux-color-surface);color:var(--uiux-color-text);font:500 14px var(--uiux-font-family);outline:none" style-focus="border-color:var(--uiux-color-primary);box-shadow:0 0 0 3px var(--uiux-color-focus-ring)">
+        </div>
+      </div>
+      <div style="padding:14px 24px;display:flex;justify-content:flex-end;gap:10px;background:var(--uiux-color-surface-secondary);border-top:1px solid var(--uiux-color-border)">
+        <button onClick="{{ closeModal }}" style="height:40px;padding:0 16px;border-radius:var(--uiux-radius-sm);border:1px solid var(--uiux-color-border-strong);background:transparent;color:var(--uiux-color-text);font:700 12px var(--uiux-font-family);letter-spacing:.08em;text-transform:uppercase;cursor:pointer" style-hover="background:var(--uiux-color-surface)" style-focus="outline:none;box-shadow:0 0 0 3px var(--uiux-color-focus-ring)">Cancelar</button>
+        <button onClick="{{ confirmModal }}" style="height:40px;padding:0 18px;border-radius:var(--uiux-radius-sm);border:none;background:var(--uiux-color-primary);color:#fff;font:700 12px var(--uiux-font-family);letter-spacing:.08em;text-transform:uppercase;cursor:pointer" style-hover="background:var(--uiux-color-primary-hover)" style-active="transform:scale(.98)" style-focus="outline:none;box-shadow:0 0 0 3px var(--uiux-color-focus-ring)">Confirmar</button>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+<div onClick="{{ closeDrawer }}" style="position:fixed;inset:0;z-index:90;background:rgba(10,11,12,.5);opacity:{{ ovOp }};pointer-events:{{ ovPe }};transition:opacity 180ms cubic-bezier(.2,.7,.2,1)"></div>
+<aside role="dialog" aria-modal="true" aria-label="Filtros" aria-hidden="{{ drawerHidden }}" style="position:fixed;top:0;right:0;bottom:0;z-index:95;width:380px;max-width:92vw;background:var(--uiux-color-surface);color:var(--uiux-color-text);box-shadow:var(--uiux-shadow-lg);display:flex;flex-direction:column;transform:{{ drawerTf }};transition:transform 280ms cubic-bezier(.16,1,.3,1)">
+  <div style="padding:18px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--uiux-color-border)">
+    <span style="flex:1;font:italic 800 26px/1 var(--uiux-font-display);text-transform:uppercase">Filtros</span>
+    <button onClick="{{ closeDrawer }}" aria-label="Cerrar filtros" style="width:34px;height:34px;border:none;border-radius:5px;background:transparent;color:var(--uiux-color-text-muted);display:flex;align-items:center;justify-content:center;cursor:pointer" style-hover="background:var(--uiux-color-surface-secondary);color:var(--uiux-color-text)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"></path></svg></button>
+  </div>
+  <div style="flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:28px">
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <span style="font:700 11px var(--uiux-font-family);letter-spacing:.14em;text-transform:uppercase;color:var(--uiux-color-text-muted)">Aplicación</span>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;border:1px solid var(--uiux-color-border-strong);border-radius:var(--uiux-radius-sm);overflow:hidden">
+        <sc-for list="{{ appOpts }}" as="ap" hint-placeholder-count="3">
+          <button onClick="{{ ap.onPick }}" aria-pressed="{{ ap.aria }}" style="height:38px;border:none;background:{{ ap.bg }};color:{{ ap.fg }};font:700 12px var(--uiux-font-family);letter-spacing:.08em;text-transform:uppercase;cursor:pointer">{{ ap.label }}</button>
+        </sc-for>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:4px">
+      <span style="font:700 11px var(--uiux-font-family);letter-spacing:.14em;text-transform:uppercase;color:var(--uiux-color-text-muted);padding-bottom:6px">Categoría</span>
+      <sc-for list="{{ catOpts }}" as="co" hint-placeholder-count="5">
+        <button role="checkbox" aria-checked="{{ co.aria }}" onClick="{{ co.onToggle }}" style="display:flex;align-items:center;gap:12px;padding:9px 4px;border:none;background:transparent;color:var(--uiux-color-text);font:500 15px var(--uiux-font-family);text-align:left;cursor:pointer;border-radius:5px" style-hover="background:var(--uiux-color-surface-secondary)">
+          <span style="width:18px;height:18px;border-radius:3px;border:1.5px solid {{ co.boxBorder }};background:{{ co.boxBg }};display:flex;align-items:center;justify-content:center;color:#fff;flex:none"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:{{ co.op }}"><path d="M20 6 9 17l-5-5"></path></svg></span>
+          <span style="flex:1">{{ co.label }}</span>
+          <span style="font:500 12px var(--uiux-font-mono);color:var(--uiux-color-text-muted)">{{ co.n }}</span>
+        </button>
+      </sc-for>
+    </div>
+    <button role="switch" aria-checked="{{ stockAria }}" onClick="{{ toggleStock }}" style="display:flex;align-items:center;gap:12px;padding:0;border:none;background:transparent;color:var(--uiux-color-text);font:500 15px var(--uiux-font-family);cursor:pointer;text-align:left">
+      <span style="flex:1">Solo con stock disponible</span>
+      <span style="width:40px;height:22px;border-radius:999px;background:{{ swBg }};position:relative;transition:background 120ms"><span style="position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transform:{{ swTf }};transition:transform 120ms"></span></span>
+    </button>
+  </div>
+  <div style="padding:14px 20px;display:flex;gap:10px;border-top:1px solid var(--uiux-color-border);background:var(--uiux-color-surface-secondary)">
+    <button onClick="{{ clearFilters }}" style="height:42px;padding:0 16px;border-radius:var(--uiux-radius-sm);border:1px solid var(--uiux-color-border-strong);background:transparent;color:var(--uiux-color-text);font:700 12px var(--uiux-font-family);letter-spacing:.08em;text-transform:uppercase;cursor:pointer" style-hover="background:var(--uiux-color-surface)">Limpiar</button>
+    <button onClick="{{ closeDrawer }}" style="flex:1;height:42px;border-radius:var(--uiux-radius-sm);border:none;background:var(--uiux-color-primary);color:#fff;font:700 12px var(--uiux-font-family);letter-spacing:.08em;text-transform:uppercase;cursor:pointer" style-hover="background:var(--uiux-color-primary-hover)" style-active="transform:scale(.98)">Ver {{ resultCount }}</button>
+  </div>
+</aside>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;light&quot;,&quot;tsType&quot;:&quot;'light'|'dark'&quot;},&quot;density&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;comfortable&quot;,&quot;compact&quot;],&quot;default&quot;:&quot;comfortable&quot;,&quot;tsType&quot;:&quot;'comfortable'|'compact'&quot;},&quot;showCode&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;}}">
+const PARTS = [
+  { id: 1, code: 'BR-4521-AD', name: 'Pastilla de freno delantera', app: 'Volvo FH 460', type: 'Camión', cat: 'Frenos', stock: 42, price: 189990 },
+  { id: 2, code: 'SU-1180-KT', name: 'Amortiguador de cabina', app: 'Scania R450', type: 'Camión', cat: 'Suspensión', stock: 8, price: 246500 },
+  { id: 3, code: 'MT-7702-FL', name: 'Filtro de aceite', app: 'Mercedes-Benz Actros', type: 'Camión', cat: 'Motor', stock: 120, price: 24990 },
+  { id: 4, code: 'EL-3310-AL', name: 'Alternador 24V 110A', app: 'Freightliner Cascadia', type: 'Camión', cat: 'Eléctrico', stock: 0, price: 612000 },
+  { id: 5, code: 'TR-5049-EM', name: 'Kit de embrague 430 mm', app: 'International LT', type: 'Camión', cat: 'Transmisión', stock: 5, price: 1089990 },
+  { id: 6, code: 'BR-4609-DS', name: 'Disco de freno ventilado', app: 'Mercedes-Benz O500', type: 'Bus', cat: 'Frenos', stock: 16, price: 158400 },
+  { id: 7, code: 'SU-2231-BL', name: 'Bolsa de aire suspensión', app: 'Volvo B12R', type: 'Bus', cat: 'Suspensión', stock: 27, price: 132750 },
+  { id: 8, code: 'MT-8840-TB', name: 'Turbocompresor', app: 'Scania K410', type: 'Bus', cat: 'Motor', stock: 3, price: 1490000 }
+];
+const BRANDS = ['Volvo', 'Scania', 'Mercedes-Benz', 'Freightliner', 'International', 'Kenworth', 'Hino', 'Isuzu', 'MAN', 'Iveco', 'Mack', 'Peterbilt'];
+const CATS = ['Frenos', 'Suspensión', 'Motor', 'Eléctrico', 'Transmisión'];
+const money = n => '$ ' + n.toLocaleString('es-CL');
+const RX = {
+  empresa: v => v.trim().length >= 3 || 'Mínimo 3 caracteres.',
+  correo: v => /^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i.test(v.trim()) || 'Ingresa un correo válido (ej. flota@empresa.cl).',
+  tel: v => /^\+?\d[\d\s]{7,14}$/.test(v.trim()) || 'Solo dígitos y espacios, 8 a 15 caracteres.',
+  patente: v => /^[A-Z]{2,4}-?\d{2,4}$/i.test(v.trim()) || 'Formato: 2–4 letras y 2–4 números (ej. CBTR-45).'
+};
+const FIELDS = [
+  { name: 'empresa', label: 'Razón social', ph: 'Transportes Ejemplo SpA' },
+  { name: 'correo', label: 'Correo de flota', ph: 'flota@empresa.cl' },
+  { name: 'tel', label: 'Teléfono', ph: '+56 9 1234 5678' },
+  { name: 'patente', label: 'Patente principal', ph: 'CBTR-45' }
+];
+
+class Component extends DCLogic {
+  state = {
+    theme: null, parts: PARTS, q: '', edits: {}, cols: { app: true, cat: true, price: true }, colsOpen: false,
+    saving: false, savedN: 0,
+    combos: { brands: { open: false, q: '', hi: 0, sel: ['Volvo', 'Scania'] }, cat: { open: false, q: '', hi: 0, sel: ['Frenos'] } },
+    modal: false, confirmed: false,
+    drawer: false, fCats: ['Frenos', 'Motor'], stockOnly: true, fApp: 'Todos',
+    form: { empresa: 'Transportes Andes', correo: 'flota@transportesandes', tel: '+56 9 8123 4567', patente: '' },
+    touched: { correo: true }, serverErr: {}, formStatus: 'idle'
+  };
+  addrRef = React.createRef();
+
+  componentDidMount() {
+    this.onKey = e => {
+      if (e.key !== 'Escape') return;
+      if (this.state.modal) this.setState({ modal: false });
+      else if (this.state.drawer) this.setState({ drawer: false });
+      else if (this.state.colsOpen) this.setState({ colsOpen: false });
+    };
+    document.addEventListener('keydown', this.onKey);
+  }
+  componentWillUnmount() { document.removeEventListener('keydown', this.onKey); clearTimeout(this.t1); clearTimeout(this.t2); }
+  componentDidUpdate(_, prev) {
+    if (!prev.modal && this.state.modal) setTimeout(() => this.addrRef.current && this.addrRef.current.focus(), 0);
+  }
+
+  combo(key, options, multi) {
+    const c = this.state.combos[key];
+    const set = p => this.setState(s => ({ combos: { ...s.combos, [key]: { ...s.combos[key], ...p } } }));
+    const list = options.filter(o => o.toLowerCase().includes(c.q.toLowerCase()));
+    const pick = o => {
+      if (multi) set({ sel: c.sel.includes(o) ? c.sel.filter(x => x !== o) : [...c.sel, o], q: '' });
+      else set({ sel: [o], q: '', open: false });
+    };
+    const onKey = e => {
+      if (e.key === 'ArrowDown') { e.preventDefault(); set({ open: true, hi: Math.min(c.hi + 1, list.length - 1) }); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); set({ hi: Math.max(c.hi - 1, 0) }); }
+      else if (e.key === 'Enter') { e.preventDefault(); if (c.open && list[c.hi]) pick(list[c.hi]); else set({ open: true }); }
+      else if (e.key === 'Escape') { e.stopPropagation(); set({ open: false, q: '' }); }
+      else if (e.key === 'Backspace' && multi && !c.q && c.sel.length) set({ sel: c.sel.slice(0, -1) });
+    };
+    const primary = 'var(--uiux-color-primary)';
+    return {
+      open: c.open, aria: String(c.open), empty: list.length === 0,
+      q: c.q,
+      ph: multi ? (c.sel.length ? '' : 'Buscar marca…') : (c.sel[0] || 'Selecciona…'),
+      border: c.open ? primary : 'var(--uiux-color-border-strong)',
+      ring: c.open ? '0 0 0 3px var(--uiux-color-focus-ring)' : 'none',
+      meta: multi ? `${c.sel.length} de ${options.length} seleccionadas` : '',
+      chips: multi ? c.sel.map(o => ({ label: o, onRemove: e => { e.preventDefault(); set({ sel: c.sel.filter(x => x !== o) }); } })) : [],
+      items: list.map((o, i) => {
+        const sel = c.sel.includes(o), act = i === c.hi;
+        return {
+          label: o, aria: String(sel), op: sel ? 1 : 0,
+          bg: act ? 'var(--uiux-color-surface-secondary)' : 'transparent',
+          bar: act ? `inset 2px 0 0 ${primary}` : 'none',
+          boxBorder: sel ? primary : 'var(--uiux-color-border-strong)', boxBg: sel ? primary : 'transparent',
+          onPick: e => { e.preventDefault(); pick(o); }, onHover: () => set({ hi: i })
+        };
+      }),
+      onInput: e => set({ q: e.target.value, open: true, hi: 0 }),
+      onKey, onFocus: () => set({ open: true }),
+      onBlur: () => setTimeout(() => set({ open: false, q: '' }), 100)
+    };
+  }
+
+  renderVals() {
+    const s = this.state;
+    const theme = s.theme ?? this.props.theme ?? 'light';
+    const compact = (this.props.density ?? 'comfortable') === 'compact';
+    const primary = 'var(--uiux-color-primary)';
+
+    const q = s.q.toLowerCase();
+    const filtered = s.parts.filter(p => !q || `${p.code} ${p.name} ${p.app} ${p.cat}`.toLowerCase().includes(q));
+    const dirtyIds = Object.keys(s.edits).filter(id => String(s.edits[id]) !== String(s.parts.find(p => p.id == id).stock));
+    const dirty = dirtyIds.length;
+    const rows = filtered.map(p => {
+      const val = s.edits[p.id] ?? p.stock;
+      const n = Number(val);
+      const isDirty = dirtyIds.includes(String(p.id));
+      const st = n <= 0 ? ['Agotado', 'var(--uiux-color-danger)'] : n <= 10 ? ['Pocas unidades', 'var(--uiux-color-warning)'] : ['En stock', 'var(--uiux-color-success)'];
+      return {
+        ...p, stock: val, price: money(p.price), stLabel: st[0], stColor: st[1],
+        rowBg: isDirty ? 'color-mix(in srgb, var(--uiux-color-primary) 6%, transparent)' : 'transparent',
+        rowMark: isDirty ? `inset 3px 0 0 ${primary}` : 'none',
+        inputBorder: isDirty ? primary : 'var(--uiux-color-border-strong)',
+        onStock: e => { const v = e.target.value; this.setState(x => ({ edits: { ...x.edits, [p.id]: v }, savedN: 0 })); }
+      };
+    });
+    const colDefs = [['app', 'Aplicación'], ['cat', 'Categoría'], ['price', 'Precio']];
+
+    const save = () => {
+      if (!dirty) return;
+      this.setState({ saving: true });
+      clearTimeout(this.t1);
+      this.t1 = setTimeout(() => this.setState(x => ({
+        saving: false, savedN: dirty, edits: {},
+        parts: x.parts.map(p => x.edits[p.id] !== undefined ? { ...p, stock: Number(x.edits[p.id]) || 0 } : p)
+      })), 650);
+    };
+    const saveMsg = s.saving ? 'POST /catalog · save-stock (data-enhance)…'
+      : dirty ? `${dirty} ${dirty === 1 ? 'fila modificada' : 'filas modificadas'} · sin guardar`
+      : s.savedN ? `Guardado · ${s.savedN} ${s.savedN === 1 ? 'fila actualizada' : 'filas actualizadas'} sin recargar la página`
+      : 'Edita el stock y guarda los cambios en lote.';
+
+    // form
+    const fields = FIELDS.map(f => {
+      const v = s.form[f.name];
+      const r = RX[f.name](v);
+      const touched = s.touched[f.name];
+      const srv = s.serverErr[f.name];
+      const bad = touched && (r !== true || !!srv);
+      const ok = touched && r === true && !srv;
+      return {
+        ...f, value: v, ok, bad, aria: String(bad),
+        border: bad ? 'var(--uiux-color-danger)' : ok ? 'var(--uiux-color-success)' : 'var(--uiux-color-border-strong)',
+        msg: srv || (bad ? r : ''), msgColor: 'var(--uiux-color-danger)',
+        onChange: e => { const val = e.target.value; this.setState(x => ({ form: { ...x.form, [f.name]: val }, touched: { ...x.touched, [f.name]: true }, serverErr: { ...x.serverErr, [f.name]: null }, formStatus: x.formStatus === 'done' ? 'idle' : x.formStatus })); },
+        onBlur: () => this.setState(x => ({ touched: { ...x.touched, [f.name]: true } }))
+      };
+    });
+    const invalidN = FIELDS.filter(f => RX[f.name](s.form[f.name]) !== true).length;
+    const submitForm = e => {
+      e.preventDefault();
+      const all = {}; FIELDS.forEach(f => all[f.name] = true);
+      this.setState({ touched: all });
+      if (invalidN) return;
+      this.setState({ formStatus: 'sending' });
+      clearTimeout(this.t2);
+      this.t2 = setTimeout(() => {
+        if (this.state.form.correo.trim().toLowerCase() === 'flota@transportesandes.cl')
+          this.setState({ formStatus: 'idle', serverErr: { correo: 'Servidor: ya existe una cuenta con este correo.' } });
+        else this.setState({ formStatus: 'done' });
+      }, 800);
+    };
+
+    // drawer
+    const byFilters = p => (s.fApp === 'Todos' || p.type === s.fApp) && (!s.stockOnly || p.stock > 0);
+    const resN = s.parts.filter(p => byFilters(p) && (!s.fCats.length || s.fCats.includes(p.cat))).length;
+    const filterCount = s.fCats.length + (s.stockOnly ? 1 : 0) + (s.fApp !== 'Todos' ? 1 : 0);
+
+    return {
+      theme, isDark: theme === 'dark', isLight: theme !== 'dark', themeLabel: theme === 'dark' ? 'Claro' : 'Oscuro',
+      toggleTheme: () => this.setState({ theme: theme === 'dark' ? 'light' : 'dark' }),
+      showCode: this.props.showCode ?? true,
+      tokens: [
+        ['Primary', '--uiux-color-primary'], ['Primary hover', '--uiux-color-primary-hover'], ['Surface', '--uiux-color-surface'],
+        ['Surface secondary', '--uiux-color-surface-secondary'], ['Text', '--uiux-color-text'], ['Text muted', '--uiux-color-text-muted'],
+        ['Border', '--uiux-color-border'], ['Focus ring', '--uiux-color-focus-ring']
+      ].map(([label, name]) => ({ label, name, v: `var(${name})` })),
+
+      q: s.q, onQuery: e => this.setState({ q: e.target.value }),
+      gridCount: `${filtered.length} / ${s.parts.length} filas · 0 ms`,
+      rows, noRows: rows.length === 0, cellPad: compact ? '7px 16px' : '12px 16px',
+      cols: s.cols, colsOpen: s.colsOpen, colsExpanded: String(s.colsOpen),
+      toggleCols: () => this.setState({ colsOpen: !s.colsOpen }),
+      colList: colDefs.map(([k, label]) => ({
+        label, aria: String(s.cols[k]), op: s.cols[k] ? 1 : 0,
+        boxBorder: s.cols[k] ? primary : 'var(--uiux-color-border-strong)', boxBg: s.cols[k] ? primary : 'transparent',
+        onToggle: () => this.setState(x => ({ cols: { ...x.cols, [k]: !x.cols[k] } }))
+      })),
+      noDirty: !dirty || s.saving, discardOp: dirty ? 1 : 0.45,
+      discard: () => this.setState({ edits: {} }),
+      save, saveLabel: s.saving ? 'Guardando…' : 'Guardar cambios',
+      saveBg: dirty ? primary : 'var(--uiux-color-border)', saveFg: dirty ? '#fff' : 'var(--uiux-color-text-muted)',
+      saveMsg, saveMsgColor: s.savedN && !dirty ? 'var(--uiux-color-success)' : 'var(--uiux-color-text-muted)',
+
+      brands: this.combo('brands', BRANDS, true), cat: this.combo('cat', CATS, false),
+
+      modalOpen: s.modal, openModal: () => this.setState({ modal: true }), closeModal: () => this.setState({ modal: false }),
+      stop: e => e.stopPropagation(), addrRef: this.addrRef,
+      confirmModal: () => this.setState({ modal: false, confirmed: true }),
+      orderStatus: s.confirmed ? 'Despacho confirmado' : 'Pendiente de confirmación',
+      orderColor: s.confirmed ? 'var(--uiux-color-success)' : 'var(--uiux-color-warning)',
+      orderItems: [{ code: 'BR-4521-AD', name: 'Pastilla de freno delantera', qty: 4 }, { code: 'MT-7702-FL', name: 'Filtro de aceite', qty: 12 }, { code: 'TR-5049-EM', name: 'Kit de embrague 430 mm', qty: 1 }],
+
+      fields, submitForm, formDone: s.formStatus === 'done',
+      sendLabel: s.formStatus === 'sending' ? 'Enviando…' : 'Crear cuenta', sendOp: s.formStatus === 'sending' ? 0.7 : 1,
+      formSummary: invalidN ? `${invalidN} ${invalidN === 1 ? 'campo requiere' : 'campos requieren'} atención` : 'Todos los campos son válidos',
+
+      openDrawer: () => this.setState({ drawer: true }), closeDrawer: () => this.setState({ drawer: false }),
+      drawerAria: String(s.drawer), drawerHidden: String(!s.drawer),
+      drawerTf: s.drawer ? 'translateX(0)' : 'translateX(105%)', ovOp: s.drawer ? 1 : 0, ovPe: s.drawer ? 'auto' : 'none',
+      filterCount, resultCount: `${resN} ${resN === 1 ? 'repuesto' : 'repuestos'}`,
+      activeChips: [...(s.fApp !== 'Todos' ? [s.fApp] : []), ...s.fCats, ...(s.stockOnly ? ['En stock'] : [])],
+      appOpts: ['Todos', 'Camión', 'Bus'].map(a => ({
+        label: a, aria: String(s.fApp === a), bg: s.fApp === a ? 'var(--uiux-color-text)' : 'transparent', fg: s.fApp === a ? 'var(--uiux-color-surface)' : 'var(--uiux-color-text)',
+        onPick: () => this.setState({ fApp: a })
+      })),
+      catOpts: CATS.map(c => {
+        const on = s.fCats.includes(c);
+        return {
+          label: c, aria: String(on), op: on ? 1 : 0, n: s.parts.filter(p => p.cat === c && byFilters(p)).length,
+          boxBorder: on ? primary : 'var(--uiux-color-border-strong)', boxBg: on ? primary : 'transparent',
+          onToggle: () => this.setState(x => ({ fCats: on ? x.fCats.filter(y => y !== c) : [...x.fCats, c] }))
+        };
+      }),
+      stockAria: String(s.stockOnly), toggleStock: () => this.setState({ stockOnly: !s.stockOnly }),
+      swBg: s.stockOnly ? primary : 'var(--uiux-color-border-strong)', swTf: s.stockOnly ? 'translateX(18px)' : 'translateX(0)',
+      clearFilters: () => this.setState({ fCats: [], stockOnly: false, fApp: 'Todos' })
+    };
+  }
+}
+</script>
+</body>
+</html>

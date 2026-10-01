@@ -1,0 +1,153 @@
+@namespace TDComponents.Components
+
+<td-menuapp class="td-menuapp" data-active="@ActivePath" data-remember="@(RememberExpanded ? "true" : "false")" data-stay="@(Stay ? "true" : null)">
+    @if (Searchable)
+    {
+        <div class="td-menuapp__search">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+            <input type="search" placeholder="@SearchPlaceholder" aria-label="Buscar en el menú" aria-controls="@_treeId" data-td-menuapp-q />
+        </div>
+    }
+    <div id="@_treeId" class="td-menuapp__tree" role="tree" aria-label="Módulos">
+        @foreach (var row in Rows)
+        {
+            <div role="treeitem"
+                 class="td-menuapp__row @(row.Href == ActivePath ? "is-on" : null)"
+                 data-td-menu-row="@row.Id"
+                 data-parent="@row.Parent"
+                 data-depth="@row.Depth"
+                 data-href="@row.Href"
+                 data-label="@row.Text"
+                 tabindex="@(row.Depth == 0 && row.Id == Rows[0].Id ? 0 : -1)"
+                 aria-expanded="@(row.ParentNode ? (row.Open ? "true" : "false") : null)"
+                 aria-level="@row.Depth + 1"
+                 aria-current="@(row.Href == ActivePath ? "page" : null)"
+                 style="--d:@row.Depth"
+                 hidden="@(row.Hidden ? "hidden" : null)"
+                 title="@row.Href">
+                @if (row.ParentNode)
+                {
+                    <svg class="td-menuapp__chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
+                }
+                else
+                {
+                    <span class="td-menuapp__dot" aria-hidden="true"></span>
+                }
+                @if (row.Depth == 0)
+                {
+                    @Icon(row.Icon)
+                }
+                <span>@row.Text</span>
+                @if (!string.IsNullOrWhiteSpace(row.Badge))
+                {
+                    <em>@row.Badge</em>
+                }
+            </div>
+        }
+        <p class="td-menuapp__empty" hidden data-td-menuapp-empty>Sin opciones</p>
+    </div>
+    <p class="td-menuapp__path" data-td-menuapp-path>Ruta activa: @ActivePath</p>
+    <p class="td-menuapp__meta">Fuente · menu.json · <span data-td-menuapp-json-state>JSON válido</span></p>
+    @if (ShowSource)
+    {
+        <label class="td-menuapp__source">
+            <span>Módulo → options · Opción padre → children (sin path) · Opción final → path</span>
+            <textarea data-td-menuapp-json rows="8" spellcheck="false">@SourceJson</textarea>
+        </label>
+    }
+</td-menuapp>
+
+@code {
+    /// <summary>Muestra el buscador de opciones. El defecto es verdadero.</summary>
+    [Parameter] public bool Searchable { get; set; } = true;
+    /// <summary>Texto del buscador vacío.</summary>
+    [Parameter] public string SearchPlaceholder { get; set; } = "Buscar opción…";
+    /// <summary>Ruta de la opción actual. Se compara con Href.</summary>
+    [Parameter] public string? ActivePath { get; set; }
+    /// <summary>Abre el grupo que contiene la ruta actual. El defecto es verdadero.</summary>
+    [Parameter] public bool ExpandActive { get; set; } = true;
+    /// <summary>Recuerda qué grupos quedaron abiertos. El defecto es verdadero.</summary>
+    [Parameter] public bool RememberExpanded { get; set; } = true;
+    /// <summary>El menú permanece visible.</summary>
+    [Parameter] public bool Stay { get; set; }
+    /// <summary>Muestra el origen de cada opción.</summary>
+    [Parameter] public bool ShowSource { get; set; }
+    /// <summary>Árbol de módulos. Children son las opciones internas.</summary>
+    [Parameter] public IReadOnlyList<TDMenuItem> Modules { get; set; } = [];
+
+    private readonly string _treeId = $"td-menuapp-{Guid.NewGuid():N}";
+
+    private string SourceJson
+    {
+        get
+        {
+            var modules = Modules.Select(item => new
+            {
+                label = item.Text,
+                icon = item.Icon,
+                path = item.Href,
+                badge = item.Shortcut,
+                options = Map(item.Children)
+            });
+            return System.Text.Json.JsonSerializer.Serialize(modules, new System.Text.Json.JsonSerializerOptions
+            {
+                WriteIndented = true,
+                DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
+            });
+        }
+    }
+
+    private static object? Map(IReadOnlyList<TDMenuItem>? items) =>
+        items?.Select(item => new
+        {
+            label = item.Text,
+            path = item.Href,
+            badge = item.Shortcut,
+            children = Map(item.Children)
+        }).ToArray();
+
+    private IReadOnlyList<MenuRow> Rows => Flatten(Modules, null, 0, true, ActivePath, ExpandActive);
+
+    private static List<MenuRow> Flatten(IReadOnlyList<TDMenuItem> items, string? parent, int depth, bool visible, string? active, bool expandActive)
+    {
+        var rows = new List<MenuRow>();
+        var index = 0;
+        foreach (var item in items)
+        {
+            var id = $"{parent ?? "root"}-{index}";
+            index++;
+            var kids = item.Children is { Count: > 0 };
+            var open = kids && (index == 1 && depth == 0 || (expandActive && Contains(item, active)));
+            rows.Add(new MenuRow(id, parent, depth, item.Text, kids ? null : item.Href, item.Shortcut, item.Icon, kids, open, !visible));
+            if (kids)
+            {
+                rows.AddRange(Flatten(item.Children!, id, depth + 1, visible && open, active, expandActive));
+            }
+        }
+        return rows;
+    }
+
+    private static bool Contains(TDMenuItem item, string? active)
+    {
+        if (string.IsNullOrEmpty(active))
+        {
+            return false;
+        }
+        if (item.Href == active)
+        {
+            return true;
+        }
+        return item.Children?.Any(child => Contains(child, active)) == true;
+    }
+
+    private static MarkupString Icon(string? name) => new(name switch
+    {
+        "box" => "<svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path d=\"M21 8 12 3 3 8l9 5 9-5Z\"></path><path d=\"M3 8v8l9 5 9-5V8\"></path></svg>",
+        "truck" => "<svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path d=\"M3 7h11v8H3z\"></path><path d=\"M14 10h4l3 3v2h-7z\"></path></svg>",
+        "file" => "<svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\"></path><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"></path></svg>",
+        "gear" => "<svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"3\"></circle><path d=\"M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4\"></path></svg>",
+        _ => "<svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><circle cx=\"9\" cy=\"20\" r=\"1\"></circle><circle cx=\"18\" cy=\"20\" r=\"1\"></circle><path d=\"M3 4h2l2.4 11h11.2l1.6-7H7\"></path></svg>"
+    });
+
+    private sealed record MenuRow(string Id, string? Parent, int Depth, string Text, string? Href, string? Badge, string? Icon, bool ParentNode, bool Open, bool Hidden);
+}

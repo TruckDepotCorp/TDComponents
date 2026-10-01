@@ -1,0 +1,98 @@
+@namespace TDComponents.Components
+
+<nav class="td-pager" aria-label="Paginación">
+    <div class="td-pager__pages">
+        @if (Page > 1 && HrefForPage is not null)
+        {
+            <a class="td-pager__nav" href="@HrefForPage(Page - 1)" aria-label="Página anterior">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
+            </a>
+        }
+        else
+        {
+            <span class="td-pager__nav" aria-disabled="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
+            </span>
+        }
+
+        @{
+            var last = 0;
+        }
+        @foreach (var number in PageNumbers())
+        {
+            if (last > 0 && number - last > 1)
+            {
+                <span class="td-pager__gap" aria-hidden="true">…</span>
+            }
+            last = number;
+            if (number == Page)
+            {
+                <span class="td-pager__page is-current" aria-current="page">@number</span>
+            }
+            else if (HrefForPage is not null)
+            {
+                <a class="td-pager__page" href="@HrefForPage(number)">@number</a>
+            }
+        }
+
+        @if (Page < Pages && HrefForPage is not null)
+        {
+            <a class="td-pager__nav" href="@HrefForPage(Page + 1)" aria-label="Página siguiente">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
+            </a>
+        }
+        else
+        {
+            <span class="td-pager__nav" aria-disabled="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
+            </span>
+        }
+    </div>
+    <p class="td-pager__info">Página @Page de @Pages (@Count @(Count == 1 ? ItemText : ItemsText))</p>
+    @if (PageSizeOptions is { Count: > 0 } && !string.IsNullOrEmpty(SizeFormId))
+    {
+        <label class="td-pager__size">
+            @RowsText
+            <select name="@SizeFieldName" form="@SizeFormId" aria-label="@RowsText" onchange="this.form.requestSubmit()">
+                @foreach (var option in PageSizeOptions)
+                {
+                    <option value="@option" selected="@(option == PageSize)">@option</option>
+                }
+            </select>
+        </label>
+    }
+</nav>
+
+@code {
+    /// <summary>Cantidad total de ítems, no de páginas.</summary>
+    [Parameter] public int Count { get; set; }
+    /// <summary>Página actual, desde 1.</summary>
+    [Parameter] public int Page { get; set; } = 1;
+    /// <summary>Ítems por página. El defecto es 10.</summary>
+    [Parameter] public int PageSize { get; set; } = 10;
+    /// <summary>Tamaños que la persona puede elegir. Nulo oculta el selector.</summary>
+    [Parameter] public IReadOnlyList<int>? PageSizeOptions { get; set; }
+    /// <summary>Construye la URL de una página. Sin ella los controles no navegan.</summary>
+    [Parameter] public Func<int, string>? HrefForPage { get; set; }
+    /// <summary>Nombre del campo de tamaño de página. El defecto es size.</summary>
+    [Parameter] public string? SizeFieldName { get; set; } = "size";
+    /// <summary>Id del formulario al que pertenece ese campo.</summary>
+    [Parameter] public string? SizeFormId { get; set; }
+    /// <summary>Nombre de un solo ítem en el resumen.</summary>
+    [Parameter] public string ItemText { get; set; } = "ítem";
+    /// <summary>Nombre de varios ítems en el resumen.</summary>
+    [Parameter] public string ItemsText { get; set; } = "ítems";
+    /// <summary>Etiqueta del selector de tamaño.</summary>
+    [Parameter] public string RowsText { get; set; } = "Filas";
+
+    private int Pages => Math.Max(1, (int)Math.Ceiling(Count / (double)Math.Max(1, PageSize)));
+
+    private IEnumerable<int> PageNumbers()
+    {
+        var pages = Pages;
+        return new[] { 1, Page - 1, Page, Page + 1, pages }
+            .Where(number => number >= 1 && number <= pages)
+            .Distinct()
+            .Order();
+    }
+}

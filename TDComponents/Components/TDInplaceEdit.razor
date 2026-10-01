@@ -1,0 +1,67 @@
+@namespace TDComponents.Components
+
+<td-inplace class="td-inplace-edit" data-mode="@(AutoCommit ? "auto" : "confirm")" data-field="@Field">
+    <button type="button"
+            class="td-inplace__value @(Multiline ? "is-note" : null)"
+            data-td-inplace-view
+            title="@(AutoCommit ? "Doble clic para editar" : "Clic para editar")"
+            aria-label="@($"{Label}: {Value}")">
+        <span data-td-inplace-text>@Value</span>
+        @if (!AutoCommit)
+        {
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 20h9"></path><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path></svg>
+        }
+        <span class="td-inplace__saved" hidden data-td-inplace-saved>✓ Guardado</span>
+    </button>
+    <div class="td-inplace__edit" hidden data-td-inplace-edit>
+        @if (Options is { Count: > 0 })
+        {
+            <select data-td-inplace-input aria-label="@Label">
+                @foreach (var option in Options)
+                {
+                    <option value="@option.Value" selected="@(option.Value == Value || option.Label == Value)">@option.Label</option>
+                }
+            </select>
+        }
+        else if (Multiline)
+        {
+            <textarea data-td-inplace-input rows="3" aria-label="@Label">@Value</textarea>
+        }
+        else
+        {
+            <input data-td-inplace-input value="@Value" aria-label="@Label" inputmode="@(Numeric ? "decimal" : null)" />
+        }
+        @if (!AutoCommit)
+        {
+            <button type="button" data-td-inplace-ok aria-label="Confirmar">✓</button>
+            <button type="button" data-td-inplace-cancel aria-label="Cancelar">✕</button>
+        }
+    </div>
+    <input type="hidden" name="@Name" value="@Value" data-td-inplace-value />
+</td-inplace>
+
+@code {
+    /// <summary>Nombre del campo oculto que envía el valor editado.</summary>
+    [Parameter] public string Name { get; set; } = "valor";
+
+    /// <summary>Identificador del dato en <c>data-field</c>. No es el texto visible. Sirve para distinguir varios editores en la misma página.</summary>
+    [Parameter] public string Field { get; set; } = "Campo";
+
+    /// <summary>Nombre accesible del valor, por ejemplo «Bodega».</summary>
+    [Parameter] public string Label { get; set; } = "Valor";
+
+    /// <summary>Texto inicial, antes de editar.</summary>
+    [Parameter] public string Value { get; set; } = "";
+
+    /// <summary>El doble clic abre el editor y el valor se guarda al salir, sin botones de confirmar. En falso, un clic abre y hay que confirmar o cancelar.</summary>
+    [Parameter] public bool AutoCommit { get; set; }
+
+    /// <summary>Usa un área de varias líneas. Se ignora si <see cref="Options"/> tiene elementos.</summary>
+    [Parameter] public bool Multiline { get; set; }
+
+    /// <summary>Pide el teclado decimal. Se ignora si <see cref="Options"/> tiene elementos.</summary>
+    [Parameter] public bool Numeric { get; set; }
+
+    /// <summary>Si tiene elementos, el editor es una lista cerrada y no se usan <see cref="Multiline"/> ni <see cref="Numeric"/>.</summary>
+    [Parameter] public IReadOnlyList<TDOption>? Options { get; set; }
+}

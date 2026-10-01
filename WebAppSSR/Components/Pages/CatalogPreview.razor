@@ -1,0 +1,74 @@
+@using WebAppSSR.Catalog
+
+<div class="td-preview">
+    <p class="td-section-title">Vista del diseño</p>
+    <div class="td-preview__stage">
+        @switch (Id)
+        {
+            case "aichat":
+            case "chat":
+                <div class="td-preview__chat">
+                    <div class="td-preview__bubble td-preview__bubble--in">¿Tienen pastillas para Volvo FH 460?</div>
+                    <div class="td-preview__bubble td-preview__bubble--out">Sí. BR-4521-AD, 18 unidades en Santiago. ¿Las reservo?</div>
+                    <div class="td-preview__composer">Pregunta por un repuesto…</div>
+                </div>
+                break;
+            case "autocomplete":
+            case "esearch":
+                <div class="td-preview__search">
+                    <span>Pastilla Volvo</span>
+                    <ul>
+                        <li><mark>Pastilla</mark> de freno delantera · BR-4521-AD</li>
+                        <li><mark>Pastilla</mark> trasera · BR-4528-AT</li>
+                        <li>Categoría Frenos</li>
+                    </ul>
+                </div>
+                break;
+            case "signature":
+                <div class="td-preview__sign">Firma aquí</div>
+                break;
+            case "qrcode":
+            case "barcode":
+                <div class="td-preview__code">
+                    <div class="td-preview__qr" aria-hidden="true"></div>
+                    <code>BR-4521-AD</code>
+                </div>
+                break;
+            case "scheduler":
+                <div class="td-preview__week">
+                    @foreach (var day in new[] { "Lun", "Mar", "Mié", "Jue", "Vie" })
+                    {
+                        <div>
+                            <strong>@day</strong>
+                            <span class="td-preview__event">OT-14 · 09:00</span>
+                        </div>
+                    }
+                </div>
+                break;
+            case "menu":
+            case "navmenu":
+            case "panelmenu":
+            case "pmenu":
+            case "profilemenu":
+            case "toolbar":
+                <div class="td-preview__menu">
+                    <span class="is-on">Catálogo</span>
+                    <span>Pedidos</span>
+                    <span>Soporte</span>
+                </div>
+                break;
+            default:
+                <div class="td-preview__generic">
+                    <strong>@Item?.Title</strong>
+                    <span>@Item?.Description</span>
+                </div>
+                break;
+        }
+    </div>
+    <p class="td-preview__note">El menú y esta página siguen el prototipo. La hidratación nativa se conecta al custom element cuando el control está en el RCL.</p>
+</div>
+
+@code {
+    [Parameter] public string Id { get; set; } = "";
+    private CatalogItem? Item => ComponentCatalog.Find(Id);
+}

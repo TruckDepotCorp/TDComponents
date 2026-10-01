@@ -1,0 +1,113 @@
+@namespace TDComponents.Components
+
+<div class="td-speed-host">
+    <td-speed class="td-speed" data-type="@Type" data-mask="@(Mask ? "true" : null)" data-count="@Items.Count">
+        @if (Mask)
+        {
+            <div class="td-speed__mask" hidden data-td-speed-mask></div>
+        }
+        <div class="td-speed__anchor">
+            <div class="td-speed__actions" hidden data-td-speed-actions>
+                @{
+                    var index = 0;
+                }
+                @foreach (var item in Items)
+                {
+                    var (x, y) = Offset(index, Items.Count);
+                    <a class="td-speed__item"
+                       href="@(item.Href ?? "#")"
+                       style="@($"--x:{x.ToString(System.Globalization.CultureInfo.InvariantCulture)}px;--y:{y.ToString(System.Globalization.CultureInfo.InvariantCulture)}px")"
+                       data-place="@Place(x, y)"
+                       data-td-speed-item
+                       aria-label="@item.Text"
+                       title="@item.Text">
+                        @((MarkupString)(item.Icon ?? IconFor(item.Text)))
+                        <span>@item.Text</span>
+                    </a>
+                    index++;
+                }
+            </div>
+            <button type="button" class="td-fab" data-td-speed aria-expanded="false" aria-haspopup="true" aria-label="@AriaLabel">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+            </button>
+        </div>
+    </td-speed>
+    <p class="td-speed__status" data-td-speed-status role="status">Enter abre · flechas recorren las acciones · Esc cierra y devuelve el foco</p>
+</div>
+
+@code {
+    /// <summary>Nombre accesible del botón que abre las acciones.</summary>
+    [Parameter] public string AriaLabel { get; set; } = "Acciones rápidas";
+
+    /// <summary>Disposición: <c>linear</c> hacia arriba, <c>right</c> hacia la derecha, <c>circle</c>, <c>semi</c> o <c>quarter</c>. El defecto es <c>linear</c>.</summary>
+    [Parameter] public string Type { get; set; } = "linear";
+
+    /// <summary>Oscurece el resto de la página mientras el menú está abierto.</summary>
+    [Parameter] public bool Mask { get; set; }
+
+    /// <summary>Acciones. De cada <see cref="TDMenuItem"/> se usan el texto, el destino y el ícono.</summary>
+    [Parameter] public IReadOnlyList<TDMenuItem> Items { get; set; } = [];
+
+    private (double X, double Y) Offset(int index, int count)
+    {
+        var step = Math.Max(1, count - 1);
+        if (Type is "right")
+        {
+            return (72 * (index + 1), 0);
+        }
+
+        if (Type is "circle")
+        {
+            var full = index * (Math.PI * 2 / Math.Max(1, count));
+            return (Math.Cos(full) * 132, Math.Sin(full) * 132);
+        }
+
+        if (Type is "semi")
+        {
+            var arc = (180 + index * (180d / step)) * Math.PI / 180;
+            return (Math.Cos(arc) * 168, Math.Sin(arc) * 168);
+        }
+
+        if (Type is "quarter")
+        {
+            var arc = (180 + index * (90d / step)) * Math.PI / 180;
+            return (Math.Cos(arc) * 176, Math.Sin(arc) * 176);
+        }
+
+        return (0, -72 * (index + 1));
+    }
+
+    private string Place(double x, double y)
+    {
+        if (Type is "mask")
+        {
+            return "left";
+        }
+
+        if (Type is "linear")
+        {
+            return "right";
+        }
+
+        if (Type is "right")
+        {
+            return "above";
+        }
+
+        if (Math.Abs(x) >= 40)
+        {
+            return x < 0 ? "left" : "right";
+        }
+
+        return y > 0 ? "below" : "above";
+    }
+
+    private static string IconFor(string text) => text switch
+    {
+        "Llamar" => "<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path d=\"M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z\"></path></svg>",
+        "WhatsApp" => "<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path d=\"M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z\"></path></svg>",
+        "Cotizar" => "<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\"></path><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"></path></svg>",
+        "Rastrear" => "<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path d=\"M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2\"></path><path d=\"M15 18H9\"></path><path d=\"M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14\"></path><circle cx=\"7\" cy=\"18\" r=\"2\"></circle><circle cx=\"17\" cy=\"18\" r=\"2\"></circle></svg>",
+        _ => "<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><circle cx=\"18\" cy=\"5\" r=\"3\"></circle><circle cx=\"6\" cy=\"12\" r=\"3\"></circle><circle cx=\"18\" cy=\"19\" r=\"3\"></circle><path d=\"m8.6 13.5 6.8 4M15.4 6.5l-6.8 4\"></path></svg>"
+    };
+}

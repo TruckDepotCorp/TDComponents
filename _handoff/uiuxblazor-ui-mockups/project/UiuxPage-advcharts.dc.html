@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="background:var(--uiux-color-surface);border:1px solid var(--uiux-color-border);border-radius:var(--uiux-radius-lg);box-shadow:var(--uiux-shadow-sm);padding:22px;display:flex;flex-direction:column;gap:16px;font-family:var(--uiux-font-family);color:var(--uiux-color-text)">
+<div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap"><span style="font:700 16px var(--uiux-font-family)">{{ ca.title }}</span><span style="font:500 12px var(--uiux-font-mono);color:var(--uiux-color-text-muted)">{{ ca.sub }}</span></div>
+<div style="width:100%;overflow-x:auto">{{ ca.svg }}</div>
+<span role="status" style="font:500 13px var(--uiux-font-mono);color:var(--uiux-color-text-muted);min-height:18px">{{ ca.read }}</span>
+<div style="display:flex;flex-direction:column;border:1px solid var(--uiux-color-border);border-radius:var(--uiux-radius-sm);overflow:hidden"><sc-for list="{{ ca.ins }}" as="i" hint-placeholder-count="3"><div style="padding:11px 14px;background:var(--uiux-color-surface);display:flex;gap:10px;align-items:flex-start;border-top:{{ i.bt }}"><span style="width:6px;height:6px;margin-top:7px;border-radius:50%;background:var(--uiux-color-primary);flex:none"></span><span style="font:500 13.5px/1.45 var(--uiux-font-family)">{{ i.t }}</span></div></sc-for></div>
+</div>
+</x-dc>
+</body>
+</html>

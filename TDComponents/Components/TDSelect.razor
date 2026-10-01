@@ -1,0 +1,197 @@
+@namespace TDComponents.Components
+
+<td-select class="td-select"
+           data-name="@Name"
+           data-multiple="@(Multiple ? "true" : null)"
+           data-searchable="@(Searchable ? "true" : null)"
+           data-chips="@(Chips ? "true" : "false")"
+           data-max-chips="@MaxChips"
+           data-max-selected="@(MaxSelected > 0 ? MaxSelected : null)"
+           data-summary="@Summary"
+           data-placeholder="@Placeholder"
+           data-nullable="@(Clearable ? "true" : null)">
+    @if (!string.IsNullOrWhiteSpace(Label))
+    {
+        <TDLabel For="@_id" Required="Required">@Label</TDLabel>
+    }
+    @foreach (var value in SelectedValues)
+    {
+        <input type="hidden" name="@Name" value="@value" data-td-select-value />
+    }
+    <div id="@_id"
+         class="td-select__trigger @(Disabled ? "is-disabled" : null) @(Clearable && SelectedValues.Count > 0 ? "has-clear" : null)"
+         role="combobox"
+         tabindex="@(Disabled ? -1 : 0)"
+         aria-expanded="false"
+         aria-haspopup="listbox"
+         aria-controls="@_listId"
+         aria-disabled="@(Disabled ? "true" : "false")"
+         data-td-select-open>
+        <span class="td-select__chips">
+            @if (Multiple && Chips && SelectedValues.Count > 0)
+            {
+                @foreach (var value in SelectedValues.Take(MaxChips))
+                {
+                    var option = Options.FirstOrDefault(o => o.Value == value);
+                    <span class="td-chip td-chip--sm" data-td-select-chip="@value">
+                        @(option?.Label ?? value)
+                        <button type="button" class="td-chip__remove" data-td-select-remove="@value" aria-label="@($"Quitar {option?.Label ?? value}")">×</button>
+                    </span>
+                }
+                @if (SelectedValues.Count > MaxChips)
+                {
+                    <span class="td-chip td-chip--sm" data-td-select-more>+@(SelectedValues.Count - MaxChips)</span>
+                }
+            }
+            else
+            {
+                <span class="td-select__text @(string.IsNullOrEmpty(DisplayText) ? "is-placeholder" : null)">@(DisplayText ?? Placeholder)</span>
+            }
+        </span>
+        @if (Clearable && !Disabled)
+        {
+            <button type="button" class="td-select__clear" data-td-select-clear aria-label="Borrar selección" title="Borrar" hidden="@(SelectedValues.Count == 0 ? "hidden" : null)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"></path></svg>
+            </button>
+        }
+        <span class="td-select__caret" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg>
+        </span>
+    </div>
+    <div class="td-select__panel" id="@_listId" hidden data-td-select-panel>
+        @if (Searchable)
+        {
+            <div class="td-select__search">
+                <input type="search" placeholder="Buscar" aria-label="Buscar" data-td-select-query />
+            </div>
+        }
+        @if (SelectAll && Multiple)
+        {
+            <div class="td-select__all">
+                <button type="button" data-td-select-all>Todas</button>
+                <button type="button" data-td-select-none>Ninguna</button>
+            </div>
+        }
+        <div class="td-select__list" role="listbox" aria-multiselectable="@(Multiple ? "true" : null)">
+            @{
+                string? group = null;
+            }
+            @foreach (var option in Options)
+            {
+                if (option.Group is { } next && next != group)
+                {
+                    group = next;
+                    @if (GroupSelect)
+                    {
+                        <button type="button" class="td-select__group" data-td-select-group="@group">@group</button>
+                    }
+                    else
+                    {
+                        <div class="td-select__group">@group</div>
+                    }
+                }
+                <button type="button"
+                        class="td-select__option @(SelectedValues.Contains(option.Value) ? "is-on" : null)"
+                        role="option"
+                        aria-selected="@(SelectedValues.Contains(option.Value) ? "true" : "false")"
+                        disabled="@option.Disabled"
+                        data-locked="@(option.Disabled ? "true" : null)"
+                        data-td-select-pick="@option.Value"
+                        data-group="@option.Group"
+                        data-label="@option.Label">
+                    <span>@option.Label</span>
+                    @if (!string.IsNullOrWhiteSpace(option.Hint))
+                    {
+                        <span class="td-select__sub">@option.Hint</span>
+                    }
+                </button>
+            }
+            <p class="td-select__empty" hidden data-td-select-empty>Sin resultados</p>
+        </div>
+    </div>
+    @if (!string.IsNullOrWhiteSpace(Hint))
+    {
+        <p class="td-field__hint">@Hint</p>
+    }
+</td-select>
+
+@code {
+    private readonly string _id = $"td-sel-{Guid.NewGuid():N}";
+    private string _listId => $"{_id}-list";
+
+    /// <summary>Nombre de cada valor enviado. En selección múltiple se repite, una vez por valor.</summary>
+    [Parameter] public string Name { get; set; } = "valor";
+
+    /// <summary>Etiqueta del desplegable.</summary>
+    [Parameter] public string? Label { get; set; }
+
+    /// <summary>Ayuda bajo el control.</summary>
+    [Parameter] public string? Hint { get; set; }
+
+    /// <summary>Texto que se ve cuando no hay selección.</summary>
+    [Parameter] public string Placeholder { get; set; } = "Elegir";
+
+    /// <summary>Opciones. <c>Group</c> agrupa, <c>Hint</c> es la segunda línea y <c>Disabled</c> bloquea esa opción.</summary>
+    [Parameter] public IReadOnlyList<TDOption> Options { get; set; } = [];
+
+    /// <summary>Selección simple inicial. No uses <c>@bind-Value</c>: este componente no tiene <c>ValueChanged</c>.</summary>
+    [Parameter] public string? Value { get; set; }
+
+    /// <summary>Selección múltiple inicial. Úsala junto con <see cref="Multiple"/>.</summary>
+    [Parameter] public IReadOnlyList<string> Values { get; set; } = [];
+
+    /// <summary>Permite elegir varias opciones.</summary>
+    [Parameter] public bool Multiple { get; set; }
+
+    /// <summary>Muestra una búsqueda dentro del panel. Úsala cuando hay más de unas ocho opciones.</summary>
+    [Parameter] public bool Searchable { get; set; }
+
+    /// <summary>Marca la etiqueta como obligatoria.</summary>
+    [Parameter] public bool Required { get; set; }
+
+    /// <summary>El panel no se abre.</summary>
+    [Parameter] public bool Disabled { get; set; }
+
+    /// <summary>Cantidad de chips visibles en selección múltiple. El resto se resume como <c>+N</c>. El defecto es 8.</summary>
+    [Parameter] public int MaxChips { get; set; } = 8;
+
+    /// <summary>Tope de opciones elegidas. Cero, el defecto, significa que no hay tope.</summary>
+    [Parameter] public int MaxSelected { get; set; }
+
+    /// <summary>Muestra el botón que vacía la selección.</summary>
+    [Parameter] public bool Clearable { get; set; }
+
+    /// <summary>En selección múltiple muestra un chip por valor. En falso muestra el texto de <see cref="Summary"/>.</summary>
+    [Parameter] public bool Chips { get; set; } = true;
+
+    /// <summary>Muestra los botones Todas y Ninguna. Solo actúan si <see cref="Multiple"/> es verdadero.</summary>
+    [Parameter] public bool SelectAll { get; set; }
+
+    /// <summary>El encabezado de cada <c>Group</c> se puede pulsar para elegir el grupo.</summary>
+    [Parameter] public bool GroupSelect { get; set; }
+
+    /// <summary>Texto del modo múltiple sin chips. <c>{0}</c> es la cantidad. Si se omite, el texto es «{0} seleccionadas».</summary>
+    [Parameter] public string? Summary { get; set; }
+
+    private IReadOnlyList<string> SelectedValues =>
+        Multiple ? Values : string.IsNullOrEmpty(Value) ? [] : [Value];
+
+    private string? DisplayText
+    {
+        get
+        {
+            if (Multiple)
+            {
+                if (SelectedValues.Count == 0)
+                {
+                    return null;
+                }
+
+                var format = string.IsNullOrWhiteSpace(Summary) ? "{0} seleccionadas" : Summary;
+                return format.Replace("{0}", SelectedValues.Count.ToString());
+            }
+
+            return Options.FirstOrDefault(o => o.Value == Value)?.Label;
+        }
+    }
+}

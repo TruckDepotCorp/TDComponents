@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="BlazorWebApp/BlazorWebApp.csproj" Id="d382853e-da93-4647-859b-6e56accc0b7c" />
+  <Project Path="TDComponents/TDComponents.csproj" />
+  <Project Path="WebAppSSR/WebAppSSR.csproj" />
+</Solution>

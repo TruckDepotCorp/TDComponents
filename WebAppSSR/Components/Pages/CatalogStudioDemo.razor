@@ -1,0 +1,55 @@
+@using WebAppSSR.Catalog
+
+@switch (Id)
+{
+    case "labeldesigner":
+        <section class="td-doc__variant">
+            <p class="td-section-title">Etiqueta 62×40 mm · Pastilla BR-4521-AD</p>
+            <p class="td-home__note">La plantilla y la ficha del repuesto salen de la página. En diseño se arrastra sobre la etiqueta; en programación se edita el JSON, el ZPL y un lote de registros.</p>
+            <TDLabelDesigner Width="62" Height="40" Dpi="203" Copies="1"
+                             Template="@CodeScenarios.LabelTemplate" Record="@CodeScenarios.BrakePad" />
+            <CatalogSampleList Id="labeldesigner" />
+        </section>
+        break;
+    case "reportdesigner":
+        <section class="td-doc__variant">
+            <p class="td-section-title">Factura F-000481 · Transportes del Sur</p>
+            <p class="td-home__note">Diseña por bandas, revisa la vista previa o edita la plantilla .uxr. Esta página abre la factura con ocho líneas, número, cliente, RUT, fecha y vendedor.</p>
+            <TDReportDesigner Report="factura" Rows="8"
+                              Numero="F-000481" Cliente="Transportes del Sur SpA"
+                              Rut="76.543.210-K" Fecha="2026-09-23" Vendedor="Camila Rojas" />
+            <CatalogSampleList Id="reportdesigner" />
+        </section>
+        break;
+    case "printers":
+        <section class="td-doc__variant">
+            <p class="td-section-title">Bodega Quilicura · tres impresoras</p>
+            <p class="td-home__note">Zebra ZD421 conectada y predeterminada. Brother sin respuesta en la red. ZQ520 por Bluetooth, desconectada, con batería visible.</p>
+            <TDPrinterConnect Devices="@CodeScenarios.WarehousePrinters" />
+            <CatalogSampleList Id="printers" />
+        </section>
+        break;
+    case "ehid":
+        <section class="td-doc__variant">
+            <p class="td-section-title">Recepción · lector de bodega</p>
+            <p class="td-home__note">La primera lectura es BR-4521-AD y coincide con el catálogo. El listener sigue el documento: largo mínimo 4 y 60 ms entre teclas.</p>
+            <TDHidListener MinLength="4" GapMs="60" IgnoreWhenTyping="false" InitialCode="BR-4521-AD" />
+            <CatalogSampleList Id="ehid" />
+        </section>
+        break;
+    case "scanner":
+        <section class="td-doc__variant">
+            <p class="td-section-title">Recepción continua · BR-4521-AD</p>
+            <p class="td-home__note">Modo continuo, con lector USB o Bluetooth. La tarjeta ya muestra BR-4521-AD, el stock y el precio del catálogo.</p>
+            <TDScanner Mode="continuous" KeyboardWedge="true" InitialValue="BR-4521-AD" />
+            <CatalogSampleList Id="scanner" />
+        </section>
+        break;
+    case "scheduler":
+        <TDScheduler />
+        break;
+}
+
+@code {
+    [Parameter] public string Id { get; set; } = "labeldesigner";
+}

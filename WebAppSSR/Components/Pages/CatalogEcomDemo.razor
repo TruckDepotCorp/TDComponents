@@ -1,0 +1,30 @@
+@switch (Id)
+{
+    case "ecard":
+    case "edetail":
+    case "ecart":
+    case "echeckout":
+    case "efacets":
+    case "esearch":
+    case "ecompare":
+    case "eflash":
+    case "ereviews":
+    case "efinder":
+    case "equote":
+    case "ebulk":
+    case "erecent":
+    case "estock":
+    case "ewishmulti":
+    case "etrack":
+    case "efbt":
+    case "elocator":
+    case "ecredit":
+    case "ereturns":
+        <TDEcom Kind="@Id" />
+        <CatalogSampleList Id="@Id" />
+        break;
+}
+
+@code {
+    [Parameter] public string Id { get; set; } = "ecard";
+}

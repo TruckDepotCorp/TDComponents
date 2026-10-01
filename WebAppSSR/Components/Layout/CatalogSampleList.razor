@@ -1,0 +1,8 @@
+@foreach (var code in CatalogSamples.For(Id))
+{
+    <CatalogCodeBlock Code="code" />
+}
+
+@code {
+    [Parameter, EditorRequired] public string Id { get; set; } = "";
+}

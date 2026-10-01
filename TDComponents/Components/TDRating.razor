@@ -1,0 +1,38 @@
+@namespace TDComponents.Components
+
+<td-rating class="td-field">
+    @if (!string.IsNullOrWhiteSpace(Label))
+    {
+        <TDLabel>@Label</TDLabel>
+    }
+    <input type="hidden" name="@Name" value="@Value" data-td-rating-value />
+    <div class="td-rating" role="radiogroup" aria-label="@(Label ?? "Calificación")" data-readonly="@(ReadOnly ? "true" : null)">
+        @for (var star = 1; star <= Max; star++)
+        {
+            var current = star;
+            <button type="button"
+                    class="td-rating__star @(current <= Value ? "is-on" : null)"
+                    aria-label="@($"{current} de {Max}")"
+                    aria-checked="@(current == Value ? "true" : "false")"
+                    disabled="@ReadOnly"
+                    data-td-rating="@current">★</button>
+        }
+    </div>
+</td-rating>
+
+@code {
+    /// <summary>Nombre del entero que se envía.</summary>
+    [Parameter] public string Name { get; set; } = "nota";
+
+    /// <summary>Etiqueta de la calificación.</summary>
+    [Parameter] public string? Label { get; set; }
+
+    /// <summary>Cantidad de estrellas marcada al inicio.</summary>
+    [Parameter] public int Value { get; set; }
+
+    /// <summary>Cantidad total de estrellas. El defecto es 5.</summary>
+    [Parameter] public int Max { get; set; } = 5;
+
+    /// <summary>Solo muestra el valor. La persona no puede cambiarlo.</summary>
+    [Parameter] public bool ReadOnly { get; set; }
+}

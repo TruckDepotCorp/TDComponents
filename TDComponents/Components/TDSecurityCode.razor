@@ -1,0 +1,53 @@
+@namespace TDComponents.Components
+
+<td-otp class="td-field" data-expected="@Expected">
+    @if (!string.IsNullOrWhiteSpace(Label))
+    {
+        <TDLabel Required="Required">@Label</TDLabel>
+    }
+    @if (!string.IsNullOrWhiteSpace(Hint))
+    {
+        <p class="td-field__hint">@Hint</p>
+    }
+    <input type="hidden" name="@Name" value="@Value" data-td-otp-value />
+    <div class="td-otp" data-td-otp="@Length">
+        @for (var i = 0; i < Length; i++)
+        {
+            var ch = Value is { Length: > 0 } && i < Value.Length ? Value[i].ToString() : "";
+            <input class="td-otp__cell"
+                   type="text"
+                   inputmode="numeric"
+                   autocomplete="@(i == 0 ? "one-time-code" : "off")"
+                   value="@ch"
+                   data-td-otp-cell="@i"
+                   aria-label="@($"Dígito {i + 1} de {Length}")" />
+        }
+    </div>
+    <div class="td-otp__foot">
+        <span data-td-otp-status>@Length dígitos restantes</span>
+        <button type="button" data-td-otp-clear>Limpiar</button>
+    </div>
+</td-otp>
+
+@code {
+    /// <summary>Nombre del campo oculto con el código completo.</summary>
+    [Parameter] public string Name { get; set; } = "codigo";
+
+    /// <summary>Etiqueta del grupo de casillas.</summary>
+    [Parameter] public string? Label { get; set; }
+
+    /// <summary>Ayuda, por ejemplo por qué canal se envió el código.</summary>
+    [Parameter] public string? Hint { get; set; }
+
+    /// <summary>Dígitos iniciales, uno por casilla.</summary>
+    [Parameter] public string? Value { get; set; }
+
+    /// <summary>Código contra el que el cliente compara. Queda en el HTML. Úsalo solo en una demostración; en producción valida el servidor.</summary>
+    [Parameter] public string? Expected { get; set; }
+
+    /// <summary>Cantidad de casillas. El defecto es 6.</summary>
+    [Parameter] public int Length { get; set; } = 6;
+
+    /// <summary>Marca el campo como obligatorio.</summary>
+    [Parameter] public bool Required { get; set; }
+}

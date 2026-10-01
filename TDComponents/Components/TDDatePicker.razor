@@ -1,0 +1,59 @@
+@namespace TDComponents.Components
+
+<div class="td-field">
+    @if (!string.IsNullOrWhiteSpace(Label))
+    {
+        <TDLabel For="@_id" Required="Required">@Label</TDLabel>
+    }
+    <input id="@_id"
+           class="td-input"
+           type="@InputType"
+           name="@Name"
+           value="@Value"
+           min="@Min"
+           max="@Max"
+           required="@Required"
+           disabled="@Disabled" />
+    @if (!string.IsNullOrWhiteSpace(Hint))
+    {
+        <p class="td-field__hint">@Hint</p>
+    }
+</div>
+
+@code {
+    private readonly string _id = $"td-date-{Guid.NewGuid():N}";
+
+    /// <summary>Nombre del valor enviado.</summary>
+    [Parameter] public string Name { get; set; } = "fecha";
+
+    /// <summary>Qué se captura. <see cref="TDDateMode.Date"/>, <see cref="TDDateMode.DateTime"/> o <see cref="TDDateMode.Time"/> cambian el formato de <see cref="Value"/>, <see cref="Min"/> y <see cref="Max"/>.</summary>
+    [Parameter] public TDDateMode Mode { get; set; } = TDDateMode.Date;
+
+    /// <summary>Etiqueta del campo.</summary>
+    [Parameter] public string? Label { get; set; }
+
+    /// <summary>Ayuda bajo el campo.</summary>
+    [Parameter] public string? Hint { get; set; }
+
+    /// <summary>Valor inicial en el formato del modo: <c>yyyy-MM-dd</c>, <c>yyyy-MM-ddTHH:mm</c> o <c>HH:mm</c>.</summary>
+    [Parameter] public string? Value { get; set; }
+
+    /// <summary>Mínimo, en el mismo formato que <see cref="Value"/>. Úsalo para no permitir días anteriores.</summary>
+    [Parameter] public string? Min { get; set; }
+
+    /// <summary>Máximo, en el mismo formato que <see cref="Value"/>.</summary>
+    [Parameter] public string? Max { get; set; }
+
+    /// <summary>El navegador exige un valor.</summary>
+    [Parameter] public bool Required { get; set; }
+
+    /// <summary>La persona no puede cambiar la fecha.</summary>
+    [Parameter] public bool Disabled { get; set; }
+
+    private string InputType => Mode switch
+    {
+        TDDateMode.DateTime => "datetime-local",
+        TDDateMode.Time => "time",
+        _ => "date"
+    };
+}

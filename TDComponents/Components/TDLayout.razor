@@ -1,0 +1,64 @@
+@namespace TDComponents.Components
+
+<td-layout class="td-appshell" data-side="@Side" data-collapsed="false">
+    <div class="td-appshell__tools">
+        <button type="button" class="td-switch-row" role="switch" aria-checked="true" data-td-layout-side>
+            <span class="td-switch-row__track" aria-hidden="true"><span></span></span>
+            Sidebar a la izquierda
+        </button>
+        <span class="td-appshell__tools-label">Sidebar</span>
+        <div class="td-grid__segment" role="group" aria-label="Posición del sidebar">
+            <button type="button" data-td-layout-pos="start" aria-pressed="true">Inicio</button>
+            <button type="button" data-td-layout-pos="end" aria-pressed="false">Fin</button>
+        </div>
+    </div>
+    <div class="td-appshell__frame">
+        <header class="td-appshell__head">
+            <button type="button" class="td-appshell__burger" data-td-layout-toggle aria-expanded="true" aria-label="Mostrar u ocultar menú">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            </button>
+            <span class="td-appshell__brand">@Title</span>
+            <span class="td-appshell__meta">TDHeader</span>
+        </header>
+        <aside class="td-appshell__side" aria-label="Menú">
+            @foreach (var item in Items)
+            {
+                <a class="td-appshell__nav @(item.Value == Active ? "is-on" : null)" href="@(item.Hint ?? "#")" data-td-layout-nav="@item.Value">
+                    <span>@item.Value[..Math.Min(2, item.Value.Length)].ToUpperInvariant()</span>
+                    <em data-td-layout-label>@item.Label</em>
+                </a>
+            }
+            <span class="td-appshell__footmark">TDSidebar</span>
+        </aside>
+        <main class="td-appshell__body">
+            <span class="td-appshell__body-title" data-td-layout-title>@BodyTitle</span>
+            @ChildContent
+            <span class="td-appshell__hint">TDBody · se desplaza de forma independiente</span>
+        </main>
+        <footer class="td-appshell__foot">
+            <span>© 2026 · v1.0.0</span>
+            <span>TDFooter</span>
+        </footer>
+    </div>
+</td-layout>
+
+@code {
+    /// <summary>Nombre de la aplicación en la cabecera.</summary>
+    [Parameter] public string Title { get; set; } = "Panel de flota";
+    /// <summary>Título del área principal.</summary>
+    [Parameter] public string BodyTitle { get; set; } = "Pedidos del día";
+    /// <summary>Lado de la barra: start o end. El defecto es start.</summary>
+    [Parameter] public string Side { get; set; } = "start";
+    /// <summary>Value del ítem marcado como actual.</summary>
+    [Parameter] public string Active { get; set; } = "pe";
+    /// <summary>Entradas de la barra. Value es la clave, Label el texto y Hint el destino.</summary>
+    [Parameter] public IReadOnlyList<TDOption> Items { get; set; } =
+    [
+        new("pe", "Pedidos"),
+        new("bo", "Bodega"),
+        new("fl", "Flota"),
+        new("ay", "Ayuda")
+    ];
+    /// <summary>Contenido del área principal.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

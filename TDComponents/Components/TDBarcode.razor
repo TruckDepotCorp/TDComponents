@@ -1,0 +1,95 @@
+@namespace TDComponents.Components
+
+<td-barcode class="td-codebox" data-td-barcode data-format="@Format" data-value="@Value" data-color="@Color">
+    <div class="td-codebox__row">
+        <span class="td-section-title" style="margin:0">Formato</span>
+        <div class="td-seg" role="group" aria-label="Formato">
+            <button type="button" class="@(Format == "code128" ? "is-on" : null)" data-td-barcode-fmt="code128" aria-pressed="@(Format == "code128")">Code 128</button>
+            <button type="button" class="@(Format == "ean13" ? "is-on" : null)" data-td-barcode-fmt="ean13" aria-pressed="@(Format == "ean13")">EAN-13</button>
+            <button type="button" class="@(Format == "ean8" ? "is-on" : null)" data-td-barcode-fmt="ean8" aria-pressed="@(Format == "ean8")">EAN-8</button>
+        </div>
+    </div>
+    <div class="td-demo-grid">
+        <div class="td-stack">
+            <span class="td-section-title">Valor a codificar</span>
+            <input class="td-codebox__input" value="@Value" aria-label="Valor del código de barras" data-td-barcode-text />
+            <span class="td-field__hint" data-td-barcode-hint>Code 128 admite ASCII. EAN-13 y EAN-8 calculan el dígito verificador.</span>
+            <div class="td-row">
+                <button type="button" class="td-chip" data-td-barcode-preset="BR-4521-AD">BR-4521-AD</button>
+                <button type="button" class="td-chip" data-td-barcode-preset="7804621001843">7804621001843</button>
+                <button type="button" class="td-chip" data-td-barcode-preset="78012345">78012345</button>
+            </div>
+        </div>
+        <div class="td-stack">
+            <span class="td-section-title">Opciones</span>
+            <label class="td-field__label">Ancho de barra · <span data-td-barcode-wlabel>2 px</span></label>
+            <input type="range" min="1" max="4" step="1" value="@BarWidth" aria-label="Ancho de barra" data-td-barcode-w />
+            <label class="td-field__label">Alto · <span data-td-barcode-hlabel>@(Height) px</span></label>
+            <input type="range" min="40" max="160" step="10" value="@Height" aria-label="Alto" data-td-barcode-h />
+            <span class="td-field__label">Color</span>
+            <div class="td-row" role="radiogroup" aria-label="Color">
+                <button type="button" class="td-rte__swatch @(IsColor("#0A0B0C") ? "is-on" : null)" style="--sw:#0A0B0C" data-td-barcode-color="#0A0B0C" aria-label="Negro"></button>
+                <button type="button" class="td-rte__swatch @(IsColor("#ED2A24") ? "is-on" : null)" style="--sw:#ED2A24" data-td-barcode-color="#ED2A24" aria-label="Rojo"></button>
+                <button type="button" class="td-rte__swatch @(IsColor("#177A41") ? "is-on" : null)" style="--sw:#177A41" data-td-barcode-color="#177A41" aria-label="Verde"></button>
+                <button type="button" class="td-rte__swatch @(IsColor("#1A4B8C") ? "is-on" : null)" style="--sw:#1A4B8C" data-td-barcode-color="#1A4B8C" aria-label="Azul"></button>
+            </div>
+            <label class="td-codebox__check">
+                <input type="checkbox" checked="@ShowText" data-td-barcode-label />
+                Mostrar texto
+            </label>
+        </div>
+    </div>
+    <div class="td-codebox__preview">
+        <div class="td-codebox__svg" data-td-barcode-svg></div>
+        <div class="td-stack">
+            <span class="td-codebox__meta"><span>Formato</span><strong data-td-barcode-meta-fmt>Code 128</strong></span>
+            <span class="td-codebox__meta"><span>Módulos</span><strong data-td-barcode-meta-mod>—</strong></span>
+            <span class="td-codebox__meta"><span>Valor</span><strong data-td-barcode-meta-val>@Value</strong></span>
+            <span class="td-field__hint is-danger" hidden data-td-barcode-err></span>
+        </div>
+    </div>
+    <div class="td-codebox__out">
+        <div class="td-stack">
+            <span class="td-section-title">Valor devuelto</span>
+            <div class="td-codebox__url">
+                <span data-td-barcode-decl>string barcodePng</span>
+                <span data-td-barcode-url>Generando…</span>
+                <span data-td-barcode-urlmeta></span>
+            </div>
+            <div class="td-codebox__actions">
+                <button type="button" data-td-barcode-copy>Copiar data URL</button>
+                <button type="button" class="is-primary" data-td-barcode-png>Descargar PNG</button>
+                <button type="button" data-td-barcode-svg>Descargar SVG</button>
+            </div>
+            <span class="td-codebox__ok" role="status" data-td-barcode-msg></span>
+            @if (!string.IsNullOrWhiteSpace(Name))
+            {
+                <input type="hidden" name="@Name" data-td-barcode-hidden />
+            }
+        </div>
+        <div class="td-stack">
+            <span class="td-section-title">Usado como imagen</span>
+            <div class="td-codebox__uses" data-td-barcode-uses></div>
+            <span class="td-field__hint">El mismo código a 120, 180 y 240 px de alto, listo para una etiqueta o un PDF.</span>
+        </div>
+    </div>
+</td-barcode>
+
+@code {
+    /// <summary>Dato codificado. El defecto de demostración es un código de repuesto.</summary>
+    [Parameter] public string Value { get; set; } = "BR-4521-AD";
+    /// <summary>Simbología. El defecto es code128.</summary>
+    [Parameter] public string Format { get; set; } = "code128";
+    /// <summary>Ancho de cada barra, en píxeles. El defecto es 2.</summary>
+    [Parameter] public int BarWidth { get; set; } = 2;
+    /// <summary>Alto del código, en píxeles. El defecto es 80.</summary>
+    [Parameter] public int Height { get; set; } = 80;
+    /// <summary>Muestra el valor bajo las barras. El defecto es verdadero.</summary>
+    [Parameter] public bool ShowText { get; set; } = true;
+    /// <summary>Color de las barras. El defecto es negro.</summary>
+    [Parameter] public string Color { get; set; } = "#0A0B0C";
+    /// <summary>Nombre del campo si el valor debe viajar en un formulario.</summary>
+    [Parameter] public string? Name { get; set; }
+
+    private bool IsColor(string hex) => string.Equals(Color, hex, StringComparison.OrdinalIgnoreCase);
+}

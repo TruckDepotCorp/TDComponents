@@ -1,0 +1,55 @@
+@namespace TDComponents.Components
+
+<td-mask class="td-field">
+    @if (!string.IsNullOrWhiteSpace(Label))
+    {
+        <TDLabel For="@_id" Required="Required">@Label</TDLabel>
+    }
+    <input id="@_id"
+           class="td-input td-input--mono"
+           type="text"
+           name="@Name"
+           value="@Value"
+           placeholder="@Placeholder"
+           required="@Required"
+           inputmode="@InputMode"
+           autocomplete="@Autocomplete"
+           data-td-mask="@Pattern"
+           aria-describedby="@_hintId" />
+    @if (!string.IsNullOrWhiteSpace(Hint))
+    {
+        <p class="td-field__hint" id="@_hintId">@Hint</p>
+    }
+</td-mask>
+
+@code {
+    private readonly string _id = $"td-mask-{Guid.NewGuid():N}";
+    private string _hintId => $"{_id}-hint";
+
+    /// <summary>Nombre del texto enmascarado que se envía.</summary>
+    [Parameter] public string Name { get; set; } = "mascara";
+
+    /// <summary>Etiqueta del campo.</summary>
+    [Parameter] public string? Label { get; set; }
+
+    /// <summary>Ayuda bajo el campo.</summary>
+    [Parameter] public string? Hint { get; set; }
+
+    /// <summary>Valor inicial, ya con la forma de <see cref="Pattern"/>.</summary>
+    [Parameter] public string? Value { get; set; }
+
+    /// <summary>Ejemplo del campo vacío, por ejemplo <c>ABCD-12</c>.</summary>
+    [Parameter] public string Placeholder { get; set; } = "";
+
+    /// <summary>Máscara. <c>0</c> es un dígito, <c>X</c> o <c>A</c> es una letra en mayúscula y el resto de los caracteres se insertan solos. El defecto es una patente <c>XXXX-00</c>.</summary>
+    [Parameter] public string Pattern { get; set; } = "XXXX-00";
+
+    /// <summary>Teclado del móvil, por ejemplo <c>tel</c> o <c>numeric</c>.</summary>
+    [Parameter] public string? InputMode { get; set; }
+
+    /// <summary>Atributo HTML <c>autocomplete</c>.</summary>
+    [Parameter] public string? Autocomplete { get; set; }
+
+    /// <summary>El navegador exige un valor.</summary>
+    [Parameter] public bool Required { get; set; }
+}

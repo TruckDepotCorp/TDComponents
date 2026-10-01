@@ -1,0 +1,39 @@
+@namespace TDComponents.Components
+
+<div class="td-lstack @(Orientation == TDOrientation.Horizontal ? "td-lstack--h" : "td-lstack--v") @(Reverse ? "td-lstack--rev" : null) @(Wrap ? "td-lstack--wrap" : null)"
+     style="--td-stack-gap:@Gap;align-items:@AlignCss;justify-content:@JustifyCss">
+    @ChildContent
+</div>
+
+@code {
+    /// <summary>Vertical apila. Horizontal pone en fila. El defecto es Vertical.</summary>
+    [Parameter] public TDOrientation Orientation { get; set; } = TDOrientation.Vertical;
+    /// <summary>Separación CSS entre hijos. El defecto es 12px.</summary>
+    [Parameter] public string Gap { get; set; } = "12px";
+    /// <summary>Alineación en el eje cruzado. El defecto es Stretch.</summary>
+    [Parameter] public TDAlignItems Align { get; set; } = TDAlignItems.Stretch;
+    /// <summary>Reparto en el eje principal. El defecto es Start.</summary>
+    [Parameter] public TDJustify Justify { get; set; } = TDJustify.Start;
+    /// <summary>Los hijos pasan a la línea siguiente cuando no caben.</summary>
+    [Parameter] public bool Wrap { get; set; }
+    /// <summary>Invierte el orden visual.</summary>
+    [Parameter] public bool Reverse { get; set; }
+    /// <summary>Elementos apilados.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private string AlignCss => Align switch
+    {
+        TDAlignItems.Start => "flex-start",
+        TDAlignItems.Center => "center",
+        TDAlignItems.End => "flex-end",
+        _ => "stretch"
+    };
+
+    private string JustifyCss => Justify switch
+    {
+        TDJustify.Center => "center",
+        TDJustify.End => "flex-end",
+        TDJustify.Between => "space-between",
+        _ => "flex-start"
+    };
+}

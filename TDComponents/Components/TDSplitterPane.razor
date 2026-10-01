@@ -1,0 +1,20 @@
+@namespace TDComponents.Components
+
+<div class="td-splitter__pane" style="flex:@Flex" data-td-split-pane data-min="@Min">
+    <div class="td-splitter__pane-inner">@ChildContent</div>
+</div>
+@if (ShowHandle)
+{
+    <button type="button" class="td-splitter__handle" data-td-split-handle aria-label="Redimensionar paneles"></button>
+}
+
+@code {
+    /// <summary>Reparto flexible CSS. El defecto es 1 1 33%.</summary>
+    [Parameter] public string Flex { get; set; } = "1 1 33%";
+    /// <summary>Tamaño mínimo CSS. El defecto es 12%.</summary>
+    [Parameter] public string Min { get; set; } = "12%";
+    /// <summary>Muestra el asa para arrastrar. El defecto es verdadero.</summary>
+    [Parameter] public bool ShowHandle { get; set; } = true;
+    /// <summary>Contenido del panel.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

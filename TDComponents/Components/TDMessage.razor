@@ -1,0 +1,40 @@
+@namespace TDComponents.Components
+
+<div class="td-message td-message--@SeverityToken @(Closable ? "td-message--closable" : null)"
+     role="@(Severity is TDSeverity.Danger or TDSeverity.Warning ? "alert" : "status")"
+     data-td-message>
+    <div>
+        @if (!string.IsNullOrWhiteSpace(Title))
+        {
+            <p class="td-message__title">@Title</p>
+        }
+        <p class="td-message__body">@ChildContent</p>
+    </div>
+    @if (Closable)
+    {
+        <button type="button" class="td-message__close" aria-label="Cerrar aviso" data-td-message-close>×</button>
+    }
+</div>
+
+@code {
+    /// <summary>Consecuencia del aviso. <see cref="TDSeverity.Danger"/> y <see cref="TDSeverity.Warning"/> se anuncian como alerta. El resto, como estado.</summary>
+    [Parameter] public TDSeverity Severity { get; set; } = TDSeverity.Info;
+
+    /// <summary>Primera línea corta. Úsala cuando el cuerpo necesita un resumen.</summary>
+    [Parameter] public string? Title { get; set; }
+
+    /// <summary>Muestra el botón de cerrar. Úsalo cuando el aviso no bloquea el siguiente paso.</summary>
+    [Parameter] public bool Closable { get; set; }
+
+    /// <summary>Texto del aviso.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private string SeverityToken => Severity switch
+    {
+        TDSeverity.Success => "success",
+        TDSeverity.Warning => "warning",
+        TDSeverity.Danger => "danger",
+        TDSeverity.Secondary => "secondary",
+        _ => "info"
+    };
+}

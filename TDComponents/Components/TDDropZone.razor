@@ -1,0 +1,27 @@
+@namespace TDComponents.Components
+
+<td-dropzone class="td-dropboard">
+    @foreach (var zone in Zones)
+    {
+        <section class="td-dropboard__col" data-td-drop-zone="@zone.Value" aria-label="@zone.Label">
+            <header>@zone.Label</header>
+            <div class="td-dropboard__list">
+                @foreach (var card in Items.Where(item => item.Zone == zone.Value))
+                {
+                    <article class="td-dropboard__card" draggable="true" tabindex="0" data-td-drop-card="@card.Id">
+                        <strong>@card.Title</strong>
+                        <span>@card.Meta</span>
+                    </article>
+                }
+            </div>
+        </section>
+    }
+    <p class="td-field__hint">Arrastra una tarjeta o, con el foco, usa ← → para cambiar de columna.</p>
+</td-dropzone>
+
+@code {
+    /// <summary>Columnas del tablero. Value es la clave y Label el título.</summary>
+    [Parameter] public IReadOnlyList<TDOption> Zones { get; set; } = [];
+    /// <summary>Tarjetas. Zone indica en qué columna empiezan.</summary>
+    [Parameter] public IReadOnlyList<TDDropCard> Items { get; set; } = [];
+}

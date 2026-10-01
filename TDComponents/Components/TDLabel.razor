@@ -1,0 +1,33 @@
+@namespace TDComponents.Components
+
+<label class="td-label @(Inline ? "td-label--inline" : null) @(HasError ? "is-invalid" : null)" for="@For">
+    <span class="td-label__text">@ChildContent</span>
+    @if (Required)
+    {
+        <span class="td-label__mark">Obligatorio</span>
+    }
+    else if (Optional)
+    {
+        <span class="td-label__mark td-label__mark--muted">Opcional</span>
+    }
+</label>
+
+@code {
+    /// <summary>Valor del atributo <c>for</c>. Tiene que ser el <c>id</c> del control asociado.</summary>
+    [Parameter] public string? For { get; set; }
+
+    /// <summary>Muestra la marca «Obligatorio». Si es verdadero, <see cref="Optional"/> no se muestra.</summary>
+    [Parameter] public bool Required { get; set; }
+
+    /// <summary>Muestra la marca «Opcional». Solo se ve cuando <see cref="Required"/> es falso.</summary>
+    [Parameter] public bool Optional { get; set; }
+
+    /// <summary>Coloca la etiqueta en la misma línea que el control.</summary>
+    [Parameter] public bool Inline { get; set; }
+
+    /// <summary>Aplica el estilo de campo con error. Úsalo cuando la validación de ese control ya falló.</summary>
+    [Parameter] public bool HasError { get; set; }
+
+    /// <summary>Texto visible de la etiqueta.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

@@ -1,0 +1,39 @@
+@namespace TDComponents.Components
+
+<td-gallery class="td-gallery" data-td-gallery>
+    <div class="td-gallery__main" data-td-gallery-main>
+        @for (var i = 0; i < Items.Count; i++)
+        {
+            var item = Items[i];
+            <div class="td-gallery__slide @(i == 0 ? "is-current" : null)"
+                 style="@($"background:{item.Background}")"
+                 hidden="@(i != 0)">
+                <span class="td-gallery__code">@item.Code</span>
+                <span class="td-gallery__name">@item.Title</span>
+            </div>
+        }
+        <button type="button" class="td-gallery__nav td-gallery__nav--prev" data-td-gallery-prev aria-label="Foto anterior">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"></path></svg>
+        </button>
+        <button type="button" class="td-gallery__nav td-gallery__nav--next" data-td-gallery-next aria-label="Foto siguiente">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"></path></svg>
+        </button>
+        <span class="td-gallery__count" data-td-gallery-count>1 / @Items.Count</span>
+    </div>
+    <div class="td-gallery__thumbs">
+        @for (var i = 0; i < Items.Count; i++)
+        {
+            var item = Items[i];
+            <button type="button"
+                    class="td-gallery__thumb @(i == 0 ? "is-current" : null)"
+                    style="@($"background:{item.Background}")"
+                    data-td-gallery-thumb="@i"
+                    aria-label="@item.Title"></button>
+        }
+    </div>
+</td-gallery>
+
+@code {
+    /// <summary>Piezas de la galería.</summary>
+    [Parameter] public IReadOnlyList<TDGalleryItem> Items { get; set; } = [];
+}

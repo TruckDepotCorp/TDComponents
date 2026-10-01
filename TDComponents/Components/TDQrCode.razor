@@ -1,0 +1,86 @@
+@namespace TDComponents.Components
+
+<td-qrcode class="td-codebox" data-td-qr data-value="@Value" data-ecc="@Ecc" data-color="@Color">
+    <div class="td-demo-grid">
+        <div class="td-stack">
+            <span class="td-section-title">Texto a codificar</span>
+            <textarea class="td-codebox__area" aria-label="Texto del código QR" maxlength="1200" data-td-qr-text>@Value</textarea>
+            <span class="td-field__hint" data-td-qr-count>0 caracteres</span>
+            <div class="td-row">
+                <button type="button" class="td-chip" data-td-qr-preset="https://truckdepot.cl/p/BR-4521-AD">Ficha</button>
+                <button type="button" class="td-chip" data-td-qr-preset="OC-00481">Pedido</button>
+                <button type="button" class="td-chip" data-td-qr-preset="WIFI:T:WPA;S:Bodega-Sur;P:Depot2026;;">Wi-Fi</button>
+            </div>
+        </div>
+        <div class="td-stack">
+            <span class="td-section-title">Corrección</span>
+            <div class="td-seg" role="group" aria-label="Nivel ECC">
+                <button type="button" class="@(Ecc == "L" ? "is-on" : null)" data-td-qr-ecc="L">L · 7%</button>
+                <button type="button" class="@(Ecc == "M" ? "is-on" : null)" data-td-qr-ecc="M">M · 15%</button>
+                <button type="button" class="@(Ecc == "Q" ? "is-on" : null)" data-td-qr-ecc="Q">Q · 25%</button>
+                <button type="button" class="@(Ecc == "H" ? "is-on" : null)" data-td-qr-ecc="H">H · 30%</button>
+            </div>
+            <label class="td-field__label">Tamaño · <span data-td-qr-slabel>6 px</span></label>
+            <input type="range" min="3" max="10" value="@Module" aria-label="Tamaño de módulo" data-td-qr-size />
+            <span class="td-field__label">Color</span>
+            <div class="td-row" role="radiogroup" aria-label="Color">
+                <button type="button" class="td-rte__swatch @(IsColor("#0A0B0C") ? "is-on" : null)" style="--sw:#0A0B0C" data-td-qr-color="#0A0B0C" aria-label="Negro"></button>
+                <button type="button" class="td-rte__swatch @(IsColor("#ED2A24") ? "is-on" : null)" style="--sw:#ED2A24" data-td-qr-color="#ED2A24" aria-label="Rojo"></button>
+                <button type="button" class="td-rte__swatch @(IsColor("#177A41") ? "is-on" : null)" style="--sw:#177A41" data-td-qr-color="#177A41" aria-label="Verde"></button>
+                <button type="button" class="td-rte__swatch @(IsColor("#1A4B8C") ? "is-on" : null)" style="--sw:#1A4B8C" data-td-qr-color="#1A4B8C" aria-label="Azul"></button>
+            </div>
+            <button type="button" class="td-switch" role="switch" aria-checked="@(QuietZone ? "true" : "false")" data-td-qr-quiet><i></i>Zona en blanco alrededor</button>
+        </div>
+    </div>
+    <div class="td-codebox__preview">
+        <div class="td-codebox__svg td-codebox__svg--qr" data-td-qr-svg></div>
+        <div class="td-stack">
+            <span class="td-codebox__meta"><span>Versión</span><strong data-td-qr-ver>—</strong></span>
+            <span class="td-codebox__meta"><span>Módulos</span><strong data-td-qr-mod>—</strong></span>
+            <span class="td-codebox__meta"><span>Bytes</span><strong data-td-qr-bytes>—</strong></span>
+            <span class="td-field__hint is-danger" hidden data-td-qr-err></span>
+        </div>
+    </div>
+    <div class="td-codebox__out">
+        <div class="td-stack">
+            <span class="td-section-title">Valor devuelto</span>
+            <div class="td-codebox__url">
+                <span data-td-qr-decl>string qrPng</span>
+                <span data-td-qr-url>Generando…</span>
+                <span data-td-qr-urlmeta></span>
+            </div>
+            <div class="td-codebox__actions">
+                <button type="button" data-td-qr-copy>Copiar data URL</button>
+                <button type="button" class="is-primary" data-td-qr-png>Descargar PNG</button>
+                <button type="button" data-td-qr-svg>Descargar SVG</button>
+            </div>
+            <span class="td-codebox__ok" role="status" data-td-qr-msg></span>
+            @if (!string.IsNullOrWhiteSpace(Name))
+            {
+                <input type="hidden" name="@Name" data-td-qr-hidden />
+            }
+        </div>
+        <div class="td-stack">
+            <span class="td-section-title">Usado como imagen</span>
+            <div class="td-codebox__uses" data-td-qr-uses></div>
+            <span class="td-field__hint">El mismo PNG a 96, 160 y 240 px, listo para una ficha o una etiqueta.</span>
+        </div>
+    </div>
+</td-qrcode>
+
+@code {
+    /// <summary>Dato codificado. Puede ser una URL o un código.</summary>
+    [Parameter] public string Value { get; set; } = "https://truckdepot.cl/p/BR-4521-AD";
+    /// <summary>Corrección de errores: L, M, Q o H. El defecto es M.</summary>
+    [Parameter] public string Ecc { get; set; } = "M";
+    /// <summary>Tamaño de cada módulo, en píxeles. El defecto es 6.</summary>
+    [Parameter] public int Module { get; set; } = 6;
+    /// <summary>Color de los módulos oscuros.</summary>
+    [Parameter] public string Color { get; set; } = "#0A0B0C";
+    /// <summary>Deja el margen en blanco alrededor del código. El defecto es verdadero.</summary>
+    [Parameter] public bool QuietZone { get; set; } = true;
+    /// <summary>Nombre del campo si el valor debe viajar en un formulario.</summary>
+    [Parameter] public string? Name { get; set; }
+
+    private bool IsColor(string hex) => string.Equals(Color, hex, StringComparison.OrdinalIgnoreCase);
+}

@@ -1,0 +1,59 @@
+@namespace TDComponents.Components
+
+<div class="td-themes">
+    <span class="td-section-title">Temas incluidos</span>
+    <div class="td-theme-grid">
+        @foreach (var theme in Themes)
+        {
+            <button type="button"
+                    class="td-theme-card"
+                    data-td-theme="@theme.Id"
+                    data-td-theme-pick="@theme.Id"
+                    aria-pressed="@(theme.Id == "modern" ? "true" : "false")"
+                    aria-label="@($"Usar tema {theme.Name}")">
+                <span class="td-theme-card__head">
+                    <strong>@theme.Name</strong>
+                    <small>@theme.Code</small>
+                </span>
+                <span class="td-theme-card__body">
+                    <span class="td-theme-card__dots" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+                    <span class="td-theme-card__sample">
+                        <span class="td-theme-card__save">Guardar</span>
+                        <span class="td-theme-card__search">Buscar…</span>
+                    </span>
+                </span>
+            </button>
+        }
+    </div>
+    <div class="td-token-grid">
+        @foreach (var token in Tokens)
+        {
+            <div class="td-token-swatch" style="@($"--sw:var({token.Name})")">
+                <span>@token.Label</span>
+                <code>@token.Name</code>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private static readonly (string Id, string Name, string Code)[] Themes =
+    [
+        ("modern", "Modern", "TDTheme.Modern"),
+        ("material", "Material", "TDTheme.Material"),
+        ("expressive", "Material Expressive", "TDTheme.MaterialExpressive"),
+        ("fluent", "Fluent 3", "TDTheme.Fluent3"),
+    ];
+
+    private static readonly (string Label, string Name)[] Tokens =
+    [
+        ("Primary", "--td-color-primary"),
+        ("Primary hover", "--td-color-primary-hover"),
+        ("Surface", "--td-color-surface"),
+        ("Surface secondary", "--td-color-surface-secondary"),
+        ("Text", "--td-color-text"),
+        ("Text muted", "--td-color-text-muted"),
+        ("Border", "--td-color-border"),
+        ("Focus ring", "--td-color-focus-ring"),
+    ];
+}

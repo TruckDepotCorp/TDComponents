@@ -1,0 +1,87 @@
+@namespace TDComponents.Components
+
+<nav class="td-pmenu @(Collapsed ? "is-collapsed" : null)" aria-label="@AriaLabel" data-td-pmenu data-multiple="@(Multiple ? "true" : "false")">
+    @foreach (var section in Sections)
+    {
+        var kids = section.Children is { Count: > 0 };
+        var open = kids && section.Text == Open;
+        <div class="td-pmenu__sec" data-td-pmenu-sec data-open="@(open ? "true" : "false")">
+            @if (kids)
+            {
+                <button type="button" class="td-pmenu__headbtn" data-td-pmenu-toggle aria-expanded="@(open ? "true" : "false")" title="@section.Text">
+                    @Icon(section.Icon)
+                    <span>@section.Text</span>
+                    <svg class="td-pmenu__chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+                </button>
+                <div class="td-pmenu__kids" role="group" hidden="@(open ? null : "hidden")">
+                    @foreach (var item in section.Children!)
+                    {
+                        var active = item.Text == Active;
+                        @if (string.IsNullOrEmpty(item.Href))
+                        {
+                            <button type="button" class="td-pmenu__link @(active ? "is-on" : null)" aria-current="@(active ? "page" : null)" data-td-pmenu-link>
+                                <span>@item.Text</span>
+                                @if (!string.IsNullOrWhiteSpace(item.Shortcut))
+                                {
+                                    <em>@item.Shortcut</em>
+                                }
+                            </button>
+                        }
+                        else
+                        {
+                            <a class="td-pmenu__link @(active ? "is-on" : null)" href="@item.Href" aria-current="@(active ? "page" : null)" data-td-pmenu-link>
+                                <span>@item.Text</span>
+                                @if (!string.IsNullOrWhiteSpace(item.Shortcut))
+                                {
+                                    <em>@item.Shortcut</em>
+                                }
+                            </a>
+                        }
+                    }
+                </div>
+            }
+            else
+            {
+                var active = section.Text == Active;
+                @if (string.IsNullOrEmpty(section.Href))
+                {
+                    <button type="button" class="td-pmenu__headbtn @(active ? "is-on" : null)" title="@section.Text" aria-current="@(active ? "page" : null)" data-td-pmenu-link>
+                        @Icon(section.Icon)
+                        <span>@section.Text</span>
+                    </button>
+                }
+                else
+                {
+                    <a class="td-pmenu__headbtn @(active ? "is-on" : null)" href="@section.Href" title="@section.Text" aria-current="@(active ? "page" : null)" data-td-pmenu-link>
+                        @Icon(section.Icon)
+                        <span>@section.Text</span>
+                    </a>
+                }
+            }
+        </div>
+    }
+</nav>
+
+@code {
+    /// <summary>Secciones. Children son las entradas de cada una.</summary>
+    [Parameter] public IReadOnlyList<TDMenuItem> Sections { get; set; } = [];
+    /// <summary>Texto o destino de la entrada actual.</summary>
+    [Parameter] public string? Active { get; set; }
+    /// <summary>Sección que empieza abierta.</summary>
+    [Parameter] public string? Open { get; set; }
+    /// <summary>Empieza con las secciones cerradas.</summary>
+    [Parameter] public bool Collapsed { get; set; }
+    /// <summary>Permite tener varias secciones abiertas.</summary>
+    [Parameter] public bool Multiple { get; set; }
+    /// <summary>Nombre accesible del menú.</summary>
+    [Parameter] public string AriaLabel { get; set; } = "Menú de cuenta";
+
+    private static MarkupString Icon(string? name) => new(name switch
+    {
+        "grid" => "<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><rect x=\"3\" y=\"3\" width=\"7\" height=\"7\"></rect><rect x=\"14\" y=\"3\" width=\"7\" height=\"7\"></rect><rect x=\"3\" y=\"14\" width=\"7\" height=\"7\"></rect><rect x=\"14\" y=\"14\" width=\"7\" height=\"7\"></rect></svg>",
+        "box" => "<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path d=\"M21 8 12 3 3 8l9 5 9-5Z\"></path><path d=\"M3 8v8l9 5 9-5V8\"></path><path d=\"M12 13v8\"></path></svg>",
+        "user" => "<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"8\" r=\"4\"></circle><path d=\"M4 21a8 8 0 0 1 16 0\"></path></svg>",
+        "help" => "<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"9\"></circle><path d=\"M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.8.4-1 .8-1 1.7\"></path><path d=\"M12 17h.01\"></path></svg>",
+        _ => "<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><rect x=\"3\" y=\"3\" width=\"7\" height=\"7\"></rect><rect x=\"14\" y=\"3\" width=\"7\" height=\"7\"></rect><rect x=\"3\" y=\"14\" width=\"7\" height=\"7\"></rect><rect x=\"14\" y=\"14\" width=\"7\" height=\"7\"></rect></svg>"
+    });
+}

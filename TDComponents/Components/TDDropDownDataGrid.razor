@@ -1,0 +1,111 @@
+@namespace TDComponents.Components
+
+<td-ddgrid class="td-ddgrid" data-page-size="@PageSize" data-nullable="@(Clearable ? "true" : null)">
+    @if (!string.IsNullOrWhiteSpace(Label))
+    {
+        <TDLabel For="@_id">@Label</TDLabel>
+    }
+    <input type="hidden" name="@Name" value="@Value" data-td-ddgrid-value />
+    <div id="@_id" class="td-select__trigger @(Clearable && !string.IsNullOrEmpty(Value) ? "has-clear" : null)" role="combobox" tabindex="0" data-td-ddgrid-open data-placeholder="@Placeholder" aria-haspopup="grid" aria-expanded="false">
+        <span class="td-select__text @(string.IsNullOrEmpty(Display) ? "is-placeholder" : null)" data-td-ddgrid-text>@(Display ?? Placeholder)</span>
+        <span class="td-ddgrid__code" data-td-ddgrid-code>@Code</span>
+        @if (Clearable)
+        {
+            <button type="button" class="td-select__clear" data-td-ddgrid-clear aria-label="Borrar selección" title="Borrar" hidden="@(string.IsNullOrEmpty(Value) ? "hidden" : null)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"></path></svg>
+            </button>
+        }
+        <span class="td-select__caret" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"></path></svg></span>
+    </div>
+    <div class="td-ddgrid__panel" hidden data-td-ddgrid-panel>
+        @if (AllowFiltering)
+        {
+            <div class="td-ddgrid__search">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+                <input type="search" placeholder="Buscar por código, nombre o marca…" aria-label="Buscar" data-td-ddgrid-q />
+            </div>
+        }
+        <div class="td-ddgrid__scroll">
+            <table role="grid">
+                <thead>
+                    <tr>
+                        @for (var i = 0; i < Columns.Count; i++)
+                        {
+                            <th class="@(i >= Columns.Count - 2 ? "is-end" : null)">@Columns[i]</th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var row in Rows)
+                    {
+                        var on = row.Value == Value;
+                        <tr data-td-ddgrid-row="@row.Value"
+                            data-label="@row.Text"
+                            data-code="@(row.Code ?? row.Cells.FirstOrDefault())"
+                            class="@(on ? "is-on" : null)"
+                            aria-selected="@(on ? "true" : "false")">
+                            @for (var i = 0; i < row.Cells.Count; i++)
+                            {
+                                <td class="@CellClass(i, row.Cells.Count)">@row.Cells[i]</td>
+                            }
+                        </tr>
+                    }
+                    <tr class="td-ddgrid__empty" hidden data-td-ddgrid-empty><td colspan="@Columns.Count">Sin resultados</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="td-ddgrid__foot">
+            <span data-td-ddgrid-meta>@Rows.Count de @Rows.Count repuestos · ↑ ↓ y Enter para elegir</span>
+            <button type="button" data-td-ddgrid-page="-1">Anterior</button>
+            <button type="button" data-td-ddgrid-page="1">Siguiente</button>
+        </div>
+    </div>
+</td-ddgrid>
+
+@code {
+    private readonly string _id = $"td-ddg-{Guid.NewGuid():N}";
+
+    /// <summary>Nombre del valor enviado. Ese valor es <c>TDDdRow.Value</c>, no el texto visible.</summary>
+    [Parameter] public string Name { get; set; } = "part";
+
+    /// <summary>Etiqueta del campo.</summary>
+    [Parameter] public string? Label { get; set; }
+
+    /// <summary>Texto que se ve cuando no hay fila elegida.</summary>
+    [Parameter] public string Placeholder { get; set; } = "Selecciona un repuesto…";
+
+    /// <summary><c>Value</c> de la fila inicial.</summary>
+    [Parameter] public string? Value { get; set; }
+
+    /// <summary>Muestra la búsqueda del panel. El defecto es verdadero.</summary>
+    [Parameter] public bool AllowFiltering { get; set; } = true;
+
+    /// <summary>Permite borrar la fila elegida.</summary>
+    [Parameter] public bool Clearable { get; set; }
+
+    /// <summary>Filas por página del panel. El defecto es 8.</summary>
+    [Parameter] public int PageSize { get; set; } = 8;
+
+    /// <summary>Títulos de columna, en el mismo orden que <c>TDDdRow.Cells</c>.</summary>
+    [Parameter] public IReadOnlyList<string> Columns { get; set; } = [];
+
+    /// <summary>Filas de la tabla. <c>Text</c> queda en el campo cerrado y <c>Value</c> es lo que se envía.</summary>
+    [Parameter] public IReadOnlyList<TDDdRow> Rows { get; set; } = [];
+
+    private TDDdRow? Current => Rows.FirstOrDefault(row => row.Value == Value);
+    private string? Display => Current?.Text;
+    private string? Code => Current?.Code ?? Current?.Cells.FirstOrDefault();
+
+    private static string CellClass(int index, int count)
+    {
+        if (index == 0)
+        {
+            return "is-code";
+        }
+        if (index >= count - 2)
+        {
+            return "is-end";
+        }
+        return index == 1 ? "is-name" : "";
+    }
+}

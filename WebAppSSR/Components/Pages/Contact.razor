@@ -1,0 +1,169 @@
+@page "/contact"
+@using WebAppSSR.Interfaces
+@using WebAppSSR.Models
+
+@inject IContactoService Contactos
+
+<PageTitle>Solicitud de contacto</PageTitle>
+
+<div class="td-page" lang="es">
+    @if (_sent)
+    {
+        <div class="td-banner td-banner--success" role="status">
+            <p class="td-banner__title">Solicitud recibida</p>
+            <p>Guardamos la solicitud de <strong>@Model!.FullName</strong>. Te responderemos en <strong>@Model.Email</strong>. El mensaje quedó guardado en el servidor.</p>
+            <p>Solicitudes guardadas en este proceso: @Contactos.Count.</p>
+        </div>
+        <div class="td-stack">
+            <TDButton Href="/contact" Variant="TDVariant.Primary">Enviar otra solicitud</TDButton>
+        </div>
+    }
+    else
+    {
+        <p class="td-eyebrow">Formulario</p>
+        <h1>Solicitud de contacto</h1>
+        <p class="td-lead">Respondemos por correo en un día hábil.</p>
+
+        <div class="td-panel">
+        <EditForm Model="Model" FormName="contact-request" OnValidSubmit="SendRequest" OnInvalidSubmit="RejectRequest" Enhance class="td-stack" novalidate="true">
+            <DataAnnotationsValidator />
+
+            @if (_rejected)
+            {
+                <div class="td-banner td-banner--danger" role="alert">
+                    <p class="td-banner__title">No pudimos enviar la solicitud.</p>
+                    <p>Corrige los campos marcados y vuelve a enviarla. Lo que escribiste sigue en el formulario.</p>
+                    <p>Si sigues atascado, <a href="mailto:soporte@tdcomponents.local">escribe a soporte</a>.</p>
+                </div>
+            }
+
+            <div class="td-banner td-banner--danger" data-td-form-status hidden role="alert" data-status-detail="Corrige los campos marcados y vuelve a enviarla. Lo que escribiste sigue en el formulario.">
+                <p class="td-banner__title">No pudimos enviar la solicitud.</p>
+                <p data-td-form-status-detail></p>
+                <p>Si sigues atascado, <a href="mailto:soporte@tdcomponents.local">escribe a soporte</a>.</p>
+            </div>
+
+            <TDTextBox @bind-Value="Model!.FullName"
+                         Label="Nombre completo"
+                         Required="true"
+                         RequiredText="Obligatorio"
+                         MinLength="2"
+                         MaxLength="80"
+                         Autocomplete="name"
+                         Placeholder="Ana López"
+                         Hint="Nombre con el que debemos responder."
+                         RequiredMessage="Escribe el nombre de la persona a la que debemos responder."
+                         MinLengthMessage="Escribe un nombre de 2 a 80 caracteres."
+                         MaxLengthMessage="Escribe un nombre de 2 a 80 caracteres." />
+
+            <TDTextBox @bind-Value="Model!.Email"
+                         Label="Correo electrónico"
+                         InputType="email"
+                         Required="true"
+                         RequiredText="Obligatorio"
+                         MaxLength="120"
+                         Autocomplete="email"
+                         InputMode="email"
+                         Placeholder="ana@empresa.com"
+                         Hint="Solo lo usamos para contestar esta solicitud."
+                         RequiredMessage="Escribe un correo para poder responder."
+                         TypeMessage="Escribe un correo como nombre@empresa.com."
+                         MaxLengthMessage="El correo admite como máximo 120 caracteres." />
+
+            <TDTextBox @bind-Value="Model!.Message"
+                         Label="Solicitud"
+                         Multiline="true"
+                         Required="true"
+                         RequiredText="Obligatorio"
+                         MinLength="12"
+                         MaxLength="280"
+                         Rows="5"
+                         Autocomplete="off"
+                         Hint="Qué necesitas que hagamos."
+                         RequiredMessage="Escribe qué necesitas que hagamos."
+                         ShowCounter="true"
+                         MinLengthMessage="Describe la solicitud entre 12 y 280 caracteres."
+                         MaxLengthMessage="Describe la solicitud entre 12 y 280 caracteres." />
+
+            <TDButton Variant="TDVariant.Primary" Block="true" PendingText="Enviando…">
+                Enviar solicitud
+            </TDButton>
+
+            <section class="td-section" aria-labelledby="td-reference-title">
+                <h2 class="td-section-title" id="td-reference-title">Referencia de controles</h2>
+                <p class="td-note">La contraseña de ejemplo no se guarda. Los botones de esta sección no envían la solicitud.</p>
+
+                <TDTextBox @bind-Value="Model!.PreviewPassword"
+                             Label="Contraseña de ejemplo"
+                             InputType="password"
+                             Autocomplete="off"
+                             Hint="Pulsa Mostrar contraseña. Este valor no se guarda."
+                             ShowSecretText="Mostrar contraseña"
+                             HideSecretText="Ocultar contraseña"
+                             data-td-secret-field="true" />
+
+                <div class="td-row">
+                    <TDButton Href="/" Variant="TDVariant.Secondary" Size="TDSize.Small" ButtonType="TDButtonType.Button">
+                        Volver al inicio
+                    </TDButton>
+                    <TDButton ButtonType="TDButtonType.Button" Variant="TDVariant.Danger" data-td-clear-secret="true">
+                        Borrar contraseña de ejemplo
+                    </TDButton>
+                    <TDButton ButtonType="TDButtonType.Button" Variant="TDVariant.Secondary" Disabled="true">
+                        Guardar borrador
+                    </TDButton>
+                </div>
+                <p class="td-note">Guardar borrador se activa cuando la solicitud ya existe en el servidor.</p>
+            </section>
+        </EditForm>
+        </div>
+    }
+</div>
+
+@code {
+    [SupplyParameterFromForm(FormName = "contact-request")]
+    private ContactRequest? Model { get; set; }
+
+    private bool _sent;
+    private bool _rejected;
+    private ValidationMessageStore? _businessErrors;
+
+    protected override void OnInitialized()
+    {
+        Model ??= new ContactRequest();
+    }
+
+    private void SendRequest(EditContext context)
+    {
+        _rejected = false;
+        _businessErrors?.Clear();
+
+        Model!.FullName = Model.FullName.Trim();
+        Model.Email = Model.Email.Trim();
+        Model.Message = Model.Message.Trim();
+
+        if (!context.Validate())
+        {
+            _rejected = true;
+            return;
+        }
+
+        if (!Model.Message.Any(char.IsLetter))
+        {
+            _businessErrors ??= new ValidationMessageStore(context);
+            _businessErrors.Add(new FieldIdentifier(Model, nameof(ContactRequest.Message)),
+                "Describe la solicitud con palabras para saber cómo ayudarte.");
+            context.NotifyValidationStateChanged();
+            _rejected = true;
+            return;
+        }
+
+        Contactos.Save(Model.FullName, Model.Email, Model.Message);
+        _sent = true;
+    }
+
+    private void RejectRequest()
+    {
+        _rejected = true;
+    }
+}

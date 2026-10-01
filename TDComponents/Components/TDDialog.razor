@@ -1,0 +1,46 @@
+@namespace TDComponents.Components
+
+<td-dialog>
+    <dialog class="td-dialog @(Drawer ? "td-dialog--drawer" : null)" id="@Id" aria-labelledby="@($"{Id}-t")">
+        <form method="dialog" class="td-dialog__frame">
+            <header class="td-dialog__head">
+                <h2 class="td-dialog__title" id="@($"{Id}-t")">@Title</h2>
+                @if (Closable)
+                {
+                    <button type="submit" class="td-dialog__x" aria-label="Cerrar" value="close">×</button>
+                }
+            </header>
+            <div class="td-dialog__body">@ChildContent</div>
+            <footer class="td-dialog__foot">
+                @if (Footer is not null)
+                {
+                    @Footer
+                }
+                else
+                {
+                    <button type="submit" class="td-btn td-btn--secondary td-btn--md" value="cancel">@CancelText</button>
+                    <button type="submit" class="td-btn td-btn--primary td-btn--md" value="ok">@ConfirmText</button>
+                }
+            </footer>
+        </form>
+    </dialog>
+</td-dialog>
+
+@code {
+    /// <summary>Identificador del diálogo. Tiene que ser único en la página.</summary>
+    [Parameter] public string Id { get; set; } = "td-dialog";
+    /// <summary>Título del diálogo.</summary>
+    [Parameter] public string Title { get; set; } = "";
+    /// <summary>Texto del botón que cierra sin confirmar.</summary>
+    [Parameter] public string CancelText { get; set; } = "Cancelar";
+    /// <summary>Texto del botón de confirmación.</summary>
+    [Parameter] public string ConfirmText { get; set; } = "Confirmar";
+    /// <summary>Permite cerrar con la equis y al pulsar fuera. El defecto es verdadero.</summary>
+    [Parameter] public bool Closable { get; set; } = true;
+    /// <summary>Lo presenta como panel lateral en lugar de diálogo centrado.</summary>
+    [Parameter] public bool Drawer { get; set; }
+    /// <summary>Cuerpo del diálogo.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    /// <summary>Pie libre. Si lo usas, reemplaza los botones por defecto.</summary>
+    [Parameter] public RenderFragment? Footer { get; set; }
+}

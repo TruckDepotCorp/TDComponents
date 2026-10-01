@@ -1,0 +1,50 @@
+@namespace TDComponents.Components
+
+<div class="td-profile" data-td-profile>
+    <button type="button" class="td-profile__btn" aria-expanded="false" aria-haspopup="true" data-td-profile-open>
+        <span class="td-profile__av">@Initials</span>
+        <span class="td-profile__who">
+            <strong>@Name</strong>
+            <em>@Role</em>
+        </span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"></path></svg>
+    </button>
+    <div class="td-profile__drop" hidden role="menu" data-td-profile-menu>
+        <div class="td-profile__card">
+            <span class="td-profile__av">@Initials</span>
+            <div>
+                <strong>@Name</strong>
+                <em>@Email</em>
+            </div>
+        </div>
+        @foreach (var item in Items)
+        {
+            if (item.Text == "-")
+            {
+                <hr class="td-menu__sep" />
+            }
+            else
+            {
+                <a class="td-menu__opt" role="menuitem" href="@(item.Href ?? "#")">@item.Text</a>
+            }
+        }
+    </div>
+</div>
+
+@code {
+    /// <summary>Nombre de la persona.</summary>
+    [Parameter] public string Name { get; set; } = "Ana Soto";
+    /// <summary>Cargo o área.</summary>
+    [Parameter] public string Role { get; set; } = "Compras";
+    /// <summary>Correo.</summary>
+    [Parameter] public string Email { get; set; } = "ana.soto@truckdepot.cl";
+    /// <summary>Iniciales del avatar.</summary>
+    [Parameter] public string Initials { get; set; } = "AS";
+    /// <summary>Acciones del menú.</summary>
+    [Parameter] public IReadOnlyList<TDMenuItem> Items { get; set; } = [
+        new("Mi cuenta", "/c/profilemenu"),
+        new("Preferencias", "/c/tokens"),
+        new("-"),
+        new("Cerrar sesión", "/")
+    ];
+}

@@ -1,0 +1,36 @@
+@namespace TDComponents.Components
+
+<td-file class="td-field">
+    @if (!string.IsNullOrWhiteSpace(Label))
+    {
+        <TDLabel For="@_id">@Label</TDLabel>
+    }
+    <label class="td-file" for="@_id">
+        <input id="@_id" class="td-sr" type="file" name="@Name" accept="@Accept" data-td-file />
+        <span class="td-file__name" data-td-file-name>@Placeholder</span>
+        <span class="td-file__pick">Elegir archivo</span>
+    </label>
+    @if (!string.IsNullOrWhiteSpace(Hint))
+    {
+        <p class="td-field__hint">@Hint</p>
+    }
+</td-file>
+
+@code {
+    private readonly string _id = $"td-file-{Guid.NewGuid():N}";
+
+    /// <summary>Nombre del archivo en el post. El formulario tiene que usar <c>multipart/form-data</c>.</summary>
+    [Parameter] public string Name { get; set; } = "archivo";
+
+    /// <summary>Etiqueta del campo.</summary>
+    [Parameter] public string? Label { get; set; }
+
+    /// <summary>Tipos y límite que la persona debe conocer. <see cref="Accept"/> no explica nada por sí solo.</summary>
+    [Parameter] public string? Hint { get; set; }
+
+    /// <summary>Filtro del diálogo del sistema, por ejemplo <c>image/*</c> o <c>.pdf</c>. No reemplaza la validación del servidor. Solo admite un archivo.</summary>
+    [Parameter] public string Accept { get; set; } = "";
+
+    /// <summary>Texto que se ve antes de elegir un archivo.</summary>
+    [Parameter] public string Placeholder { get; set; } = "Ningún archivo elegido";
+}

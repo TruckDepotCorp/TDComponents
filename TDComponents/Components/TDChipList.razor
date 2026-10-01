@@ -1,0 +1,49 @@
+@namespace TDComponents.Components
+
+<td-chiplist class="td-field" data-name="@Name">
+    @if (!string.IsNullOrWhiteSpace(Label))
+    {
+        <label class="td-field__label">@Label</label>
+    }
+    <div class="td-chiplist" data-td-chiplist>
+        @foreach (var value in Values)
+        {
+            <span class="td-chip td-chip--removable">
+                @value
+                <button type="button" class="td-chip__remove" data-td-chip-remove="@value" aria-label="@($"Quitar {value}")">×</button>
+                <input type="hidden" name="@Name" value="@value" data-td-chip-value />
+            </span>
+        }
+        <input class="td-chiplist__input"
+               type="text"
+               placeholder="@Placeholder"
+               data-td-chip-input
+               autocomplete="off" />
+    </div>
+    @if (Suggestions.Count > 0)
+    {
+        <div class="td-chiplist__suggest">
+            @foreach (var suggestion in Suggestions)
+            {
+                <button type="button" class="td-chip" data-td-chip-add="@suggestion">@suggestion</button>
+            }
+        </div>
+    }
+</td-chiplist>
+
+@code {
+    /// <summary>Nombre con el que viajan las etiquetas.</summary>
+    [Parameter] public string? Name { get; set; }
+
+    /// <summary>Etiqueta del campo.</summary>
+    [Parameter] public string? Label { get; set; }
+
+    /// <summary>Texto del campo vacío. Enter agrega la etiqueta y Retroceso quita la última.</summary>
+    [Parameter] public string Placeholder { get; set; } = "Agrega y pulsa Enter";
+
+    /// <summary>Etiquetas iniciales.</summary>
+    [Parameter] public IReadOnlyList<string> Values { get; set; } = [];
+
+    /// <summary>Sugerencias de texto para agregar. No son <see cref="TDOption"/>.</summary>
+    [Parameter] public IReadOnlyList<string> Suggestions { get; set; } = [];
+}

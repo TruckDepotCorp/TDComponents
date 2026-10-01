@@ -1,0 +1,34 @@
+@namespace TDComponents.Components
+
+<div class="td-progress-wrap">
+    <div class="td-progress @(Size == TDSize.Small ? "td-progress--sm" : null)"
+         role="progressbar"
+         aria-valuemin="0"
+         aria-valuemax="@Max"
+         aria-valuenow="@Value"
+         aria-label="@Label">
+        <span class="td-progress__bar" style="@($"width:{Percent:0}%")"></span>
+    </div>
+    @if (ShowValue)
+    {
+        <span class="td-progress__value">@Display</span>
+    }
+</div>
+
+@code {
+    /// <summary>Avance actual.</summary>
+    [Parameter] public double Value { get; set; }
+    /// <summary>Tope del avance. El defecto es 100.</summary>
+    [Parameter] public double Max { get; set; } = 100;
+    /// <summary>Muestra el número junto a la barra.</summary>
+    [Parameter] public bool ShowValue { get; set; }
+    /// <summary>Qué está avanzando.</summary>
+    [Parameter] public string? Label { get; set; }
+    /// <summary>Alto de la barra: Small, Medium o Large.</summary>
+    [Parameter] public TDSize Size { get; set; } = TDSize.Medium;
+    /// <summary>Unidad junto al valor, por ejemplo %.</summary>
+    [Parameter] public string? Suffix { get; set; }
+
+    private double Percent => Max <= 0 ? 0 : Math.Clamp(Value / Max * 100, 0, 100);
+    private string Display => string.IsNullOrWhiteSpace(Suffix) ? $"{Value:0}" : $"{Value:0} {Suffix}";
+}

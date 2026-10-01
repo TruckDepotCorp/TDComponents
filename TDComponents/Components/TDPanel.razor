@@ -1,0 +1,32 @@
+@namespace TDComponents.Components
+
+<section class="td-panel @(Collapsible ? "td-panel--fold" : null)">
+    @if (!string.IsNullOrWhiteSpace(Title) || Actions is not null)
+    {
+        <header class="td-panel__head">
+            <h3 class="td-panel__title">@Title</h3>
+            @if (Actions is not null)
+            {
+                <div class="td-panel__actions">@Actions</div>
+            }
+        </header>
+    }
+    <div class="td-panel__body">@ChildContent</div>
+    @if (Footer is not null)
+    {
+        <footer class="td-panel__foot">@Footer</footer>
+    }
+</section>
+
+@code {
+    /// <summary>Título del bloque.</summary>
+    [Parameter] public string? Title { get; set; }
+    /// <summary>Permite plegar el cuerpo.</summary>
+    [Parameter] public bool Collapsible { get; set; }
+    /// <summary>Acciones de la cabecera, a la derecha del título.</summary>
+    [Parameter] public RenderFragment? Actions { get; set; }
+    /// <summary>Cuerpo del panel.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    /// <summary>Pie del panel.</summary>
+    [Parameter] public RenderFragment? Footer { get; set; }
+}

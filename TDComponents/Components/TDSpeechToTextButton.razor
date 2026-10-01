@@ -1,0 +1,25 @@
+@namespace TDComponents.Components
+
+<button type="button"
+        class="td-speech"
+        data-td-speech
+        data-target="@Target"
+        data-lang="@Language"
+        data-continuous="@(Continuous ? "true" : "false")"
+        aria-pressed="false"
+        aria-label="Dictar">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><path d="M12 19v3"></path></svg>
+    <span data-td-speech-label>Dictar</span>
+</button>
+<p class="td-field__hint" hidden data-td-speech-note></p>
+
+@code {
+    /// <summary><c>id</c> del campo que recibe el dictado. Vacío no escribe en ningún control. No busca por <c>Name</c>.</summary>
+    [Parameter] public string Target { get; set; } = "";
+
+    /// <summary>Idioma del reconocimiento. El defecto es español de Chile.</summary>
+    [Parameter] public string Language { get; set; } = "es-CL";
+
+    /// <summary>Sigue escuchando después de la primera frase. En falso, dicta una frase y se detiene.</summary>
+    [Parameter] public bool Continuous { get; set; }
+}

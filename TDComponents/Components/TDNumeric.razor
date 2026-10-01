@@ -1,0 +1,59 @@
+@namespace TDComponents.Components
+
+<td-numeric class="td-field">
+    @if (!string.IsNullOrWhiteSpace(Label))
+    {
+        <TDLabel For="@_id" Required="Required">@Label</TDLabel>
+    }
+    <div class="td-numeric">
+        <button type="button" class="td-numeric__step" data-td-numeric-step="-1" aria-label="Disminuir" disabled="@Disabled">−</button>
+        <input id="@_id"
+               class="td-input td-numeric__input"
+               type="number"
+               name="@Name"
+               value="@Value"
+               min="@Min"
+               max="@Max"
+               step="@Step"
+               required="@Required"
+               disabled="@Disabled"
+               inputmode="decimal"
+               data-td-numeric />
+        <button type="button" class="td-numeric__step" data-td-numeric-step="1" aria-label="Aumentar" disabled="@Disabled">+</button>
+    </div>
+    @if (!string.IsNullOrWhiteSpace(Hint))
+    {
+        <p class="td-field__hint">@Hint</p>
+    }
+</td-numeric>
+
+@code {
+    private readonly string _id = $"td-num-{Guid.NewGuid():N}";
+
+    /// <summary>Nombre del decimal que se envía.</summary>
+    [Parameter] public string Name { get; set; } = "cantidad";
+
+    /// <summary>Etiqueta de la cantidad.</summary>
+    [Parameter] public string? Label { get; set; }
+
+    /// <summary>Ayuda bajo el campo, por ejemplo la unidad. El componente no formatea moneda.</summary>
+    [Parameter] public string? Hint { get; set; }
+
+    /// <summary>Valor inicial.</summary>
+    [Parameter] public decimal Value { get; set; }
+
+    /// <summary>Mínimo. El defecto es 0.</summary>
+    [Parameter] public decimal Min { get; set; }
+
+    /// <summary>Máximo. El defecto es 9999.</summary>
+    [Parameter] public decimal Max { get; set; } = 9999;
+
+    /// <summary>Incremento de los botones y del input. Para decimales usa <c>0.5</c> o <c>0.01</c>.</summary>
+    [Parameter] public decimal Step { get; set; } = 1;
+
+    /// <summary>El navegador exige un valor.</summary>
+    [Parameter] public bool Required { get; set; }
+
+    /// <summary>Bloquea el input y los dos botones.</summary>
+    [Parameter] public bool Disabled { get; set; }
+}

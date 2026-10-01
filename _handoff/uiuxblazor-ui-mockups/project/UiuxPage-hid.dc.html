@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="background:var(--uiux-color-surface);border:1px solid var(--uiux-color-border);border-radius:var(--uiux-radius-lg);box-shadow:var(--uiux-shadow-sm);padding:22px;display:flex;flex-direction:column;gap:18px;font-family:var(--uiux-font-family);color:var(--uiux-color-text)">
+<span style="font:500 14px/1.5 var(--uiux-font-family);color:var(--uiux-color-text-muted);max-width:640px">Este componente no necesita foco en un campo de texto: escucha las teclas que un lector handheld (USB, Bluetooth HID o RF) emite al documento completo. Apunta el lector hacia cualquier código, sin hacer clic en nada primero, o usa "Simular lectura" para probar sin hardware.</span>
+<div style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start">
+<div style="display:flex;flex-direction:column;gap:14px;flex:1 1 260px;min-width:0">
+<button type="button" role="switch" aria-checked="{{ hid.onSw.aria }}" onClick="{{ hid.onSw.onToggle }}" style="display:flex;align-items:center;gap:10px;padding:0;border:none;background:transparent;color:var(--uiux-color-text);font:600 14px var(--uiux-font-family);cursor:pointer" style-focus="outline:none;box-shadow:0 0 0 3px var(--uiux-color-focus-ring)"><span style="width:36px;height:20px;border-radius:999px;background:{{ hid.onSw.bg }};position:relative;flex:none"><span style="position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:#fff;transform:{{ hid.onSw.tf }};transition:transform 120ms"></span></span>{{ hid.onSw.label }}</button>
+<button type="button" role="switch" aria-checked="{{ hid.ignoreSw.aria }}" onClick="{{ hid.ignoreSw.onToggle }}" style="display:flex;align-items:center;gap:10px;padding:0;border:none;background:transparent;color:var(--uiux-color-text);font:500 13.5px var(--uiux-font-family);cursor:pointer" style-focus="outline:none;box-shadow:0 0 0 3px var(--uiux-color-focus-ring)"><span style="width:34px;height:20px;border-radius:999px;background:{{ hid.ignoreSw.bg }};position:relative;flex:none"><span style="position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:#fff;transform:{{ hid.ignoreSw.tf }};transition:transform 120ms"></span></span>{{ hid.ignoreSw.label }}</button>
+<label style="display:flex;flex-direction:column;gap:6px;font:600 13px var(--uiux-font-family)">Longitud mínima válida<input type="number" min="1" value="{{ hid.minLen }}" onChange="{{ hid.setMinLen }}" style="height:36px;width:100px;box-sizing:border-box;padding:0 10px;border-radius:var(--uiux-radius-sm);border:1px solid var(--uiux-color-border-strong);background:var(--uiux-color-surface);color:var(--uiux-color-text);font:600 13px var(--uiux-font-mono);outline:none" style-focus="border-color:var(--uiux-color-primary);box-shadow:0 0 0 3px var(--uiux-color-focus-ring)"></label>
+<label style="display:flex;flex-direction:column;gap:6px;font:600 13px var(--uiux-font-family)">Tolerancia entre teclas · {{ hid.gapL }}<input type="range" min="20" max="200" step="10" value="{{ hid.gap }}" onChange="{{ hid.setGap }}" style="width:220px;accent-color:var(--uiux-color-primary)"></label>
+<div style="display:flex;gap:8px"><button type="button" onClick="{{ hid.simulate }}" style="height:36px;padding:0 14px;border:none;border-radius:var(--uiux-radius-sm);background:var(--uiux-color-primary);color:#fff;font:700 12px var(--uiux-font-family);letter-spacing:.08em;text-transform:uppercase;cursor:pointer" style-hover="background:var(--uiux-color-primary-hover)" style-focus="outline:none;box-shadow:0 0 0 3px var(--uiux-color-focus-ring)">Simular lectura</button><button type="button" onClick="{{ hid.clear }}" style="height:36px;padding:0 12px;border-radius:var(--uiux-radius-sm);border:1px solid var(--uiux-color-border-strong);background:var(--uiux-color-surface);color:var(--uiux-color-text);font:700 12px var(--uiux-font-family);letter-spacing:.08em;text-transform:uppercase;cursor:pointer" style-hover="background:var(--uiux-color-surface-secondary)" style-focus="outline:none;box-shadow:0 0 0 3px var(--uiux-color-focus-ring)">Limpiar</button></div>
+</div>
+<div style="flex:2 1 320px;min-width:0;display:flex;flex-direction:column;gap:14px">
+<div style="padding:16px;border:1px solid var(--uiux-color-border);border-radius:var(--uiux-radius-md);display:flex;flex-direction:column;gap:8px">
+<div style="display:flex;align-items:center"><span style="font:700 11px var(--uiux-font-family);letter-spacing:.14em;text-transform:uppercase;color:var(--uiux-color-text-muted)">Última lectura</span><span style="flex:1"></span><span style="font:600 12px var(--uiux-font-mono);color:var(--uiux-color-text-muted)">{{ hid.count }} en total</span></div>
+<sc-if value="{{ hid.hasLast }}" hint-placeholder-val="{{ false }}"><span style="font:700 22px var(--uiux-font-mono)">{{ hid.last.code }}</span><span style="font:600 13px var(--uiux-font-family);color:{{ hid.last.stC }}">{{ hid.last.matchL }}</span><span style="font:500 12px var(--uiux-font-mono);color:var(--uiux-color-text-muted)">{{ hid.last.t }}</span></sc-if>
+<sc-if value="{{ hid.noLast }}" hint-placeholder-val="{{ true }}"><span style="font:500 13.5px var(--uiux-font-family);color:var(--uiux-color-text-muted)">Sin lecturas todavía. Apunta el lector a un código o usa "Simular lectura".</span></sc-if>
+</div>
+<div style="display:flex;flex-direction:column;border:1px solid var(--uiux-color-border);border-radius:var(--uiux-radius-md);overflow:hidden">
+<div role="log" aria-live="polite" style="max-height:280px;overflow:auto"><sc-for list="{{ hid.log }}" as="l" hint-placeholder-count="0"><div style="display:grid;grid-template-columns:62px 130px minmax(0,1fr);gap:12px;align-items:center;padding:8px 12px;border-top:{{ l.bt }}"><span style="font:500 12px var(--uiux-font-mono);color:var(--uiux-color-text-muted)">{{ l.t }}</span><span style="font:700 13px var(--uiux-font-mono)">{{ l.code }}</span><span style="font:500 13px var(--uiux-font-family);color:{{ l.color }};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ l.name }}</span></div></sc-for><sc-if value="{{ hid.none }}" hint-placeholder-val="{{ true }}"><div style="padding:20px;text-align:center;font:500 13px var(--uiux-font-family);color:var(--uiux-color-text-muted)">Sin eventos registrados</div></sc-if></div>
+</div>
+</div>
+</div>
+</div>
+</x-dc>
+</body>
+</html>

@@ -1,0 +1,124 @@
+@namespace TDComponents.Components
+
+<td-layout class="td-appshell td-appshell--menu" data-side="start" data-mode="@ModeName" data-collapsed="false">
+    <div class="td-appshell__frame">
+        <header class="td-appshell__head">
+            <button type="button" class="td-appshell__burger" data-td-layout-toggle aria-expanded="true" aria-label="Mostrar u ocultar menú">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            </button>
+            <span class="td-appshell__brand">
+                <strong>@Title</strong>
+                <em>@Eyebrow</em>
+            </span>
+            @if (ShowSearch)
+            {
+                <label class="td-appshell__search @(ShowSearchOnSmall ? null : "td-appshell__search--desktop")">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+                    <input type="search" data-td-shell-q placeholder="Buscar en la aplicación" aria-label="Buscar en la aplicación" />
+                </label>
+            }
+            <div class="td-appshell__bell">
+                <button type="button" data-td-shell-bell aria-expanded="false" aria-haspopup="true" aria-label="Avisos, @NoticeCount sin leer">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10 21a2 2 0 0 0 4 0"></path></svg>
+                    @if (NoticeCount > 0)
+                    {
+                        <em>@NoticeCount</em>
+                    }
+                </button>
+                <div class="td-appshell__notes" data-td-shell-notes hidden>
+                    <strong>Avisos de operación</strong>
+                    <a href="#despacho">3 pedidos por despachar</a>
+                    <a href="#factura">OC-00481 lista para facturar</a>
+                    <a href="#stock">Stock bajo en BR-4521</a>
+                </div>
+            </div>
+            <span class="td-appshell__user">
+                <span class="td-appshell__avatar" aria-hidden="true">OP</span>
+                <span>Operaciones</span>
+            </span>
+        </header>
+        @if (Mode == TDMenuShellMode.Float)
+        {
+            <button type="button" class="td-appshell__mask" data-td-shell-mask aria-label="Cerrar menú"></button>
+        }
+        <aside class="td-appshell__side" aria-label="Menú de la aplicación">
+            <TDMenuApp Modules="Modules" ActivePath="@ActivePath" Searchable="true" ExpandActive="true" RememberExpanded="true" Stay="true" />
+        </aside>
+        <main class="td-appshell__body">
+            <p class="td-appshell__crumb" data-td-shell-crumb>@Crumb</p>
+            <h2 class="td-appshell__body-title" data-td-shell-title>@PageTitle</h2>
+            <p class="td-appshell__path" data-td-shell-path>Ruta activa: @ActivePath</p>
+            @if (ChildContent is null)
+            {
+                <div class="td-appshell__kpis">
+                    <article class="td-appshell__kpi"><span>Pedidos hoy</span><strong>18</strong></article>
+                    <article class="td-appshell__kpi"><span>En ruta</span><strong>6</strong></article>
+                    <article class="td-appshell__kpi"><span>Por facturar</span><strong>3</strong></article>
+                </div>
+                <p class="td-appshell__hint">@Hint</p>
+            }
+            else
+            {
+                @ChildContent
+            }
+        </main>
+        <footer class="td-appshell__foot">
+            <span>Truck Depot Corporation</span>
+            <span>@Title</span>
+        </footer>
+    </div>
+</td-layout>
+
+@code {
+    /// <summary>Título de la cabecera.</summary>
+    [Parameter] public string Title { get; set; } = "Panel de flota";
+    /// <summary>Línea pequeña sobre el título.</summary>
+    [Parameter] public string Eyebrow { get; set; } = "Truck Depot";
+    /// <summary>Ruta marcada en el menú.</summary>
+    [Parameter] public string? ActivePath { get; set; } = "/ventas/pedidos";
+    /// <summary>Cantidad del aviso de la cabecera.</summary>
+    [Parameter] public int NoticeCount { get; set; } = 3;
+    /// <summary>Muestra la búsqueda de la cabecera. El defecto es verdadero.</summary>
+    [Parameter] public bool ShowSearch { get; set; } = true;
+    /// <summary>Mantiene la búsqueda en anchos estrechos.</summary>
+    [Parameter] public bool ShowSearchOnSmall { get; set; }
+    /// <summary>Icons o Float. El defecto es Icons.</summary>
+    [Parameter] public TDMenuShellMode Mode { get; set; } = TDMenuShellMode.Icons;
+    /// <summary>Árbol que recibe el menú interno.</summary>
+    [Parameter] public IReadOnlyList<TDMenuItem> Modules { get; set; } = [];
+    /// <summary>Contenido de la página.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private IReadOnlyList<string> Trail => Find(Modules, ActivePath, []);
+
+    private string PageTitle => Trail.LastOrDefault() ?? Title;
+
+    private string Crumb => Trail.Count == 0 ? Title : string.Join(" / ", Trail);
+
+    private string ModeName => Mode == TDMenuShellMode.Float ? "float" : "icons";
+
+    private string Hint => Mode == TDMenuShellMode.Float
+        ? "El menú flota sobre el contenido y se oculta al elegir una opción."
+        : "El botón deja el menú en iconos.";
+
+    private static List<string> Find(IReadOnlyList<TDMenuItem> items, string? path, List<string> trail)
+    {
+        foreach (var item in items)
+        {
+            var next = new List<string>(trail) { item.Text };
+            if (!string.IsNullOrEmpty(path) && item.Href == path)
+            {
+                return next;
+            }
+            if (item.Children is { Count: > 0 })
+            {
+                var found = Find(item.Children, path, next);
+                if (found.Count > 0)
+                {
+                    return found;
+                }
+            }
+        }
+        return [];
+    }
+}

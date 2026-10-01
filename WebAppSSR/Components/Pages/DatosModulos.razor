@@ -1,0 +1,555 @@
+@using System.Globalization
+@using WebAppSSR.Interfaces
+@using WebAppSSR.Models
+
+@inject IRepuestoCatalogo Catalogo
+
+<section id="columnas">
+    <h2 class="td-data-note">DataGrid · Columnas</h2>
+    <p class="td-lead">Plantillas, anchos, orden, totales, columnas fijas y grupos. El selector de columnas sigue en la grilla principal.</p>
+
+    <h3 id="plantillas">Templates</h3>
+    <TDDataGrid TItem="Repuesto" Data="Partes" QueryKey="tpl" PageSize="5" ShowSearch="false" ShowTools="false" Selection="TDSelectionMode.None" AriaLabel="Templates de columna">
+        <Columns>
+            <TDColumn Property="p => p.Name" Title="Repuesto">
+                <Template Context="p">
+                    <div class="td-cell-media">
+                        <span class="td-grid__thumb">@(p.Code.Length >= 2 ? p.Code[..2] : p.Code)</span>
+                        <div><strong>@p.Name</strong><small>@p.Code</small></div>
+                    </div>
+                </Template>
+            </TDColumn>
+            <TDColumn Property="p => p.Brand" Title="Marca" />
+            <TDColumn Property="p => p.Stock" Title="Estado">
+                <Template Context="p"><span class="td-stock__state @Estado(p.Stock).ClassName">@Estado(p.Stock).Label</span></Template>
+            </TDColumn>
+            <TDColumn Property="p => p.Stock" Title="Nivel" KeyName="nivel">
+                <Template Context="p">
+                    <div class="td-bar"><span class="td-bar__track"><span class="td-bar__fill" style="@($"width:{Math.Clamp(p.Stock, 0, 120) * 100 / 120}%")"></span></span><span>@p.Stock</span></div>
+                </Template>
+            </TDColumn>
+            <TDColumn Property="p => p.Price" Title="Precio" Kind="TDColumnKind.Money" Align="TDColumnAlign.End" />
+        </Columns>
+    </TDDataGrid>
+
+    <h3 id="anchos">Redimensionar</h3>
+    <p class="td-lead">Arrastra el borde del encabezado. El ancho queda en este navegador.</p>
+    <TDDataGrid TItem="Repuesto" Data="Partes" QueryKey="rsz" PageSize="5" ShowSearch="false" ShowTools="false" Selection="TDSelectionMode.None" AllowResize="true" AriaLabel="Redimensionar columnas">
+        <Columns>
+            <TDColumn Property="p => p.Code" Title="Código" Kind="TDColumnKind.Mono" Width="120" MinWidth="80" />
+            <TDColumn Property="p => p.Name" Title="Repuesto" Kind="TDColumnKind.Strong" Width="240" />
+            <TDColumn Property="p => p.Brand" Title="Marca" Width="130" />
+            <TDColumn Property="p => p.Category" Title="Categoría" Kind="TDColumnKind.Pill" Width="130" />
+            <TDColumn Property="p => p.Stock" Title="Stock" Kind="TDColumnKind.Number" Align="TDColumnAlign.End" Width="90" />
+            <TDColumn Property="p => p.Price" Title="Precio" Kind="TDColumnKind.Money" Align="TDColumnAlign.End" Width="120" />
+        </Columns>
+    </TDDataGrid>
+
+    <h3 id="reordenar">Reordenar</h3>
+    <p class="td-lead">Arrastra el encabezado o usa Alt + flechas con el foco en la columna.</p>
+    <TDDataGrid TItem="Repuesto" Data="Partes" QueryKey="ror" PageSize="5" ShowSearch="false" ShowTools="false" Selection="TDSelectionMode.None" AllowReorder="true" AriaLabel="Reordenar columnas">
+        <Columns>
+            <TDColumn Property="p => p.Code" Title="Código" Kind="TDColumnKind.Mono" />
+            <TDColumn Property="p => p.Name" Title="Repuesto" Kind="TDColumnKind.Strong" />
+            <TDColumn Property="p => p.Brand" Title="Marca" />
+            <TDColumn Property="p => p.Category" Title="Categoría" Kind="TDColumnKind.Pill" />
+            <TDColumn Property="p => p.Price" Title="Precio" Kind="TDColumnKind.Money" Align="TDColumnAlign.End" />
+        </Columns>
+    </TDDataGrid>
+
+    <h3 id="totales">Totales</h3>
+    <TDDataGrid TItem="Repuesto" Data="Partes" QueryKey="ftr" PageSize="5" ShowSearch="false" ShowTools="false" Selection="TDSelectionMode.None" ShowFooter="true" AriaLabel="Totales">
+        <Columns>
+            <TDColumn Property="p => p.Code" Title="Código" Kind="TDColumnKind.Mono" Aggregate="TDAggregate.Count" />
+            <TDColumn Property="p => p.Name" Title="Repuesto" Kind="TDColumnKind.Strong" />
+            <TDColumn Property="p => p.Category" Title="Categoría" Kind="TDColumnKind.Pill" />
+            <TDColumn Property="p => p.Stock" Title="Stock" Kind="TDColumnKind.Number" Align="TDColumnAlign.End" Aggregate="TDAggregate.Sum" />
+            <TDColumn Property="p => p.Price" Title="Precio" Kind="TDColumnKind.Money" Align="TDColumnAlign.End" Aggregate="TDAggregate.Average" />
+        </Columns>
+    </TDDataGrid>
+
+    <h3 id="fijas">Columnas fijas</h3>
+    <div class="td-grid-frame">
+        <TDDataGrid TItem="Repuesto" Data="Partes" QueryKey="frz" PageSize="5" ShowSearch="false" ShowTools="false" Selection="TDSelectionMode.None" AriaLabel="Columnas fijas">
+            <Columns>
+                <TDColumn Property="p => p.Code" Title="Código" Kind="TDColumnKind.Mono" Width="120" Frozen="TDFrozenEdge.Left" />
+                <TDColumn Property="p => p.Name" Title="Repuesto" Kind="TDColumnKind.Strong" Width="220" Frozen="TDFrozenEdge.Left" />
+                <TDColumn Property="p => p.Brand" Title="Marca" Width="140" />
+                <TDColumn Property="p => p.Model" Title="Aplicación" Width="200" />
+                <TDColumn Property="p => p.Category" Title="Categoría" Kind="TDColumnKind.Pill" Width="140" />
+                <TDColumn Property="p => p.Stock" Title="Stock" Kind="TDColumnKind.Number" Width="100" Align="TDColumnAlign.End" />
+                <TDColumn Property="p => p.Price" Title="Precio" Kind="TDColumnKind.Money" Width="130" Align="TDColumnAlign.End" />
+                <TDColumn Property="p => p.Updated" Title="Actualizado" Kind="TDColumnKind.Date" Width="130" Frozen="TDFrozenEdge.Right" />
+            </Columns>
+        </TDDataGrid>
+    </div>
+
+    <h3 id="grupos">Columnas compuestas</h3>
+    <TDDataGrid TItem="Repuesto" Data="Partes" QueryKey="cmp" PageSize="5" ShowSearch="false" ShowTools="false" Selection="TDSelectionMode.None" AriaLabel="Columnas compuestas">
+        <Columns>
+            <TDColumn Property="p => p.Code" Title="Código" Kind="TDColumnKind.Mono" GroupTitle="Identidad" />
+            <TDColumn Property="p => p.Name" Title="Repuesto" Kind="TDColumnKind.Strong" GroupTitle="Identidad" />
+            <TDColumn Property="p => p.Stock" Title="Stock" Kind="TDColumnKind.Number" Align="TDColumnAlign.End" GroupTitle="Inventario" />
+            <TDColumn Property="p => p.Price" Title="Precio" Kind="TDColumnKind.Money" Align="TDColumnAlign.End" GroupTitle="Comercial" />
+        </Columns>
+    </TDDataGrid>
+
+    <h3 id="rol">Columnas condicionales</h3>
+    <p class="td-lead">@NotaRol</p>
+    <p class="td-module-nav">
+        <a href="/datos?rol=vendedor#rol">Vendedor</a>
+        <a href="/datos?rol=bodega#rol">Bodega</a>
+        <a href="/datos?rol=gerencia#rol">Gerencia</a>
+    </p>
+    <TDDataGrid TItem="Repuesto" Data="Partes" QueryKey="rol" PageSize="5" ShowSearch="false" ShowTools="false" Selection="TDSelectionMode.None" AriaLabel="Columnas por rol">
+        <Columns>
+            <TDColumn Property="p => p.Code" Title="Código" Kind="TDColumnKind.Mono" />
+            <TDColumn Property="p => p.Name" Title="Repuesto" Kind="TDColumnKind.Strong" />
+            @if (Rol is null or "" or "vendedor" or "gerencia")
+            {
+                <TDColumn Property="p => p.Price" Title="Precio" Kind="TDColumnKind.Money" Align="TDColumnAlign.End" />
+            }
+            @if (Rol is "bodega" or "gerencia")
+            {
+                <TDColumn Property="p => p.Stock" Title="Stock" Kind="TDColumnKind.Number" Align="TDColumnAlign.End" />
+                <TDColumn Property="p => p.Updated" Title="Actualizado" Kind="TDColumnKind.Date" />
+            }
+        </Columns>
+    </TDDataGrid>
+</section>
+
+<section id="filtros">
+    <h2 class="td-data-note">DataGrid · Filtering</h2>
+    <h3 id="simple">Filtro simple</h3>
+    <p class="td-lead">Escribe y pulsa Enter. El texto usa Contiene; los números, Igual a.</p>
+    <TDDataGrid TItem="Repuesto" Data="Partes" QueryKey="fs" PageSize="5" ShowTools="false" Selection="TDSelectionMode.None" FilterMode="TDFilterMode.Simple" SearchPlaceholder="Buscar en el filtro simple" AriaLabel="Filtro simple">
+        <Columns>
+            <TDColumn Property="p => p.Code" Title="Código" Kind="TDColumnKind.Mono" Searchable="true" />
+            <TDColumn Property="p => p.Name" Title="Repuesto" Kind="TDColumnKind.Strong" Searchable="true" />
+            <TDColumn Property="p => p.Brand" Title="Marca" />
+            <TDColumn Property="p => p.Category" Title="Categoría" Kind="TDColumnKind.Pill" />
+            <TDColumn Property="p => p.Stock" Title="Stock" Kind="TDColumnKind.Number" Align="TDColumnAlign.End" />
+        </Columns>
+    </TDDataGrid>
+
+    <h3 id="menu">Filtro con menú de operador</h3>
+    <TDDataGrid TItem="Repuesto" Data="Partes" QueryKey="fm" PageSize="5" ShowSearch="false" ShowTools="false" Selection="TDSelectionMode.None" FilterMode="TDFilterMode.Menu" AriaLabel="Filtro con operador">
+        <Columns>
+            <TDColumn Property="p => p.Name" Title="Repuesto" Kind="TDColumnKind.Strong" />
+            <TDColumn Property="p => p.Brand" Title="Marca" />
+            <TDColumn Property="p => p.Stock" Title="Stock" Kind="TDColumnKind.Number" Align="TDColumnAlign.End" />
+            <TDColumn Property="p => p.Price" Title="Precio" Kind="TDColumnKind.Money" Align="TDColumnAlign.End" />
+        </Columns>
+    </TDDataGrid>
+
+    <h3 id="lista">Lista de valores</h3>
+    <TDDataGrid TItem="Repuesto" Data="Partes" QueryKey="fcb" PageSize="5" ShowSearch="false" ShowTools="false" Selection="TDSelectionMode.None" FilterMode="TDFilterMode.CheckList" AriaLabel="Filtro por lista">
+        <Columns>
+            <TDColumn Property="p => p.Brand" Title="Marca" />
+            <TDColumn Property="p => p.Category" Title="Categoría" Kind="TDColumnKind.Pill" />
+            <TDColumn Property="p => p.Name" Title="Repuesto" Kind="TDColumnKind.Strong" FilterMode="TDFilterMode.None" />
+        </Columns>
+    </TDDataGrid>
+
+    <h3 id="mixto">Filtro mixto</h3>
+    <TDDataGrid TItem="Repuesto" Data="Partes" QueryKey="fmx" PageSize="5" ShowSearch="false" ShowTools="false" Selection="TDSelectionMode.None" FilterMode="TDFilterMode.Mixed" AriaLabel="Filtro mixto">
+        <Columns>
+            <TDColumn Property="p => p.Name" Title="Repuesto" Kind="TDColumnKind.Strong" FilterMode="TDFilterMode.Simple" />
+            <TDColumn Property="p => p.Stock" Title="Stock" Kind="TDColumnKind.Number" Align="TDColumnAlign.End" FilterMode="TDFilterMode.Menu" />
+            <TDColumn Property="p => p.Brand" Title="Marca" FilterMode="TDFilterMode.CheckList" />
+        </Columns>
+    </TDDataGrid>
+
+    <h3 id="api">API de filtros</h3>
+    <p class="td-module-nav">
+        <a href="/datos?fapif=@Uri.EscapeDataString("Stock|eq|0")#api">Stock igual a 0</a>
+        <a href="/datos?fapif=@Uri.EscapeDataString("Category|in|Frenos,Motor")#api">Frenos o Motor</a>
+        <a href="/datos#api">Limpiar</a>
+    </p>
+    <TDDataGrid TItem="Repuesto" Data="Partes" QueryKey="fapi" PageSize="5" ShowSearch="false" ShowTools="false" Selection="TDSelectionMode.None" FilterMode="TDFilterMode.None" AriaLabel="Filtros externos">
+        <Columns>
+            <TDColumn Property="p => p.Code" Title="Código" Kind="TDColumnKind.Mono" />
+            <TDColumn Property="p => p.Name" Title="Repuesto" Kind="TDColumnKind.Strong" />
+            <TDColumn Property="p => p.Category" Title="Categoría" Kind="TDColumnKind.Pill" />
+            <TDColumn Property="p => p.Stock" Title="Stock" Kind="TDColumnKind.Number" Align="TDColumnAlign.End" />
+        </Columns>
+    </TDDataGrid>
+</section>
+
+<section id="seleccion">
+    <h2 class="td-data-note">DataGrid · Selection</h2>
+    <h3 id="simple-sel">Selección simple</h3>
+    <TDDataGrid TItem="Repuesto" Data="Partes" QueryKey="ss" PageSize="5" ShowSearch="false" ShowTools="false" Selection="TDSelectionMode.Single" SelectedId="Seleccion" RowId="p => p.Id" AriaLabel="Selección simple">
+        <Columns>
+            <TDColumn Property="p => p.Code" Title="Código" Kind="TDColumnKind.Mono" />
+            <TDColumn Property="p => p.Name" Title="Repuesto" Kind="TDColumnKind.Strong" />
+            <TDColumn Property="p => p.Brand" Title="Marca" />
+            <TDColumn Property="p => p.Price" Title="Precio" Kind="TDColumnKind.Money" Align="TDColumnAlign.End" />
+        </Columns>
+    </TDDataGrid>
+    @if (Catalogo.Find(Seleccion ?? 0) is { } elegido)
+    {
+        <div class="td-detail">
+            <p><strong>@elegido.Name</strong></p>
+            <p>@elegido.Code · @elegido.Brand · @elegido.Model · stock @elegido.Stock</p>
+        </div>
+    }
+
+    <h3 id="multiple">Selección múltiple</h3>
+    <TDDataGrid TItem="Repuesto" Data="Partes" QueryKey="sm" PageSize="5" ShowSearch="false" ShowTools="false" AriaLabel="Selección múltiple">
+        <Columns>
+            <TDColumn Property="p => p.Code" Title="Código" Kind="TDColumnKind.Mono" />
+            <TDColumn Property="p => p.Name" Title="Repuesto" Kind="TDColumnKind.Strong" />
+            <TDColumn Property="p => p.Category" Title="Categoría" Kind="TDColumnKind.Pill" />
+            <TDColumn Property="p => p.Stock" Title="Stock" Kind="TDColumnKind.Number" Align="TDColumnAlign.End" />
+        </Columns>
+    </TDDataGrid>
+</section>
+
+<section id="orden">
+    <h2 class="td-data-note">DataGrid · Sorting</h2>
+    <p class="td-lead">El orden de una columna está en la grilla principal. Aquí el orden es múltiple: Categoría y después Precio. Cada clic suma, invierte o quita esa columna.</p>
+    <TDDataGrid TItem="Repuesto" Data="Partes" QueryKey="ms" PageSize="8" ShowSearch="false" ShowTools="false" Selection="TDSelectionMode.None" MultiSort="true" InitialSort="Category:asc,Price:desc" AriaLabel="Orden múltiple">
+        <Columns>
+            <TDColumn Property="p => p.Category" Title="Categoría" Kind="TDColumnKind.Pill" />
+            <TDColumn Property="p => p.Brand" Title="Marca" />
+            <TDColumn Property="p => p.Name" Title="Repuesto" Kind="TDColumnKind.Strong" />
+            <TDColumn Property="p => p.Price" Title="Precio" Kind="TDColumnKind.Money" Align="TDColumnAlign.End" />
+        </Columns>
+    </TDDataGrid>
+</section>
+
+<section id="celda">
+    <h2 class="td-data-note">Data · DataGrid</h2>
+    <h3 id="menu-celda">Menú contextual</h3>
+    <p class="td-lead">Clic derecho en una celda: copiar, filtrar por ese valor, ordenar o abrir la ficha.</p>
+    <TDDataGrid TItem="Repuesto" Data="Partes" QueryKey="cm" PageSize="6" ShowSearch="false" ShowTools="false" Selection="TDSelectionMode.None" ContextMenu="true" AriaLabel="Menú contextual">
+        <Columns>
+            <TDColumn Property="p => p.Code" Title="Código" Kind="TDColumnKind.Mono" />
+            <TDColumn Property="p => p.Name" Title="Repuesto" Kind="TDColumnKind.Strong" />
+            <TDColumn Property="p => p.Brand" Title="Marca" />
+            <TDColumn Property="p => p.Category" Title="Categoría" Kind="TDColumnKind.Pill" />
+            <TDColumn Property="p => p.Price" Title="Precio" Kind="TDColumnKind.Money" Align="TDColumnAlign.End" />
+        </Columns>
+    </TDDataGrid>
+
+    <h3 id="formato">Formato condicional</h3>
+    <TDDataGrid TItem="Repuesto" Data="Partes" QueryKey="cf" PageSize="8" ShowSearch="false" ShowTools="false" Selection="TDSelectionMode.None" RowClass="Formato" AriaLabel="Formato condicional">
+        <Columns>
+            <TDColumn Property="p => p.Name" Title="Repuesto">
+                <Template Context="p">
+                    @p.Name
+                    @if (p.Price > 500000)
+                    {
+                        <span class="td-grid__pill">Premium</span>
+                    }
+                </Template>
+            </TDColumn>
+            <TDColumn Property="p => p.Stock" Title="Stock" Kind="TDColumnKind.Number" Align="TDColumnAlign.End" />
+            <TDColumn Property="p => p.Price" Title="Precio" Align="TDColumnAlign.End">
+                <Template Context="p"><span class="@(p.Price > 500000 ? "td-cell-hot" : "td-grid__money")">@p.Price.ToString("C0", Cultura)</span></Template>
+            </TDColumn>
+            <TDColumn Property="p => p.Updated" Title="Actualizado" Kind="TDColumnKind.Date" />
+        </Columns>
+    </TDDataGrid>
+</section>
+
+<section id="exportar">
+    <h2 class="td-data-note">Exportar</h2>
+    <p class="td-lead">Excel sale del servidor con los filtros de la grilla principal. CSV se arma en el navegador desde las filas ya filtradas.</p>
+    <p><a class="td-grid__tool" href="@ExcelHref">Descargar Excel</a></p>
+</section>
+
+<section id="edicion">
+    <h2 class="td-data-note">DataGrid · Edición</h2>
+    @if (!string.IsNullOrEmpty(_aviso))
+    {
+        <div class="td-banner td-banner--success" role="status"><p>@_aviso</p></div>
+    }
+    @if (!string.IsNullOrEmpty(_error))
+    {
+        <div class="td-banner" role="alert"><p>@_error</p></div>
+    }
+
+    <h3 id="linea">Edición en línea</h3>
+    <p class="td-lead"><a href="/datos?edit=0#linea">Agregar repuesto</a></p>
+    @if (EditId == 0)
+    {
+        <form method="post" @formname="save-new" @onsubmit="Crear" data-enhance class="td-stack">
+            <label>Código <input name="Code" required /></label>
+            <label>Repuesto <input name="Name" required /></label>
+            <label>Marca <input name="Brand" value="Volvo" /></label>
+            <label>Stock <input name="Stock" type="number" min="0" value="0" /></label>
+            <label>Precio <input name="Price" type="number" min="0" value="0" /></label>
+            <TDButton PendingText="Guardando…">Guardar repuesto</TDButton>
+        </form>
+    }
+    <TDDataGrid TItem="Repuesto" Data="Partes" QueryKey="ie" PageSize="5" ShowSearch="false" ShowTools="false" Selection="TDSelectionMode.None" FormName="save-inline" OnSubmit="GuardarLinea" SaveHint="Elige Editar, cambia la fila y guarda." AriaLabel="Edición en línea">
+        <Columns>
+            <TDColumn Property="p => p.Code" Title="Código" Kind="TDColumnKind.Mono">
+                <Template Context="p">
+                    @if (EditId == p.Id)
+                    {
+                        <input name="Id" type="hidden" value="@p.Id" />
+                        <input name="Code" value="@p.Code" aria-label="Código" required />
+                    }
+                    else
+                    {
+                        @p.Code
+                    }
+                </Template>
+            </TDColumn>
+            <TDColumn Property="p => p.Name" Title="Repuesto">
+                <Template Context="p">
+                    @if (EditId == p.Id)
+                    {
+                        <input name="Name" value="@p.Name" aria-label="Repuesto" required />
+                    }
+                    else
+                    {
+                        @p.Name
+                    }
+                </Template>
+            </TDColumn>
+            <TDColumn Property="p => p.Brand" Title="Marca">
+                <Template Context="p">
+                    @if (EditId == p.Id)
+                    {
+                        <input name="Brand" value="@p.Brand" aria-label="Marca" />
+                        <input name="Model" type="hidden" value="@p.Model" />
+                        <input name="Category" type="hidden" value="@p.Category" />
+                        <input name="Type" type="hidden" value="@p.Type" />
+                    }
+                    else
+                    {
+                        @p.Brand
+                    }
+                </Template>
+            </TDColumn>
+            <TDColumn Property="p => p.Stock" Title="Stock" Align="TDColumnAlign.End">
+                <Template Context="p">
+                    @if (EditId == p.Id)
+                    {
+                        <input name="Stock" type="number" min="0" value="@p.Stock" aria-label="Stock" />
+                    }
+                    else
+                    {
+                        @p.Stock
+                    }
+                </Template>
+            </TDColumn>
+            <TDColumn Property="p => p.Price" Title="Precio" Align="TDColumnAlign.End">
+                <Template Context="p">
+                    @if (EditId == p.Id)
+                    {
+                        <input name="Price" type="number" min="0" value="@p.Price" aria-label="Precio" />
+                        <button type="submit" name="accion" value="guardar">Guardar</button>
+                    }
+                    else
+                    {
+                        <a href="@($"/datos?edit={p.Id}#linea")">Editar</a>
+                        <button type="submit" name="accion" value="@($"eliminar:{p.Id}")">Eliminar</button>
+                    }
+                </Template>
+            </TDColumn>
+        </Columns>
+    </TDDataGrid>
+
+    <h3 id="celda-edit">Edición en celda</h3>
+    <p class="td-lead">La celda ya es un campo. Guardar envía la página visible.</p>
+    <TDDataGrid TItem="Repuesto" Data="Partes" QueryKey="ic" PageSize="5" ShowSearch="false" ShowTools="false" Selection="TDSelectionMode.None" FormName="save-cells" OnSubmit="GuardarCeldas" RowId="p => p.Id" SaveHint="Edita nombre o categoría y guarda la página." AriaLabel="Edición en celda">
+        <Columns>
+            <TDColumn Property="p => p.Code" Title="Código" Kind="TDColumnKind.Mono" />
+            <TDColumn Property="p => p.Name" Title="Repuesto">
+                <Template Context="p"><span class="td-incell"><input name="@($"Nombre[{p.Id}]")" value="@p.Name" aria-label="@($"Nombre {p.Code}")" /></span></Template>
+            </TDColumn>
+            <TDColumn Property="p => p.Category" Title="Categoría">
+                <Template Context="p">
+                    <span class="td-incell">
+                        <select name="@($"Categoria[{p.Id}]")" aria-label="@($"Categoría {p.Code}")">
+                            @foreach (var categoria in Categorias)
+                            {
+                                <option value="@categoria" selected="@(categoria == p.Category)">@categoria</option>
+                            }
+                        </select>
+                    </span>
+                </Template>
+            </TDColumn>
+            <TDColumn Property="p => p.Stock" Title="Stock" Kind="TDColumnKind.Stock" Align="TDColumnAlign.End" />
+        </Columns>
+    </TDDataGrid>
+
+    <h3 id="cascada">Dropdowns en cascada</h3>
+    <form method="get" action="/datos" data-enhance class="td-stack">
+        <label>Marca
+            <select name="marca" data-td-cascade aria-label="Marca">
+                <option value="">Todas</option>
+                @foreach (var marca in Marcas)
+                {
+                    <option value="@marca" selected="@(marca == Marca)">@marca</option>
+                }
+            </select>
+        </label>
+        <label>Modelo
+            <select name="modelo" data-td-cascade aria-label="Modelo">
+                <option value="">Todos</option>
+                @foreach (var modelo in Modelos)
+                {
+                    <option value="@modelo" selected="@(modelo == Modelo)">@modelo</option>
+                }
+            </select>
+        </label>
+        <label>Sistema
+            <select name="sistema" data-td-cascade aria-label="Sistema">
+                <option value="">Todos</option>
+                @foreach (var sistema in Sistemas)
+                {
+                    <option value="@sistema" selected="@(sistema == Sistema)">@sistema</option>
+                }
+            </select>
+        </label>
+        <button type="submit" class="td-grid__tool">Ver aplicaciones</button>
+        <p>@Aplicaciones.Count() aplicaciones</p>
+    </form>
+</section>
+
+@code {
+    [Parameter] public string? Rol { get; set; }
+    [Parameter] public int? EditId { get; set; }
+    [Parameter] public int? Seleccion { get; set; }
+    [Parameter] public string? Marca { get; set; }
+    [Parameter] public string? Modelo { get; set; }
+    [Parameter] public string? Sistema { get; set; }
+    [Parameter] public string ExcelHref { get; set; } = "/datos/repuestos.xlsx";
+
+    [CascadingParameter] private HttpContext HttpContext { get; set; } = default!;
+
+    private IQueryable<Repuesto> Partes => Catalogo.Repuestos.AsQueryable();
+    private static readonly CultureInfo Cultura = CultureInfo.GetCultureInfo("es-CL");
+    private string? _aviso;
+    private string? _error;
+
+    private string NotaRol => Rol switch
+    {
+        "bodega" => "Bodega ve cantidades y fecha, sin precio.",
+        "gerencia" => "Gerencia ve precio, stock y fecha.",
+        _ => "Vendedor ve el precio de venta."
+    };
+
+    private IEnumerable<string> Categorias => Catalogo.Repuestos.Select(item => item.Category).Distinct().Order();
+    private IEnumerable<string> Marcas => Catalogo.Repuestos.Select(item => item.Brand).Distinct().Order();
+    private IEnumerable<string> Modelos => Catalogo.Repuestos.Where(item => string.IsNullOrEmpty(Marca) || item.Brand == Marca).Select(item => item.Model).Distinct().Order();
+    private IEnumerable<string> Sistemas => Catalogo.Repuestos.Where(item =>
+        (string.IsNullOrEmpty(Marca) || item.Brand == Marca) &&
+        (string.IsNullOrEmpty(Modelo) || item.Model == Modelo)).Select(item => item.Category).Distinct().Order();
+    private IEnumerable<Repuesto> Aplicaciones => Catalogo.Repuestos.Where(item =>
+        (string.IsNullOrEmpty(Marca) || item.Brand == Marca) &&
+        (string.IsNullOrEmpty(Modelo) || item.Model == Modelo) &&
+        (string.IsNullOrEmpty(Sistema) || item.Category == Sistema));
+
+    private static (string Label, string ClassName) Estado(int stock)
+        => stock <= 0 ? ("Agotado", "is-out") : stock <= 10 ? ("Pocas unidades", "is-low") : ("En stock", "is-ok");
+
+    private string? Formato(Repuesto item)
+    {
+        if (item.Stock <= 0)
+        {
+            return "td-row-danger";
+        }
+
+        return item.Updated < DateOnly.FromDateTime(DateTime.Today.AddDays(-20)) ? "td-row-muted" : null;
+    }
+
+    private void Crear()
+    {
+        var form = HttpContext.Request.Form;
+        var name = form["Name"].ToString().Trim();
+        if (name.Length == 0)
+        {
+            _error = "El nombre es obligatorio.";
+            return;
+        }
+
+        Catalogo.Save(new Repuesto
+        {
+            Code = form["Code"].ToString().Trim(),
+            Name = name,
+            Brand = form["Brand"].ToString().Trim(),
+            Model = form["Brand"].ToString().Trim(),
+            Type = "Camión",
+            Category = "Motor",
+            Stock = LeerEntero(form["Stock"]),
+            Price = LeerEntero(form["Price"])
+        });
+        _aviso = "Repuesto agregado.";
+        _error = null;
+    }
+
+    private void GuardarLinea()
+    {
+        var form = HttpContext.Request.Form;
+        var accion = form["accion"].ToString();
+        if (accion.StartsWith("eliminar:", StringComparison.Ordinal) && int.TryParse(accion["eliminar:".Length..], out var id))
+        {
+            Catalogo.Remove(id);
+            _aviso = "Repuesto eliminado.";
+            return;
+        }
+
+        var name = form["Name"].ToString().Trim();
+        if (name.Length == 0 || !int.TryParse(form["Id"], out var editId))
+        {
+            _error = "El nombre es obligatorio.";
+            return;
+        }
+
+        var current = Catalogo.Find(editId);
+        Catalogo.Save(new Repuesto
+        {
+            Id = editId,
+            Code = form["Code"].ToString().Trim(),
+            Name = name,
+            Brand = form["Brand"].ToString().Trim(),
+            Model = form["Model"].ToString(),
+            Type = current?.Type ?? form["Type"].ToString(),
+            Category = form["Category"].ToString(),
+            Stock = LeerEntero(form["Stock"]),
+            Price = LeerEntero(form["Price"])
+        });
+        _aviso = "Fila guardada.";
+        _error = null;
+    }
+
+    private void GuardarCeldas()
+    {
+        var updated = 0;
+        foreach (var item in Catalogo.Repuestos.ToList())
+        {
+            var name = HttpContext.Request.Form[$"Nombre[{item.Id}]"].ToString();
+            if (name.Length == 0)
+            {
+                continue;
+            }
+
+            var category = HttpContext.Request.Form[$"Categoria[{item.Id}]"].ToString();
+            if (name == item.Name && category == item.Category)
+            {
+                continue;
+            }
+
+            item.Name = name;
+            if (category.Length > 0)
+            {
+                item.Category = category;
+            }
+
+            item.Updated = DateOnly.FromDateTime(DateTime.Today);
+            updated++;
+        }
+
+        _aviso = updated == 0 ? "No había cambios en las celdas." : $"Celdas guardadas · {updated}.";
+    }
+
+    private static int LeerEntero(Microsoft.Extensions.Primitives.StringValues value)
+        => int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var number) ? Math.Max(0, number) : 0;
+}

@@ -1,0 +1,22 @@
+@namespace TDComponents.Components
+
+<div class="td-row12" style="--td-row-gap:@Gap;align-items:@AlignCss">
+    @ChildContent
+</div>
+
+@code {
+    /// <summary>Separación entre columnas, en CSS. El defecto es 16px.</summary>
+    [Parameter] public string Gap { get; set; } = "16px";
+    /// <summary>Alineación vertical de las columnas. El defecto es Stretch.</summary>
+    [Parameter] public TDAlignItems Align { get; set; } = TDAlignItems.Stretch;
+    /// <summary>Columnas TDCol.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private string AlignCss => Align switch
+    {
+        TDAlignItems.Start => "flex-start",
+        TDAlignItems.Center => "center",
+        TDAlignItems.End => "flex-end",
+        _ => "stretch"
+    };
+}

@@ -1,0 +1,28 @@
+@namespace TDComponents.Components
+
+<span class="td-badge td-badge--@Token @(Dot ? "td-badge--dot" : null)">
+    @if (Dot)
+    {
+        <span class="td-badge__dot" aria-hidden="true"></span>
+    }
+    @ChildContent
+</span>
+
+@code {
+    /// <summary>Énfasis del badge. El defecto es Neutral.</summary>
+    [Parameter] public TDBadgeVariant Variant { get; set; } = TDBadgeVariant.Neutral;
+    /// <summary>Muestra un punto en lugar del texto. Úsalo solo si el estado ya está escrito al lado.</summary>
+    [Parameter] public bool Dot { get; set; }
+    /// <summary>Texto del estado. No lo dejes vacío si Dot es falso.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private string Token => Variant switch
+    {
+        TDBadgeVariant.Success => "ok",
+        TDBadgeVariant.Warning => "warn",
+        TDBadgeVariant.Danger => "danger",
+        TDBadgeVariant.Info => "info",
+        TDBadgeVariant.Primary => "primary",
+        _ => "neutral"
+    };
+}

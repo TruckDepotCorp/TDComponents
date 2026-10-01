@@ -1,0 +1,52 @@
+@namespace TDComponents.Components
+
+<nav class="td-menu @(Dark ? "td-menu--dark" : null)" aria-label="@AriaLabel" data-td-menu>
+    @foreach (var item in Items)
+    {
+        if (item.Children is { Count: > 0 })
+        {
+            <div class="td-menu__item">
+                <button type="button" class="td-menu__btn" aria-haspopup="true" aria-expanded="false" data-td-menu-open>
+                    @item.Text
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"></path></svg>
+                </button>
+                <div class="td-menu__drop" hidden role="menu">
+                    @foreach (var child in item.Children)
+                    {
+                        if (child.Text == "-")
+                        {
+                            <hr class="td-menu__sep" />
+                        }
+                        else if (child.Disabled)
+                        {
+                            <span class="td-menu__opt is-off" role="menuitem" aria-disabled="true">@child.Text</span>
+                        }
+                        else
+                        {
+                            <a class="td-menu__opt" role="menuitem" href="@(child.Href ?? "#")">
+                                <span>@child.Text</span>
+                                @if (!string.IsNullOrWhiteSpace(child.Shortcut))
+                                {
+                                    <kbd>@child.Shortcut</kbd>
+                                }
+                            </a>
+                        }
+                    }
+                </div>
+            </div>
+        }
+        else
+        {
+            <a class="td-menu__btn" href="@(item.Href ?? "#")">@item.Text</a>
+        }
+    }
+</nav>
+
+@code {
+    /// <summary>Entradas de primer nivel. Children son los submenús.</summary>
+    [Parameter] public IReadOnlyList<TDMenuItem> Items { get; set; } = [];
+    /// <summary>Barra oscura. El defecto es verdadero.</summary>
+    [Parameter] public bool Dark { get; set; } = true;
+    /// <summary>Nombre accesible de la barra.</summary>
+    [Parameter] public string AriaLabel { get; set; } = "Menú principal";
+}

@@ -1,0 +1,121 @@
+@namespace TDComponents.Components
+
+<td-org class="td-org" data-multi="@(Multiple ? "true" : "false")">
+    <div class="td-org__tools">
+        <button type="button" class="td-switch" role="switch" aria-checked="@(Multiple ? "true" : "false")" data-td-org-multi><i></i>Selección múltiple</button>
+        <button type="button" class="td-btn td-btn--secondary td-btn--sm" data-td-org-expand>Expandir todo</button>
+        <button type="button" class="td-btn td-btn--secondary td-btn--sm" data-td-org-collapse>Contraer todo</button>
+    </div>
+    <div class="td-org__scroll" data-td-org-scroll>
+        @if (Root is not null)
+        {
+            <div class="td-org__canvas">
+                <ul class="td-org__level" role="tree" aria-label="Organigrama">
+                    @Node(Root, true, true, true)
+                </ul>
+            </div>
+        }
+    </div>
+    <p class="td-home__note" data-td-org-msg role="status">@Status</p>
+</td-org>
+
+@code {
+    /// <summary>Persona raíz. Sus Children arman el resto del árbol.</summary>
+    [Parameter] public TDOrgNode? Root { get; set; }
+    /// <summary>Permite marcar varias personas.</summary>
+    [Parameter] public bool Multiple { get; set; }
+    /// <summary>Id de la persona marcada. Coincide con TDOrgNode.Id.</summary>
+    [Parameter] public string? SelectedId { get; set; }
+
+    private string Status
+    {
+        get
+        {
+            if (Root is null || string.IsNullOrWhiteSpace(SelectedId))
+            {
+                return "Sin selección";
+            }
+
+            var person = Find(Root, SelectedId);
+            return person is null
+                ? "Sin selección"
+                : $"Seleccionado: {person.Name} ({person.Role})";
+        }
+    }
+
+    private static TDOrgNode? Find(TDOrgNode node, string id)
+    {
+        if (node.Id == id)
+        {
+            return node;
+        }
+
+        if (node.Children is null)
+        {
+            return null;
+        }
+
+        foreach (var child in node.Children)
+        {
+            var hit = Find(child, id);
+            if (hit is not null)
+            {
+                return hit;
+            }
+        }
+
+        return null;
+    }
+
+    private static int TeamSize(TDOrgNode node) =>
+        node.Children is not { Count: > 0 } children
+            ? 0
+            : children.Sum(child => 1 + TeamSize(child));
+
+    private RenderFragment Node(TDOrgNode node, bool root, bool first, bool last) => @<li class="td-org__item @(root ? "is-root" : null) @(first ? "is-first" : null) @(last ? "is-last" : null)" role="treeitem" aria-selected="@(node.Id == SelectedId ? "true" : "false")" aria-expanded="@(node.Children is { Count: > 0 } ? "true" : null)">
+        <div class="td-org__rail" aria-hidden="true"><span></span><span></span></div>
+        <span class="td-org__stem" aria-hidden="true"></span>
+        <article class="td-org__card @(node.Id == SelectedId ? "is-on" : null) @(root ? "is-root" : null)" data-td-org-card="@node.Id" data-name="@node.Name" data-role="@node.Role">
+            @if (!string.IsNullOrWhiteSpace(node.Href))
+            {
+                <a class="td-org__identity" href="@node.Href">
+                    <span class="td-org__avatar @(root ? "is-root" : null)">@node.Initials</span>
+                    <span class="td-org__name">@node.Name</span>
+                    <span class="td-org__role">@node.Role</span>
+                </a>
+            }
+            else
+            {
+                <div class="td-org__identity">
+                    <span class="td-org__avatar @(root ? "is-root" : null)">@node.Initials</span>
+                    <span class="td-org__name">@node.Name</span>
+                    <span class="td-org__role">@node.Role</span>
+                </div>
+            }
+            @if (!string.IsNullOrWhiteSpace(node.Email))
+            {
+                <a class="td-org__mail" href="@($"mailto:{node.Email}")" title="@node.Email" aria-label="@($"Correo de {node.Name}, {node.Email}")">Correo</a>
+            }
+            @if (node.Children is { Count: > 0 })
+            {
+                var team = TeamSize(node);
+                <button type="button" class="td-org__chev" data-td-org-toggle aria-expanded="true" aria-label="@($"Ocultar equipo de {node.Name}, {(team == 1 ? "1 persona" : $"{team} personas")}")">
+                    <span>@team</span>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+                </button>
+            }
+        </article>
+        @if (node.Children is { Count: > 0 } children)
+        {
+            <div data-td-org-kids>
+                <span class="td-org__drop" aria-hidden="true"></span>
+                <ul class="td-org__level" role="group">
+                    @for (var i = 0; i < children.Count; i++)
+                    {
+                        @Node(children[i], false, i == 0, i == children.Count - 1)
+                    }
+                </ul>
+            </div>
+        }
+    </li>;
+}

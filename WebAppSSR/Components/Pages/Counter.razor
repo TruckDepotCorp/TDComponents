@@ -1,0 +1,40 @@
+@page "/counter"
+
+<PageTitle>Contador</PageTitle>
+
+<div class="td-page" lang="es">
+    <p class="td-eyebrow">Formulario mejorado</p>
+    <h1>Contador</h1>
+    <p class="td-lead">Cada suma se procesa con un controlador de formulario en C#, sin una conexión permanente al servidor.</p>
+
+    <div class="td-panel">
+        <form method="post" @formname="counter" @onsubmit="Increment" data-enhance class="td-stack">
+            <AntiforgeryToken />
+            <input type="hidden" name="CurrentCount" value="@CurrentCount" />
+            <p class="td-note" role="status">Conteo actual: <strong>@CurrentCount</strong></p>
+            <TDButton PendingText="Sumando uno…">Sumar uno</TDButton>
+        </form>
+    </div>
+</div>
+
+@code {
+    [SupplyParameterFromForm(FormName = "counter")]
+    private CounterModel? Model { get; set; }
+
+    private int CurrentCount => Model?.CurrentCount ?? 0;
+
+    protected override void OnInitialized()
+    {
+        Model ??= new CounterModel();
+    }
+
+    private void Increment()
+    {
+        Model!.CurrentCount++;
+    }
+
+    private sealed class CounterModel
+    {
+        public int CurrentCount { get; set; }
+    }
+}

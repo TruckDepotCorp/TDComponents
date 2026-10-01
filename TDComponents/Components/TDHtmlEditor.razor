@@ -1,0 +1,76 @@
+@namespace TDComponents.Components
+
+<td-html-editor class="td-rte" data-td-rte data-min="@(Minimal ? "true" : null)">
+    @if (!string.IsNullOrWhiteSpace(Label))
+    {
+        <span class="td-section-title">@Label</span>
+    }
+    <div class="td-rte__frame">
+        <div class="td-rte__bar" role="toolbar" aria-label="Formato">
+            @if (!Minimal)
+            {
+                <select aria-label="Estilo de párrafo" data-td-rte-block>
+                    <option value="p">Párrafo</option>
+                    <option value="h2">Título</option>
+                    <option value="h3">Subtítulo</option>
+                    <option value="blockquote">Cita</option>
+                </select>
+            }
+            <button type="button" data-td-rte-cmd="bold" aria-label="Negrita" title="Negrita"><b>B</b></button>
+            <button type="button" data-td-rte-cmd="italic" aria-label="Cursiva" title="Cursiva"><i>I</i></button>
+            <button type="button" data-td-rte-cmd="underline" aria-label="Subrayado" title="Subrayado"><u>U</u></button>
+            <span class="td-rte__sep"></span>
+            <button type="button" data-td-rte-cmd="insertUnorderedList" aria-label="Lista" title="Lista">•</button>
+            <button type="button" data-td-rte-cmd="insertOrderedList" aria-label="Lista numerada" title="Lista numerada">1.</button>
+            @if (!Minimal)
+            {
+                <span class="td-rte__sep"></span>
+                <button type="button" data-td-rte-link aria-label="Enlace" title="Enlace">↗</button>
+                <span class="td-rte__sep"></span>
+                <button type="button" data-td-rte-color="#0A0B0C" aria-label="Negro" title="Negro" class="td-rte__swatch" style="--sw:#0A0B0C"></button>
+                <button type="button" data-td-rte-color="#ED2A24" aria-label="Rojo Depot" title="Rojo Depot" class="td-rte__swatch" style="--sw:#ED2A24"></button>
+                <button type="button" data-td-rte-color="#177A41" aria-label="Verde" title="Verde" class="td-rte__swatch" style="--sw:#177A41"></button>
+            }
+            <span class="td-rte__sep"></span>
+            <button type="button" data-td-rte-source aria-label="Código HTML" title="Código HTML">&lt;/&gt;</button>
+        </div>
+        <div class="td-rte__link" hidden data-td-rte-linkbar>
+            <input type="url" placeholder="https://" aria-label="URL del enlace" data-td-rte-url />
+            <button type="button" class="td-btn td-btn--primary td-btn--sm" data-td-rte-link-apply>Aplicar</button>
+            <button type="button" class="td-btn td-btn--secondary td-btn--sm" data-td-rte-link-remove>Quitar enlace</button>
+            <button type="button" class="td-btn td-btn--secondary td-btn--sm" data-td-rte-link-cancel>Cancelar</button>
+        </div>
+        <div class="td-rte__edit"
+             contenteditable="true"
+             role="textbox"
+             aria-multiline="true"
+             aria-label="@(Label ?? "Editor")"
+             data-td-rte-edit>@((MarkupString)(Value ?? ""))</div>
+        <textarea class="td-rte__src" hidden spellcheck="false" aria-label="Código HTML" data-td-rte-src></textarea>
+        <input type="hidden" name="@Name" value="@Value" data-td-rte-value />
+        <div class="td-rte__stat">
+            <span>El valor viaja en un input hidden y se sanea en el servidor.</span>
+            @if (MaxLength is > 0)
+            {
+                <span class="td-rte__limit" data-td-rte-limit data-max="@MaxLength">0 / @MaxLength</span>
+            }
+        </div>
+    </div>
+</td-html-editor>
+
+@code {
+    /// <summary>Nombre del campo oculto que envía el HTML. Hay que sanear ese HTML en el servidor.</summary>
+    [Parameter] public string? Name { get; set; }
+
+    /// <summary>Título del editor.</summary>
+    [Parameter] public string? Label { get; set; }
+
+    /// <summary>HTML inicial. Se pinta como contenido del editor.</summary>
+    [Parameter] public string? Value { get; set; }
+
+    /// <summary>Deja solo negrita, cursiva, subrayado y listas. En falso agrega estilo de párrafo, enlace y tres colores.</summary>
+    [Parameter] public bool Minimal { get; set; }
+
+    /// <summary>Si es mayor que cero, muestra el contador de caracteres.</summary>
+    [Parameter] public int? MaxLength { get; set; }
+}

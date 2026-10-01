@@ -1,0 +1,46 @@
+@namespace TDComponents.Components
+
+<td-markdown class="td-md" data-mode="@Mode">
+    @if (!string.IsNullOrWhiteSpace(Label))
+    {
+        <TDLabel For="@_id">@Label</TDLabel>
+    }
+    @if (Toolbar)
+    {
+        <div class="td-md__bar" role="toolbar" aria-label="Formato Markdown">
+            <button type="button" data-td-md="**">Negrita</button>
+            <button type="button" data-td-md="*">Cursiva</button>
+            <button type="button" data-td-md="# ">Título</button>
+            <button type="button" data-td-md="- ">Lista</button>
+            <button type="button" data-td-md="`">Código</button>
+            <div class="td-grid__segment" role="group" aria-label="Vista">
+                <button type="button" data-td-md-mode="split" aria-pressed="@(Mode == "split")">Dividido</button>
+                <button type="button" data-td-md-mode="source" aria-pressed="@(Mode == "source")">Fuente</button>
+                <button type="button" data-td-md-mode="preview" aria-pressed="@(Mode == "preview")">Vista</button>
+            </div>
+        </div>
+    }
+    <div class="td-md__panes">
+        <textarea id="@_id" name="@Name" data-td-md-source rows="10">@Value</textarea>
+        <div class="td-md__preview" data-td-md-preview></div>
+    </div>
+</td-markdown>
+
+@code {
+    private readonly string _id = $"td-md-{Guid.NewGuid():N}";
+
+    /// <summary>Nombre del textarea. El post es Markdown, no HTML.</summary>
+    [Parameter] public string Name { get; set; } = "markdown";
+
+    /// <summary>Etiqueta del editor.</summary>
+    [Parameter] public string? Label { get; set; }
+
+    /// <summary>Markdown inicial.</summary>
+    [Parameter] public string Value { get; set; } = "";
+
+    /// <summary>Vista inicial: <c>split</c> muestra fuente y vista, <c>source</c> solo el texto y <c>preview</c> solo la vista. La persona puede cambiarla en la barra.</summary>
+    [Parameter] public string Mode { get; set; } = "split";
+
+    /// <summary>Muestra negrita, cursiva, título, lista, código y el cambio de vista. En falso queda solo el área de texto.</summary>
+    [Parameter] public bool Toolbar { get; set; } = true;
+}

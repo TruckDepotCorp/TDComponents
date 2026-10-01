@@ -1,0 +1,127 @@
+@page "/datos"
+@using System.Globalization
+@using WebAppSSR.Interfaces
+@using WebAppSSR.Models
+
+@inject IRepuestoCatalogo Catalogo
+@inject NavigationManager Navigation
+
+<PageTitle>Repuestos</PageTitle>
+
+<div class="td-page td-page--wide" lang="es">
+    <p class="td-eyebrow">Data</p>
+    <h1>Repuestos</h1>
+    <p class="td-lead">El orden, los filtros y la página viven en la URL. El stock se guarda con un solo POST.</p>
+
+    <nav class="td-module-nav" aria-label="Módulos de Data">
+        <a href="#grid">DataGrid</a>
+        <a href="#inventario">DataTable</a>
+        <a href="#grid">Pager</a>
+        <a href="#arbol">Tree</a>
+        <a href="#columnas">Columnas</a>
+        <a href="#filtros">Filtering</a>
+        <a href="#seleccion">Selection</a>
+        <a href="#orden">Sorting</a>
+        <a href="#celda">Menú y formato</a>
+        <a href="#exportar">Excel y CSV</a>
+        <a href="#edicion">Edición</a>
+    </nav>
+
+    <div class="td-data-layout" id="grid">
+        <div id="arbol">
+        <TDTree TItem="CategoriaNodo" Items="Catalogo.Categorias(Tipo, Categoria)"
+                  Text="n => n.Name"
+                  Children="n => n.Children"
+                  Count="n => n.Count"
+                  Href="n => n.Href"
+                  Expanded="n => n.Expanded"
+                  Active="n => n.Active" />
+        </div>
+
+        <TDDataGrid TItem="Repuesto" Data="Catalogo.Repuestos.AsQueryable()"
+                      PageSize="10"
+                      SearchPlaceholder="Buscar código o repuesto"
+                      AriaLabel="Repuestos"
+                      FormName="save-stock"
+                      OnSubmit="SaveStock"
+                      RowId="p => p.Id"
+                      CategoryProperty="p => p.Category"
+                      GroupProperty="p => p.Type"
+                      ShowQuery="true"
+                      QueryRoot="Catalogo.Repuestos.AsQueryable()"
+                      SavedCount="_saved"
+                      ExcelHref="@ExcelLink">
+            <Columns>
+                <TDColumn TItem="Repuesto" TValue="string" Title="Foto" KeyName="photo" Kind="TDColumnKind.Thumb" Sortable="false" Filterable="false" Pickable="false" Thumb="p => p.Code" />
+                <TDColumn Property="p => p.Code" Title="Código" Kind="TDColumnKind.Mono" Searchable="true" />
+                <TDColumn Property="p => p.Name" Title="Repuesto" Kind="TDColumnKind.Strong" Searchable="true" />
+                <TDColumn Property="p => p.Brand" Title="Marca" />
+                <TDColumn Property="p => p.Model" Title="Aplicación" />
+                <TDColumn Property="p => p.Category" Title="Categoría" Kind="TDColumnKind.Pill" />
+                <TDColumn Property="p => p.Stock" Title="Stock" Kind="TDColumnKind.Stock" Align="TDColumnAlign.End" />
+                <TDColumn Property="p => p.Price" Title="Precio" Kind="TDColumnKind.Money" Align="TDColumnAlign.End" />
+                <TDColumn Property="p => p.Updated" Title="Actualizado" Kind="TDColumnKind.Date" />
+            </Columns>
+        </TDDataGrid>
+    </div>
+
+    <h2 class="td-data-note" id="inventario">Inventario por bodega</h2>
+    <p class="td-lead">Las columnas salen del esquema del DataTable, sin un modelo tipado.</p>
+    <TDDataTable Data="Catalogo.Inventario()" AriaLabel="Inventario por bodega" SearchPlaceholder="Buscar en el inventario" />
+
+    <DatosModulos Rol="@Rol" EditId="@EditId" Seleccion="@Seleccion" Marca="@Marca" Modelo="@Modelo" Sistema="@Sistema" ExcelHref="@ExcelLink" />
+</div>
+
+@code {
+    [SupplyParameterFromQuery(Name = "tipo")]
+    public string? Tipo { get; set; }
+
+    [SupplyParameterFromQuery(Name = "cat")]
+    public string? Categoria { get; set; }
+
+    [SupplyParameterFromQuery(Name = "rol")]
+    public string? Rol { get; set; }
+
+    [SupplyParameterFromQuery(Name = "edit")]
+    public int? EditId { get; set; }
+
+    [SupplyParameterFromQuery(Name = "sssel")]
+    public int? Seleccion { get; set; }
+
+    [SupplyParameterFromQuery(Name = "marca")]
+    public string? Marca { get; set; }
+
+    [SupplyParameterFromQuery(Name = "modelo")]
+    public string? Modelo { get; set; }
+
+    [SupplyParameterFromQuery(Name = "sistema")]
+    public string? Sistema { get; set; }
+
+    private string ExcelLink => "/datos/repuestos.xlsx" + Navigation.ToAbsoluteUri(Navigation.Uri).Query;
+
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+
+    private int _saved;
+
+    private void SaveStock()
+    {
+        var updates = new Dictionary<int, int>();
+        foreach (var key in HttpContext.Request.Form.Keys)
+        {
+            if (key.Length < 8 || !key.StartsWith("Stock[", StringComparison.Ordinal) || key[^1] != ']')
+            {
+                continue;
+            }
+
+            var idText = key[6..^1];
+            if (int.TryParse(idText, NumberStyles.Integer, CultureInfo.InvariantCulture, out var id)
+                && int.TryParse(HttpContext.Request.Form[key], NumberStyles.Integer, CultureInfo.InvariantCulture, out var quantity))
+            {
+                updates[id] = Math.Max(0, quantity);
+            }
+        }
+
+        _saved = Catalogo.SaveStock(updates);
+    }
+}

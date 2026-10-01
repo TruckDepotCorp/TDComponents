@@ -1,0 +1,32 @@
+@namespace TDComponents.Components
+
+<div class="td-col" style="@Style">
+    @ChildContent
+</div>
+
+@code {
+    /// <summary>Columnas que ocupa en móvil, de 1 a 12. El defecto es 12, el ancho completo.</summary>
+    [Parameter] public int Size { get; set; } = 12;
+    /// <summary>Columnas desde el ancho mediano. 0 conserva Size.</summary>
+    [Parameter] public int SizeMd { get; set; }
+    /// <summary>Columnas desde el ancho grande. 0 conserva el ancho anterior.</summary>
+    [Parameter] public int SizeLg { get; set; }
+    /// <summary>Columnas vacías antes de esta.</summary>
+    [Parameter] public int Offset { get; set; }
+    /// <summary>Orden visual. 0 conserva el orden del marcado.</summary>
+    [Parameter] public int Order { get; set; }
+    /// <summary>Contenido de la columna.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private string Style
+    {
+        get
+        {
+            var style = $"--s:{Size};";
+            if (SizeMd > 0) style += $"--md:{SizeMd};";
+            if (SizeLg > 0) style += $"--lg:{SizeLg};";
+            style += $"--off:{Offset};--ord:{Order}";
+            return style;
+        }
+    }
+}

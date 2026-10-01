@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+
+<div style="display:flex;flex-direction:column;gap:10px;margin-bottom:8px"><span style="font:700 11px var(--uiux-font-family);letter-spacing:calc(.14em * var(--uiux-label-track));text-transform:var(--uiux-label-case);color:var(--uiux-color-text-muted)">Temas incluidos</span><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px"><button onClick="{{ themeCards.modern.onPick }}" aria-pressed="{{ themeCards.modern.aria }}" data-uiux-theme="modern" data-theme="{{ theme }}" style="text-align:left;padding:0;border:2px solid {{ themeCards.modern.border }};border-radius:var(--uiux-radius-lg);background:var(--uiux-color-surface);color:var(--uiux-color-text);font-family:var(--uiux-font-family);cursor:pointer;overflow:hidden;display:flex;flex-direction:column" style-focus="outline:none;box-shadow:0 0 0 3px var(--uiux-color-focus-ring)">
+<div style="padding:14px 16px;background:var(--uiux-color-header-bg);color:var(--uiux-color-header-fg);display:flex;justify-content:space-between;align-items:baseline;gap:8px"><span style="font:var(--uiux-display-style) var(--uiux-display-weight, 800) 26px/1 var(--uiux-font-display);text-transform:var(--uiux-display-case)">Modern</span><span style="font:500 11px var(--uiux-font-mono);color:var(--uiux-color-header-muted)">UiuxTheme.Modern</span></div>
+<div style="padding:14px 16px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;gap:6px"><span style="width:22px;height:22px;border-radius:50%;background:var(--uiux-color-primary)"></span><span style="width:22px;height:22px;border-radius:50%;background:var(--uiux-color-text)"></span><span style="width:22px;height:22px;border-radius:50%;background:var(--uiux-color-surface-secondary);border:1px solid var(--uiux-color-border)"></span><span style="width:22px;height:22px;border-radius:50%;background:var(--uiux-color-success)"></span></div>
+<div style="display:flex;gap:8px;align-items:center"><span style="height:32px;padding:0 14px;border-radius:var(--uiux-radius-sm);background:var(--uiux-color-primary);color:#fff;font:700 12px var(--uiux-font-family);letter-spacing:calc(.08em * var(--uiux-label-track));text-transform:var(--uiux-label-case);display:flex;align-items:center">Guardar</span><span style="height:32px;padding:0 12px;border-radius:var(--uiux-radius-md);border:1px solid var(--uiux-color-border-strong);font:500 13px var(--uiux-font-family);color:var(--uiux-color-text-muted);display:flex;align-items:center;flex:1">Buscar…</span></div>
+</div></button><button onClick="{{ themeCards.material.onPick }}" aria-pressed="{{ themeCards.material.aria }}" data-uiux-theme="material" data-theme="{{ theme }}" style="text-align:left;padding:0;border:2px solid {{ themeCards.material.border }};border-radius:var(--uiux-radius-lg);background:var(--uiux-color-surface);color:var(--uiux-color-text);font-family:var(--uiux-font-family);cursor:pointer;overflow:hidden;display:flex;flex-direction:column" style-focus="outline:none;box-shadow:0 0 0 3px var(--uiux-color-focus-ring)">
+<div style="padding:14px 16px;background:var(--uiux-color-header-bg);color:var(--uiux-color-header-fg);display:flex;justify-content:space-between;align-items:baseline;gap:8px"><span style="font:var(--uiux-display-style) var(--uiux-display-weight, 800) 26px/1 var(--uiux-font-display);text-transform:var(--uiux-display-case)">Material</span><span style="font:500 11px var(--uiux-font-mono);color:var(--uiux-color-header-muted)">UiuxTheme.Material</span></div>
+<div style="padding:14px 16px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;gap:6px"><span style="width:22px;height:22px;border-radius:50%;background:var(--uiux-color-primary)"></span><span style="width:22px;height:22px;border-radius:50%;background:var(--uiux-color-text)"></span><span style="width:22px;height:22px;border-radius:50%;background:var(--uiux-color-surface-secondary);border:1px solid var(--uiux-color-border)"></span><span style="width:22px;height:22px;border-radius:50%;background:var(--uiux-color-success)"></span></div>
+<div style="display:flex;gap:8px;align-items:center"><span style="height:32px;padding:0 14px;border-radius:var(--uiux-radius-sm);background:var(--uiux-color-primary);color:#fff;font:700 12px var(--uiux-font-family);letter-spacing:calc(.08em * var(--uiux-label-track));text-transform:var(--uiux-label-case);display:flex;align-items:center">Guardar</span><span style="height:32px;padding:0 12px;border-radius:var(--uiux-radius-md);border:1px solid var(--uiux-color-border-strong);font:500 13px var(--uiux-font-family);color:var(--uiux-color-text-muted);display:flex;align-items:center;flex:1">Buscar…</span></div>
+</div></button><button onClick="{{ themeCards.expressive.onPick }}" aria-pressed="{{ themeCards.expressive.aria }}" data-uiux-theme="expressive" data-theme="{{ theme }}" style="text-align:left;padding:0;border:2px solid {{ themeCards.expressive.border }};border-radius:var(--uiux-radius-lg);background:var(--uiux-color-surface);color:var(--uiux-color-text);font-family:var(--uiux-font-family);cursor:pointer;overflow:hidden;display:flex;flex-direction:column" style-focus="outline:none;box-shadow:0 0 0 3px var(--uiux-color-focus-ring)">
+<div style="padding:14px 16px;background:var(--uiux-color-header-bg);color:var(--uiux-color-header-fg);display:flex;justify-content:space-between;align-items:baseline;gap:8px"><span style="font:var(--uiux-display-style) var(--uiux-display-weight, 800) 26px/1 var(--uiux-font-display);text-transform:var(--uiux-display-case)">Material Expressive</span><span style="font:500 11px var(--uiux-font-mono);color:var(--uiux-color-header-muted)">UiuxTheme.MaterialExpressive</span></div>
+<div style="padding:14px 16px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;gap:6px"><span style="width:22px;height:22px;border-radius:50%;background:var(--uiux-color-primary)"></span><span style="width:22px;height:22px;border-radius:50%;background:var(--uiux-color-text)"></span><span style="width:22px;height:22px;border-radius:50%;background:var(--uiux-color-surface-secondary);border:1px solid var(--uiux-color-border)"></span><span style="width:22px;height:22px;border-radius:50%;background:var(--uiux-color-success)"></span></div>
+<div style="display:flex;gap:8px;align-items:center"><span style="height:32px;padding:0 14px;border-radius:var(--uiux-radius-sm);background:var(--uiux-color-primary);color:#fff;font:700 12px var(--uiux-font-family);letter-spacing:calc(.08em * var(--uiux-label-track));text-transform:var(--uiux-label-case);display:flex;align-items:center">Guardar</span><span style="height:32px;padding:0 12px;border-radius:var(--uiux-radius-md);border:1px solid var(--uiux-color-border-strong);font:500 13px var(--uiux-font-family);color:var(--uiux-color-text-muted);display:flex;align-items:center;flex:1">Buscar…</span></div>
+</div></button><button onClick="{{ themeCards.fluent.onPick }}" aria-pressed="{{ themeCards.fluent.aria }}" data-uiux-theme="fluent" data-theme="{{ theme }}" style="text-align:left;padding:0;border:2px solid {{ themeCards.fluent.border }};border-radius:var(--uiux-radius-lg);background:var(--uiux-color-surface);color:var(--uiux-color-text);font-family:var(--uiux-font-family);cursor:pointer;overflow:hidden;display:flex;flex-direction:column" style-focus="outline:none;box-shadow:0 0 0 3px var(--uiux-color-focus-ring)">
+<div style="padding:14px 16px;background:var(--uiux-color-header-bg);color:var(--uiux-color-header-fg);display:flex;justify-content:space-between;align-items:baseline;gap:8px"><span style="font:var(--uiux-display-style) var(--uiux-display-weight, 800) 26px/1 var(--uiux-font-display);text-transform:var(--uiux-display-case)">Fluent 3</span><span style="font:500 11px var(--uiux-font-mono);color:var(--uiux-color-header-muted)">UiuxTheme.Fluent3</span></div>
+<div style="padding:14px 16px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;gap:6px"><span style="width:22px;height:22px;border-radius:50%;background:var(--uiux-color-primary)"></span><span style="width:22px;height:22px;border-radius:50%;background:var(--uiux-color-text)"></span><span style="width:22px;height:22px;border-radius:50%;background:var(--uiux-color-surface-secondary);border:1px solid var(--uiux-color-border)"></span><span style="width:22px;height:22px;border-radius:50%;background:var(--uiux-color-success)"></span></div>
+<div style="display:flex;gap:8px;align-items:center"><span style="height:32px;padding:0 14px;border-radius:var(--uiux-radius-sm);background:var(--uiux-color-primary);color:#fff;font:700 12px var(--uiux-font-family);letter-spacing:calc(.08em * var(--uiux-label-track));text-transform:var(--uiux-label-case);display:flex;align-items:center">Guardar</span><span style="height:32px;padding:0 12px;border-radius:var(--uiux-radius-md);border:1px solid var(--uiux-color-border-strong);font:500 13px var(--uiux-font-family);color:var(--uiux-color-text-muted);display:flex;align-items:center;flex:1">Buscar…</span></div>
+</div></button></div></div>
+<div style="display:flex;flex-direction:column;gap:16px">
+  
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px">
+    <sc-for list="{{ tokens }}" as="t" hint-placeholder-count="8">
+      <div style="background:var(--uiux-color-surface);border:1px solid var(--uiux-color-border);border-radius:var(--uiux-radius-md);overflow:hidden">
+        <div style="height:56px;background:{{ t.v }};border-bottom:1px solid var(--uiux-color-border)"></div>
+        <div style="padding:10px 12px;display:flex;flex-direction:column;gap:3px">
+          <span style="font:600 13px var(--uiux-font-family)">{{ t.label }}</span>
+          <span style="font:400 10.5px var(--uiux-font-mono);color:var(--uiux-color-text-muted);word-break:break-all">{{ t.name }}</span>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

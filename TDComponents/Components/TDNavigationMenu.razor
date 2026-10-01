@@ -1,0 +1,84 @@
+@namespace TDComponents.Components
+
+<nav class="td-navmenu" aria-label="@AriaLabel" data-td-navmenu data-delay="@Delay">
+    <ul class="td-navmenu__bar">
+    @foreach (var item in Items)
+    {
+        if (item.Groups is { Count: > 0 } || item.Panel is "brands" or "desc")
+        {
+            <li class="td-navmenu__item" data-panel="@item.Panel">
+                <button type="button" class="td-navmenu__btn" data-td-nav-open aria-haspopup="true" aria-expanded="false">
+                    @item.Text
+                    <svg class="td-navmenu__chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+                </button>
+                <div class="td-navmenu__panel td-navmenu__panel--@item.Panel" hidden>
+                    @if (item.Panel == "brands")
+                    {
+                        <div class="td-navmenu__brands">
+                            @foreach (var link in item.Groups?.SelectMany(group => group.Links) ?? [])
+                            {
+                                <a href="@Href(link)">@link.Label</a>
+                            }
+                        </div>
+                    }
+                    else if (item.Panel == "desc")
+                    {
+                        <div class="td-navmenu__desc">
+                            @foreach (var link in item.Groups?.SelectMany(group => group.Links) ?? [])
+                            {
+                                <a href="@Href(link)">
+                                    <strong>@link.Label</strong>
+                                    @if (!string.IsNullOrWhiteSpace(link.Hint))
+                                    {
+                                        <span>@link.Hint</span>
+                                    }
+                                </a>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        @foreach (var group in item.Groups ?? [])
+                        {
+                            <div>
+                                <span>@group.Title</span>
+                                @foreach (var link in group.Links)
+                                {
+                                    <a href="@Href(link)">@link.Label</a>
+                                }
+                            </div>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(item.Featured))
+                        {
+                            <aside>
+                                <span>@(item.FeaturedEyebrow ?? "Destacado")</span>
+                                @if (!string.IsNullOrWhiteSpace(item.FeaturedTitle))
+                                {
+                                    <strong>@item.FeaturedTitle</strong>
+                                }
+                                <p>@item.Featured</p>
+                            </aside>
+                        }
+                    }
+                </div>
+            </li>
+        }
+        else
+        {
+            <li><a class="td-navmenu__btn" href="@(item.Href ?? "#")">@item.Text</a></li>
+        }
+    }
+    </ul>
+    <p class="td-navmenu__hint">Hover o clic abre el panel · ← → entre secciones · ↓ entra al panel · Esc cierra</p>
+</nav>
+
+@code {
+    /// <summary>Nombre accesible del menú.</summary>
+    [Parameter] public string AriaLabel { get; set; } = "Navegación";
+    /// <summary>Milisegundos antes de abrir un panel. El defecto es 120.</summary>
+    [Parameter] public int Delay { get; set; } = 120;
+    /// <summary>Entradas de primer nivel. Cada una es un TDNavMega.</summary>
+    [Parameter] public IReadOnlyList<TDNavMega> Items { get; set; } = [];
+
+    private static string Href(TDOption link) => string.IsNullOrEmpty(link.Value) ? "#" : link.Value;
+}

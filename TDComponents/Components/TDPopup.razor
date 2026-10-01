@@ -1,0 +1,19 @@
+@namespace TDComponents.Components
+
+<td-popup class="td-popup" data-placement="@Placement.ToString().ToLowerInvariant()">
+    <button type="button" class="td-btn td-btn--secondary td-btn--md" data-td-popup-open aria-haspopup="dialog" aria-expanded="false">@Trigger</button>
+    <div class="td-popup__panel" hidden role="dialog" aria-label="@AriaLabel" data-td-popup-panel>
+        @ChildContent
+    </div>
+</td-popup>
+
+@code {
+    /// <summary>Texto del botón que abre el popup.</summary>
+    [Parameter] public string Trigger { get; set; } = "Abrir";
+    /// <summary>Nombre accesible del popup.</summary>
+    [Parameter] public string AriaLabel { get; set; } = "Popup";
+    /// <summary>Bottom, Top, Start o End. El defecto es Bottom.</summary>
+    [Parameter] public TDPlacement Placement { get; set; } = TDPlacement.Bottom;
+    /// <summary>Contenido del popup.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

@@ -1,0 +1,8 @@
+@namespace TDComponents.Components
+
+<td-chart class="td-chart" data-kind="@Kind" data-td-chart></td-chart>
+
+@code {
+    /// <summary>Gráfico que se pinta. chline es el defecto. Un valor desconocido también se pinta como línea. Los datos son los de demostración del cliente.</summary>
+    [Parameter] public string Kind { get; set; } = "chline";
+}

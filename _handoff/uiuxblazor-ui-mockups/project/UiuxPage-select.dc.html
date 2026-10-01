@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+
+<div style="display:flex;flex-direction:column;gap:16px">
+  
+
+  <div style="background:var(--uiux-color-surface);border:1px solid var(--uiux-color-border);border-radius:var(--uiux-radius-lg);box-shadow:var(--uiux-shadow-sm);padding:24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px;min-height:300px;align-items:start">
+    <div style="display:flex;flex-direction:column;gap:6px;position:relative">
+      <label style="font:600 14px var(--uiux-font-family)">Marcas compatibles</label>
+      <div style="min-height:42px;box-sizing:border-box;padding:5px 8px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;border:1px solid {{ brands.border }};box-shadow:{{ brands.ring }};border-radius:var(--uiux-radius-md);background:var(--uiux-color-surface);transition:border-color var(--uiux-transition-fast)">
+        <sc-for list="{{ brands.chips }}" as="ch" hint-placeholder-count="2">
+          <span style="display:inline-flex;align-items:center;gap:4px;height:26px;padding:0 4px 0 10px;border-radius:999px;background:var(--uiux-color-surface-secondary);border:1px solid var(--uiux-color-border);font:600 13px var(--uiux-font-family)">{{ ch.label }}
+            <button onMouseDown="{{ ch.onRemove }}" aria-label="Quitar {{ ch.label }}" style="width:18px;height:18px;border:none;border-radius:50%;background:transparent;color:var(--uiux-color-text-muted);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0" style-hover="background:var(--uiux-color-border);color:var(--uiux-color-text)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"></path></svg></button>
+          </span>
+        </sc-for>
+        <input role="combobox" aria-expanded="{{ brands.aria }}" aria-controls="lb-brands" aria-autocomplete="list" value="{{ brands.q }}" onChange="{{ brands.onInput }}" onKeyDown="{{ brands.onKey }}" onFocus="{{ brands.onFocus }}" onBlur="{{ brands.onBlur }}" placeholder="{{ brands.ph }}" style="flex:1;min-width:90px;height:30px;border:none;outline:none;background:transparent;color:var(--uiux-color-text);font:500 14px var(--uiux-font-family)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--uiux-color-text-muted);flex:none"><path d="m6 9 6 6 6-6"></path></svg>
+      </div>
+      <sc-if value="{{ brands.open }}" hint-placeholder-val="{{ false }}">
+        <div id="lb-brands" role="listbox" aria-multiselectable="true" style="position:absolute;left:0;right:0;top:76px;z-index:10;max-height:232px;overflow-y:auto;padding:6px;background:var(--uiux-color-surface);border:1px solid var(--uiux-color-border);border-radius:var(--uiux-radius-md);box-shadow:var(--uiux-shadow-lg);display:flex;flex-direction:column;gap:1px">
+          <sc-for list="{{ brands.items }}" as="o" hint-placeholder-count="6">
+            <div role="option" aria-selected="{{ o.aria }}" onMouseDown="{{ o.onPick }}" onMouseEnter="{{ o.onHover }}" style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:5px;background:{{ o.bg }};box-shadow:{{ o.bar }};font:500 14px var(--uiux-font-family);cursor:pointer">
+              <span style="width:16px;height:16px;border-radius:3px;border:1.5px solid {{ o.boxBorder }};background:{{ o.boxBg }};display:flex;align-items:center;justify-content:center;color:#fff;flex:none"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:{{ o.op }}"><path d="M20 6 9 17l-5-5"></path></svg></span>
+              {{ o.label }}
+            </div>
+          </sc-for>
+          <sc-if value="{{ brands.empty }}" hint-placeholder-val="{{ false }}"><div style="padding:10px;font-size:14px;color:var(--uiux-color-text-muted)">Sin coincidencias</div></sc-if>
+        </div>
+      </sc-if>
+      <span style="font-size:12.5px;color:var(--uiux-color-text-muted)">{{ brands.meta }}</span>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:6px;position:relative">
+      <label style="font:600 14px var(--uiux-font-family)">Categoría</label>
+      <div style="height:42px;box-sizing:border-box;padding:0 12px;display:flex;gap:8px;align-items:center;border:1px solid {{ cat.border }};box-shadow:{{ cat.ring }};border-radius:var(--uiux-radius-md);background:var(--uiux-color-surface)">
+        <input role="combobox" aria-expanded="{{ cat.aria }}" aria-controls="lb-cat" aria-autocomplete="list" value="{{ cat.q }}" onChange="{{ cat.onInput }}" onKeyDown="{{ cat.onKey }}" onFocus="{{ cat.onFocus }}" onBlur="{{ cat.onBlur }}" placeholder="{{ cat.ph }}" style="flex:1;min-width:0;height:30px;border:none;outline:none;background:transparent;color:var(--uiux-color-text);font:500 14px var(--uiux-font-family)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--uiux-color-text-muted);flex:none"><path d="m6 9 6 6 6-6"></path></svg>
+      </div>
+      <sc-if value="{{ cat.open }}" hint-placeholder-val="{{ false }}">
+        <div id="lb-cat" role="listbox" style="position:absolute;left:0;right:0;top:76px;z-index:10;max-height:232px;overflow-y:auto;padding:6px;background:var(--uiux-color-surface);border:1px solid var(--uiux-color-border);border-radius:var(--uiux-radius-md);box-shadow:var(--uiux-shadow-lg);display:flex;flex-direction:column;gap:1px">
+          <sc-for list="{{ cat.items }}" as="o" hint-placeholder-count="5">
+            <div role="option" aria-selected="{{ o.aria }}" onMouseDown="{{ o.onPick }}" onMouseEnter="{{ o.onHover }}" style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 10px;border-radius:5px;background:{{ o.bg }};box-shadow:{{ o.bar }};font:500 14px var(--uiux-font-family);cursor:pointer">
+              {{ o.label }}
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--uiux-color-primary);opacity:{{ o.op }}"><path d="M20 6 9 17l-5-5"></path></svg>
+            </div>
+          </sc-for>
+          <sc-if value="{{ cat.empty }}" hint-placeholder-val="{{ false }}"><div style="padding:10px;font-size:14px;color:var(--uiux-color-text-muted)">Sin coincidencias</div></sc-if>
+        </div>
+      </sc-if>
+      <span style="font-size:12.5px;color:var(--uiux-color-text-muted)">Selección simple</span>
+    </div>
+  </div>
+
+  
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

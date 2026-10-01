@@ -1,0 +1,20 @@
+@namespace TDComponents.Components
+
+<td-tiles class="td-tiles" data-cols="@Columns">
+    @foreach (var tile in Items)
+    {
+        <article class="td-tiles__item" draggable="true" tabindex="0" data-td-tile="@tile.Id" style="--span:@tile.Span">
+            <span class="td-tiles__kicker">@tile.Title</span>
+            <strong>@tile.Value</strong>
+            <em>@tile.Hint</em>
+        </article>
+    }
+    <p class="td-field__hint">Arrastra las tarjetas para reordenar. El orden queda en este dispositivo.</p>
+</td-tiles>
+
+@code {
+    /// <summary>Cantidad de columnas de la rejilla. El defecto es 4.</summary>
+    [Parameter] public int Columns { get; set; } = 4;
+    /// <summary>Métricas. Span indica cuántas columnas ocupa cada una.</summary>
+    [Parameter] public IReadOnlyList<TDTileItem> Items { get; set; } = [];
+}

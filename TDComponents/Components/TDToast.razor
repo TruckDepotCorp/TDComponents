@@ -1,0 +1,25 @@
+@namespace TDComponents.Components
+
+<div class="td-toasts" aria-live="polite">
+    @foreach (var item in Items)
+    {
+        <aside class="td-toast td-toast--@SeverityToken(item.Severity)" data-td-toast>
+            <strong>@item.Title</strong>
+            <span>@item.Text</span>
+            <button type="button" class="td-toast__x" data-td-toast-close aria-label="Cerrar">×</button>
+        </aside>
+    }
+</div>
+
+@code {
+    /// <summary>Avisos visibles. Cada uno es un TDToastItem.</summary>
+    [Parameter] public IReadOnlyList<TDToastItem> Items { get; set; } = [];
+
+    private static string SeverityToken(TDSeverity severity) => severity switch
+    {
+        TDSeverity.Success => "ok",
+        TDSeverity.Warning => "warn",
+        TDSeverity.Danger => "danger",
+        _ => "info"
+    };
+}

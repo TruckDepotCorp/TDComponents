@@ -1,0 +1,69 @@
+@page "/c/{Id}"
+@using WebAppSSR.Catalog
+
+@if (Item is null)
+{
+    <PageTitle>No encontrado</PageTitle>
+    <div class="td-doc" lang="es">
+        <p class="td-eyebrow">Catálogo</p>
+        <h1>Componente no encontrado</h1>
+        <p class="td-lead">No hay una página para <code>@Id</code>. Vuelve al inicio y elige un componente del menú.</p>
+        <TDButton Href="" Variant="TDVariant.Secondary" ButtonType="TDButtonType.Button">Ir al inicio</TDButton>
+    </div>
+}
+else
+{
+    <PageTitle>@Item.Title · TDComponents</PageTitle>
+    <div class="td-doc" lang="es">
+        <div class="td-doc__crumb">
+            <a href="">Componentes</a>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
+            <span>@Item.Group</span>
+        </div>
+        <h1>@Item.Title</h1>
+        <p class="td-lead">@Item.Description</p>
+        <span class="td-doc__tag">@Item.Tag</span>
+
+        <div class="td-doc__tabs" role="tablist" aria-label="Vista">
+            <a class="td-doc__tab @(!ShowCode ? "is-current" : null)"
+               href="@Item.Href"
+               role="tab"
+               aria-selected="@((!ShowCode).ToString().ToLowerInvariant())">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.06 12.35a1 1 0 0 1 0-.7 10.75 10.75 0 0 1 19.88 0 1 1 0 0 1 0 .7 10.75 10.75 0 0 1-19.88 0"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                Ejemplo
+            </a>
+            <a class="td-doc__tab @(ShowCode ? "is-current" : null)"
+               href="@($"{Item.Href}?vista=codigo")"
+               role="tab"
+               aria-selected="@ShowCode.ToString().ToLowerInvariant()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 18 6-6-6-6M8 6l-6 6 6 6"></path></svg>
+                Código Blazor
+            </a>
+        </div>
+
+        @if (ShowCode)
+        {
+            @foreach (var code in Item.Samples.Count > 0 ? Item.Samples : [Item.Code])
+            {
+                <CatalogCodeBlock Code="code" />
+            }
+        }
+        else
+        {
+            <div class="td-doc__example">
+                <CatalogDemo Id="@Item.Id" />
+            </div>
+        }
+    </div>
+}
+
+@code {
+    [Parameter] public string Id { get; set; } = "";
+
+    [SupplyParameterFromQuery(Name = "vista")]
+    public string? Vista { get; set; }
+
+    private CatalogItem? Item => ComponentCatalog.Find(Id);
+
+    private bool ShowCode => string.Equals(Vista, "codigo", StringComparison.OrdinalIgnoreCase);
+}

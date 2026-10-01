@@ -1,0 +1,48 @@
+@namespace TDComponents.Components
+
+<div class="td-selectbar @(Size == TDSize.Small ? "td-selectbar--sm" : null)" data-multiple="@(Multiple ? "true" : "false")" data-name="@Name">
+    @if (!string.IsNullOrWhiteSpace(Label))
+    {
+        <p class="td-section-title">@Label</p>
+    }
+    <div class="td-selectbar__row" role="group" aria-label="@Label">
+        @foreach (var option in Options)
+        {
+            var on = Selected.Contains(option.Value);
+            <button type="button"
+                    class="td-selectbar__item @(on ? "is-on" : null)"
+                    aria-pressed="@(on ? "true" : "false")"
+                    data-td-selectbar="@option.Value">
+                @if (!string.IsNullOrWhiteSpace(option.Icon))
+                {
+                    <span class="td-selectbar__icon" aria-hidden="true">@((MarkupString)option.Icon)</span>
+                }
+                @option.Label
+            </button>
+        }
+    </div>
+    @foreach (var value in Selected)
+    {
+        <input type="hidden" name="@Name" value="@value" data-td-selectbar-value />
+    }
+</div>
+
+@code {
+    /// <summary>Nombre de los valores enviados.</summary>
+    [Parameter] public string Name { get; set; } = "barra";
+
+    /// <summary>Etiqueta del grupo.</summary>
+    [Parameter] public string? Label { get; set; }
+
+    /// <summary>Segmentos. Se usan <c>Label</c> y <c>Value</c> de cada <see cref="TDOption"/>.</summary>
+    [Parameter] public IReadOnlyList<TDOption> Options { get; set; } = [];
+
+    /// <summary>Valores iniciales. Se comparan con <c>TDOption.Value</c>.</summary>
+    [Parameter] public IReadOnlyList<string> Selected { get; set; } = [];
+
+    /// <summary>Permite dejar varios segmentos activos.</summary>
+    [Parameter] public bool Multiple { get; set; }
+
+    /// <summary>Tamaño de los segmentos.</summary>
+    [Parameter] public TDSize Size { get; set; } = TDSize.Medium;
+}

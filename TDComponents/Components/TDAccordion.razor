@@ -1,0 +1,12 @@
+@namespace TDComponents.Components
+
+<div class="td-accordion" data-single="@(Single ? "true" : null)">
+    @ChildContent
+</div>
+
+@code {
+    /// <summary>Solo una sección permanece abierta. En falso, varias pueden estar abiertas a la vez.</summary>
+    [Parameter] public bool Single { get; set; }
+    /// <summary>Secciones. Cada una es un TDAccordionItem.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

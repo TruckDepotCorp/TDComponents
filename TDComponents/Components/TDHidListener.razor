@@ -1,0 +1,17 @@
+@namespace TDComponents.Components
+
+<td-studio class="td-studio" data-kind="ehid" data-td-studio
+           data-min="@MinLength" data-gap="@GapMs"
+           data-ignore="@(IgnoreWhenTyping ? "true" : "false")"
+           data-initial="@InitialCode"></td-studio>
+
+@code {
+    /// <summary>Largo mínimo del código aceptado. El defecto es 4.</summary>
+    [Parameter] public int MinLength { get; set; } = 4;
+    /// <summary>Pausa, en milisegundos, que vacía el búfer. Una persona es más lenta que una pistola. El defecto es 60.</summary>
+    [Parameter] public int GapMs { get; set; } = 60;
+    /// <summary>No captura teclas mientras el foco está en un campo.</summary>
+    [Parameter] public bool IgnoreWhenTyping { get; set; }
+    /// <summary>Código que se muestra al abrir el ejemplo.</summary>
+    [Parameter] public string? InitialCode { get; set; }
+}

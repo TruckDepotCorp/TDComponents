@@ -1,0 +1,91 @@
+@namespace TDComponents.Components
+
+<td-button variant="@VariantToken" size="@SizeToken" block="@Block">
+    @if (IsLink)
+    {
+        <a @attributes="AdditionalAttributes"
+           class="@ModifierClass"
+           href="@(Disabled ? null : Href)"
+           aria-disabled="@(Disabled ? "true" : null)"
+           tabindex="@(Disabled ? "-1" : null)">
+            <span class="td-btn__label">@ChildContent</span>
+        </a>
+    }
+    else
+    {
+        <button @attributes="AdditionalAttributes"
+                class="@ModifierClass"
+                type="@TypeToken"
+                disabled="@Disabled">
+            <span class="td-btn__label">@ChildContent</span>
+            @if (ButtonType == TDButtonType.Submit)
+            {
+                <span class="td-btn__pending" aria-hidden="true">
+                    <span class="td-btn__spinner" aria-hidden="true"></span>
+                    @PendingText
+                </span>
+            }
+        </button>
+    }
+</td-button>
+
+@code {
+    /// <summary>Jerarquía visual. <see cref="TDVariant.Primary"/> es la acción principal; <see cref="TDVariant.Secondary"/> la alternativa; <see cref="TDVariant.Ghost"/> la terciaria; <see cref="TDVariant.Danger"/> la destructiva.</summary>
+    [Parameter] public TDVariant Variant { get; set; } = TDVariant.Primary;
+
+    /// <summary>Tamaño del botón. <see cref="TDSize.Small"/> en barras densas, <see cref="TDSize.Medium"/> por defecto, <see cref="TDSize.Large"/> para destacarlo.</summary>
+    [Parameter] public TDSize Size { get; set; } = TDSize.Medium;
+
+    /// <summary>Qué hace dentro de un formulario. El defecto <see cref="TDButtonType.Submit"/> envía. <see cref="TDButtonType.Button"/> no envía. <see cref="TDButtonType.Reset"/> limpia los campos.</summary>
+    [Parameter] public TDButtonType ButtonType { get; set; } = TDButtonType.Submit;
+
+    /// <summary>Si tiene un URL seguro, el control se pinta como enlace. Se ignoran destinos que empiezan por <c>javascript:</c> o <c>data:</c>.</summary>
+    [Parameter] public string? Href { get; set; }
+
+    /// <summary>Impide activarlo. En un enlace también quita el destino y lo saca del tabulador.</summary>
+    [Parameter] public bool Disabled { get; set; }
+
+    /// <summary>Ocupa todo el ancho del contenedor. Úsalo en un formulario de una columna.</summary>
+    [Parameter] public bool Block { get; set; }
+
+    /// <summary>Texto visible durante el envío. Solo se pinta cuando <see cref="ButtonType"/> es <see cref="TDButtonType.Submit"/>. El defecto está en inglés: en español usa «Enviando…».</summary>
+    [Parameter] public string PendingText { get; set; } = "Please wait…";
+
+    /// <summary>Etiqueta del botón. Puede incluir un ícono.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>Atributos HTML que este componente no declara, por ejemplo un <c>id</c> o un <c>data-*</c>.</summary>
+    [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private bool IsLink => IsSafeHref;
+
+    private bool IsSafeHref =>
+        !string.IsNullOrWhiteSpace(Href)
+        && !Href.TrimStart().StartsWith("javascript:", StringComparison.OrdinalIgnoreCase)
+        && !Href.TrimStart().StartsWith("data:", StringComparison.OrdinalIgnoreCase);
+
+    private string VariantToken => Variant switch
+    {
+        TDVariant.Secondary => "secondary",
+        TDVariant.Ghost => "ghost",
+        TDVariant.Danger => "danger",
+        _ => "primary"
+    };
+
+    private string SizeToken => Size switch
+    {
+        TDSize.Small => "sm",
+        TDSize.Large => "lg",
+        _ => "md"
+    };
+
+    private string TypeToken => ButtonType switch
+    {
+        TDButtonType.Button => "button",
+        TDButtonType.Reset => "reset",
+        _ => "submit"
+    };
+
+    private string ModifierClass =>
+        $"td-btn td-btn--{VariantToken} td-btn--{SizeToken}{(Block ? " td-btn--block" : "")}";
+}

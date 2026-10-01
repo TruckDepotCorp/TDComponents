@@ -1,0 +1,33 @@
+@namespace TDComponents.Components
+
+<div class="td-toc-wrap">
+    <aside class="td-toc" data-td-toc data-target="@Target">
+        <span class="td-toc__title">@Title</span>
+        @if (ShowProgress)
+        {
+            <div class="td-toc__bar" aria-hidden="true"><i data-td-toc-bar></i></div>
+        }
+        <nav aria-label="@Title">
+            @foreach (var item in Items)
+            {
+                <a href="#@item.Value" data-td-toc-link="@item.Value" class="@(item.Hint == "h3" ? "is-sub" : null)">@item.Label</a>
+            }
+        </nav>
+    </aside>
+    <article class="td-toc__article" id="@Target.TrimStart('#')">
+        @ChildContent
+    </article>
+</div>
+
+@code {
+    /// <summary>Id del contenedor cuyos encabezados se siguen.</summary>
+    [Parameter] public string Target { get; set; } = "guia";
+    /// <summary>Título del índice.</summary>
+    [Parameter] public string Title { get; set; } = "En esta página";
+    /// <summary>Muestra el avance de lectura. El defecto es verdadero.</summary>
+    [Parameter] public bool ShowProgress { get; set; } = true;
+    /// <summary>Entradas. Value es el id del destino y Label el texto.</summary>
+    [Parameter] public IReadOnlyList<TDOption> Items { get; set; } = [];
+    /// <summary>Contenido extra bajo el índice.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

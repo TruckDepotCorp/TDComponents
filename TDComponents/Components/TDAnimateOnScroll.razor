@@ -1,0 +1,20 @@
+@namespace TDComponents.Components
+
+<td-aos class="td-aos" data-enter="@Enter" data-once="@(Once ? "true" : "false")" data-threshold="@Threshold.ToString(System.Globalization.CultureInfo.InvariantCulture)" data-delay="@Delay" style="--td-aos-delay:@(Delay)ms;--td-aos-duration:@(Duration)ms">
+    @ChildContent
+</td-aos>
+
+@code {
+    /// <summary>Animación de entrada. El defecto es fade-up.</summary>
+    [Parameter] public string Enter { get; set; } = "fade-up";
+    /// <summary>Duración en milisegundos. El defecto es 400.</summary>
+    [Parameter] public int Duration { get; set; } = 400;
+    /// <summary>Espera en milisegundos antes de animar.</summary>
+    [Parameter] public int Delay { get; set; }
+    /// <summary>Anima solo la primera vez que entra en la vista. El defecto es verdadero.</summary>
+    [Parameter] public bool Once { get; set; } = true;
+    /// <summary>Fracción visible que dispara la animación. El defecto es 0,25.</summary>
+    [Parameter] public double Threshold { get; set; } = 0.25;
+    /// <summary>Contenido que se anima.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

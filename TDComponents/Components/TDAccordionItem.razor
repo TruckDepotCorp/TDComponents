@@ -1,0 +1,23 @@
+@namespace TDComponents.Components
+
+<details class="td-accordion__item" open="@Open" data-td-acc>
+    <summary class="td-accordion__head">
+        <span>@Title</span>
+        @if (!string.IsNullOrWhiteSpace(Badge))
+        {
+            <span class="td-accordion__badge">@Badge</span>
+        }
+    </summary>
+    <div class="td-accordion__body">@ChildContent</div>
+</details>
+
+@code {
+    /// <summary>Título visible de la sección. También es el control para abrirla.</summary>
+    [Parameter] public string Title { get; set; } = "";
+    /// <summary>Texto corto junto al título, por ejemplo un conteo.</summary>
+    [Parameter] public string? Badge { get; set; }
+    /// <summary>Empieza abierta.</summary>
+    [Parameter] public bool Open { get; set; }
+    /// <summary>Contenido de la sección.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

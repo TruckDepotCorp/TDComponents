@@ -1,0 +1,43 @@
+@namespace TDComponents.Components
+
+<button type="button"
+        class="td-btn td-btn--@VariantToken td-toggle @(Pressed ? "is-on" : null)"
+        aria-pressed="@(Pressed ? "true" : "false")"
+        name="@Name"
+        value="@Value"
+        data-td-toggle
+        data-td-toggle-group="@Group">
+    @ChildContent
+</button>
+@if (Pressed)
+{
+    <input type="hidden" name="@Name" value="@Value" data-td-toggle-value />
+}
+
+@code {
+    /// <summary>Nombre del campo en el post. Si el botón está presionado, también se escribe un campo oculto con este nombre.</summary>
+    [Parameter] public string? Name { get; set; }
+
+    /// <summary>Valor enviado cuando el botón está presionado.</summary>
+    [Parameter] public string Value { get; set; } = "on";
+
+    /// <summary>Identificador de grupo. Los botones con el mismo grupo se tratan como excluyentes.</summary>
+    [Parameter] public string? Group { get; set; }
+
+    /// <summary>Empieza presionado.</summary>
+    [Parameter] public bool Pressed { get; set; }
+
+    /// <summary>Cara del botón. El defecto es <see cref="TDVariant.Secondary"/>.</summary>
+    [Parameter] public TDVariant Variant { get; set; } = TDVariant.Secondary;
+
+    /// <summary>Texto visible del botón.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private string VariantToken => Variant switch
+    {
+        TDVariant.Primary => "primary",
+        TDVariant.Danger => "danger",
+        TDVariant.Ghost => "ghost",
+        _ => "secondary"
+    };
+}

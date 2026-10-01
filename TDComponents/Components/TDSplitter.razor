@@ -1,0 +1,13 @@
+@namespace TDComponents.Components
+
+<td-splitter class="td-splitter @(Orientation == TDOrientation.Vertical ? "td-splitter--v" : "td-splitter--h")"
+             data-orientation="@(Orientation == TDOrientation.Vertical ? "vertical" : "horizontal")">
+    @ChildContent
+</td-splitter>
+
+@code {
+    /// <summary>Horizontal parte a lo ancho. Vertical parte a lo alto. El defecto es Horizontal.</summary>
+    [Parameter] public TDOrientation Orientation { get; set; } = TDOrientation.Horizontal;
+    /// <summary>Paneles TDSplitterPane.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

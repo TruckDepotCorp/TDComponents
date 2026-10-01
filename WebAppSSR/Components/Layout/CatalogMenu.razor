@@ -1,0 +1,83 @@
+@using WebAppSSR.Catalog
+@inject NavigationManager Navigation
+
+<nav class="td-catalog" aria-label="Componentes" data-td-catalog>
+    <div class="td-catalog__search">
+        <div class="td-catalog__field">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+            <input type="search"
+                   value="@Query"
+                   data-td-catalog-q
+                   placeholder="Buscar componente…"
+                   aria-label="Buscar en el menú"
+                   autocomplete="off" />
+            <button type="button" class="td-catalog__clear" data-td-catalog-clear hidden aria-label="Limpiar búsqueda">×</button>
+        </div>
+        <a class="td-catalog__home @(IsHome ? "is-current" : null)"
+           href=""
+           aria-current="@(IsHome ? "page" : null)">Inicio</a>
+    </div>
+
+    <div class="td-catalog__tree" role="tree" aria-label="Módulos de componentes">
+        @foreach (var group in ComponentCatalog.Groups)
+        {
+            var visible = string.IsNullOrWhiteSpace(Query) || group.Any(Matches);
+            var expanded = group.Any(item => string.Equals(item.Id, CurrentId, StringComparison.OrdinalIgnoreCase))
+                || !string.IsNullOrWhiteSpace(Query);
+            <div class="td-catalog__group" data-td-catalog-group="@group.Key" hidden="@(!visible)">
+                <button type="button"
+                        class="td-catalog__group-btn"
+                        data-td-catalog-toggle
+                        aria-expanded="@expanded.ToString().ToLowerInvariant()">
+                    <span class="td-catalog__chevron" aria-hidden="true">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg>
+                    </span>
+                    <span class="td-catalog__group-name">@group.Key</span>
+                    <span class="td-catalog__count">@group.Count()</span>
+                </button>
+                <div class="td-catalog__leaves" role="group" hidden="@(!expanded)">
+                    @foreach (var item in group)
+                    {
+                        var current = string.Equals(item.Id, CurrentId, StringComparison.OrdinalIgnoreCase);
+                        <a class="td-catalog__leaf @(current ? "is-current" : null)"
+                           href="@item.Href"
+                           data-td-catalog-leaf
+                           data-name="@item.Title"
+                           aria-current="@(current ? "page" : null)">@item.Title</a>
+                    }
+                </div>
+            </div>
+        }
+        <div class="td-catalog__empty" data-td-catalog-empty hidden>Sin coincidencias</div>
+    </div>
+    <div class="td-catalog__foot">TDMenuApp · este mismo menú</div>
+</nav>
+
+@code {
+    [Parameter] public string? ActiveId { get; set; }
+    [Parameter] public string? Query { get; set; }
+
+    private string? CurrentId
+    {
+        get
+        {
+            if (!string.IsNullOrWhiteSpace(ActiveId))
+            {
+                return ActiveId;
+            }
+
+            var path = new Uri(Navigation.Uri).AbsolutePath.Trim('/');
+            return path.StartsWith("c/", StringComparison.OrdinalIgnoreCase)
+                ? path[2..]
+                : null;
+        }
+    }
+
+    private bool IsHome => string.IsNullOrWhiteSpace(CurrentId);
+
+    private bool Matches(CatalogItem item) =>
+        string.IsNullOrWhiteSpace(Query)
+        || item.Title.Contains(Query, StringComparison.OrdinalIgnoreCase)
+        || item.Id.Contains(Query, StringComparison.OrdinalIgnoreCase)
+        || item.Group.Contains(Query, StringComparison.OrdinalIgnoreCase);
+}

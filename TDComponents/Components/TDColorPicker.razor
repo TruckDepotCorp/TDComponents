@@ -1,0 +1,25 @@
+@namespace TDComponents.Components
+
+<div class="td-field">
+    @if (!string.IsNullOrWhiteSpace(Label))
+    {
+        <TDLabel For="@_id">@Label</TDLabel>
+    }
+    <div class="td-color">
+        <input id="@_id" class="td-color__swatch" type="color" name="@Name" value="@Value" aria-label="@Label" />
+        <span class="td-color__hex">@Value</span>
+    </div>
+</div>
+
+@code {
+    private readonly string _id = $"td-color-{Guid.NewGuid():N}";
+
+    /// <summary>Nombre del campo en el post.</summary>
+    [Parameter] public string Name { get; set; } = "color";
+
+    /// <summary>Etiqueta del selector. También se usa como nombre accesible del input.</summary>
+    [Parameter] public string? Label { get; set; }
+
+    /// <summary>Color inicial en formato <c>#RRGGBB</c>.</summary>
+    [Parameter] public string Value { get; set; } = "#ED2A24";
+}

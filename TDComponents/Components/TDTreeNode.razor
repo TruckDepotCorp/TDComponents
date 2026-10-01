@@ -1,0 +1,61 @@
+@namespace TDComponents.Components
+@typeparam TItem
+
+<li role="treeitem" aria-expanded="@(_children.Count > 0 ? (_open ? "true" : "false") : null)" aria-current="@(_active ? "page" : null)" style="@($"--td-tree-level:{Level}")">
+    <div class="td-tree__row @(_active ? "is-active" : null)">
+        @if (_children.Any())
+        {
+            <button type="button" class="td-tree__toggle" data-td-tree-toggle aria-expanded="@(_open ? "true" : "false")" aria-label="@(_open ? $"Contraer {Tree.Label(Item)}" : $"Expandir {Tree.Label(Item)}")">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
+            </button>
+        }
+        else
+        {
+            <span class="td-tree__toggle" aria-hidden="true"></span>
+        }
+        @if (!string.IsNullOrEmpty(_href))
+        {
+            <a href="@_href">@Tree.Label(Item)</a>
+        }
+        else
+        {
+            <span>@Tree.Label(Item)</span>
+        }
+        @if (_count is not null)
+        {
+            <span class="td-tree__count">@_count</span>
+        }
+    </div>
+    @if (_children.Any())
+    {
+        <ul role="group" hidden="@(!_open)">
+            @foreach (var child in _children)
+            {
+                <TDTreeNode TItem="TItem" Item="child" Level="@(Level + 1)" />
+            }
+        </ul>
+    }
+</li>
+
+@code {
+    [CascadingParameter] public TDTree<TItem> Tree { get; set; } = default!;
+    /// <summary>Dato del nodo. Lo asigna TDTree.</summary>
+    [Parameter] public TItem Item { get; set; } = default!;
+    /// <summary>Profundidad, desde 1. Lo asigna el padre.</summary>
+    [Parameter] public int Level { get; set; } = 1;
+
+    private bool _open;
+    private bool _active;
+    private string? _href;
+    private int? _count;
+    private IReadOnlyList<TItem> _children = [];
+
+    protected override void OnParametersSet()
+    {
+        _children = Tree.Nodes(Item).ToList();
+        _open = Tree.IsOpen(Item);
+        _active = Tree.IsActive(Item);
+        _href = Tree.Link(Item);
+        _count = Tree.Badge(Item);
+    }
+}

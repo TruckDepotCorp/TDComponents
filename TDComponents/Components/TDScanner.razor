@@ -1,0 +1,15 @@
+@namespace TDComponents.Components
+
+<td-studio class="td-studio" data-kind="scanner" data-td-studio
+           data-mode="@Mode"
+           data-wedge="@(KeyboardWedge ? "true" : "false")"
+           data-initial="@InitialValue"></td-studio>
+
+@code {
+    /// <summary>continuous sigue leyendo. single pausa hasta confirmar. El defecto es continuous.</summary>
+    [Parameter] public string Mode { get; set; } = "continuous";
+    /// <summary>Acepta el lector USB que escribe como teclado. El defecto es verdadero.</summary>
+    [Parameter] public bool KeyboardWedge { get; set; } = true;
+    /// <summary>Código que se muestra al abrir el ejemplo.</summary>
+    [Parameter] public string? InitialValue { get; set; }
+}

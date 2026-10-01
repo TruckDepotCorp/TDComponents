@@ -1,0 +1,37 @@
+@namespace TDComponents.Components
+@typeparam TItem
+
+<td-tree class="td-tree">
+    <ul role="tree">
+        <CascadingValue Value="this" IsFixed="true">
+            @foreach (var item in Items ?? [])
+            {
+                <TDTreeNode TItem="TItem" Item="item" Level="1" />
+            }
+        </CascadingValue>
+    </ul>
+</td-tree>
+
+@code {
+    /// <summary>Nodos de primer nivel.</summary>
+    [Parameter] public IEnumerable<TItem>? Items { get; set; }
+    /// <summary>Texto de cada nodo. Es obligatorio.</summary>
+    [Parameter, EditorRequired] public Func<TItem, string> Text { get; set; } = default!;
+    /// <summary>Hijos de un nodo. Nulo o vacío significa que es una hoja.</summary>
+    [Parameter] public Func<TItem, IEnumerable<TItem>?>? Children { get; set; }
+    /// <summary>Conteo que se muestra junto al nodo.</summary>
+    [Parameter] public Func<TItem, int?>? Count { get; set; }
+    /// <summary>Destino del nodo. Si devuelve un valor, el nodo es un enlace.</summary>
+    [Parameter] public Func<TItem, string?>? Href { get; set; }
+    /// <summary>Indica si el nodo empieza abierto.</summary>
+    [Parameter] public Func<TItem, bool>? Expanded { get; set; }
+    /// <summary>Indica si el nodo es el actual.</summary>
+    [Parameter] public Func<TItem, bool>? Active { get; set; }
+
+    internal string Label(TItem item) => Text(item);
+    internal IEnumerable<TItem> Nodes(TItem item) => Children?.Invoke(item) ?? [];
+    internal int? Badge(TItem item) => Count?.Invoke(item);
+    internal string? Link(TItem item) => Href?.Invoke(item);
+    internal bool IsOpen(TItem item) => Expanded?.Invoke(item) ?? false;
+    internal bool IsActive(TItem item) => Active?.Invoke(item) ?? false;
+}

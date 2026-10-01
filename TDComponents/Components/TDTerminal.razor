@@ -1,0 +1,22 @@
+@namespace TDComponents.Components
+
+<td-terminal class="td-terminal" data-prompt="@Prompt">
+    <div class="td-terminal__bar"><span></span><span></span><span></span><strong>@Prompt</strong></div>
+    <div class="td-terminal__out" data-td-term-out tabindex="0">
+        <p data-td-term-line data-tone="muted">@Welcome</p>
+    </div>
+    <form class="td-terminal__line" data-td-term-form>
+        <span>@Prompt</span>
+        <input data-td-term-in aria-label="Comando" autocomplete="off" spellcheck="false" />
+    </form>
+    <script type="application/json" data-td-term-parts>@((MarkupString)PartsJson)</script>
+</td-terminal>
+
+@code {
+    /// <summary>Texto que precede a cada comando.</summary>
+    [Parameter] public string Prompt { get; set; } = "td@taller:~$";
+    /// <summary>Línea que se muestra al abrir.</summary>
+    [Parameter] public string Welcome { get; set; } = "TDTerminal 1.0 · escribe help para ver los comandos";
+    /// <summary>Arreglo JSON de repuestos que los comandos consultan. El defecto es un arreglo vacío.</summary>
+    [Parameter] public string PartsJson { get; set; } = "[]";
+}

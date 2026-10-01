@@ -1,0 +1,23 @@
+@namespace TDComponents.Components
+
+<td-studio class="td-studio" data-kind="printers" data-td-studio data-devices="@DevicesJson"></td-studio>
+
+@code {
+    /// <summary>Impresoras. Nulo muestra el juego de demostración.</summary>
+    [Parameter] public IReadOnlyList<TDPrinterDevice>? Devices { get; set; }
+
+    private string? DevicesJson => Devices is null ? null : JsonSerializer.Serialize(Devices.Select(device => new
+    {
+        id = device.Id,
+        name = device.Name,
+        model = device.Model,
+        connection = device.Connection,
+        address = device.Address,
+        protocol = device.Protocol,
+        dpi = device.Dpi,
+        widthMm = device.WidthMm,
+        connected = device.Connected,
+        isDefault = device.IsDefault,
+        unreachable = device.Unreachable
+    }));
+}

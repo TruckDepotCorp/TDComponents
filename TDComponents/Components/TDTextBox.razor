@@ -1,0 +1,246 @@
+@namespace TDComponents.Components
+@inherits InputBase<string?>
+
+<td-textbox>
+    <div class="td-field @CssClass">
+        <div class="td-field__label-row">
+            <label class="td-field__label" for="@_fieldId">@Label</label>
+            @if (Required)
+            {
+                <span class="td-field__required">@RequiredText</span>
+            }
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(Hint))
+        {
+            <p class="td-field__hint" id="@_hintId">@Hint</p>
+        }
+
+        <div class="td-control @(IsPassword ? "td-control--secret" : null)">
+            @if (Multiline)
+            {
+                <textarea id="@_fieldId"
+                          name="@FieldName"
+                          rows="@Rows"
+                          placeholder="@Placeholder"
+                          required="@Required"
+                          minlength="@MinLength"
+                          maxlength="@MaxLength"
+                          autocomplete="@Autocomplete"
+                          autocapitalize="@AutoCapitalize"
+                          inputmode="@InputMode"
+                          spellcheck="@SpellcheckValue"
+                          aria-required="@(Required ? "true" : null)"
+                          aria-describedby="@DescribedBy"
+                          aria-errormessage="@_clientErrorId"
+                          data-msg-required="@RequiredMessage"
+                          data-msg-type="@TypeMessage"
+                          data-msg-minlength="@MinLengthMessage"
+                          data-msg-maxlength="@MaxLengthMessage"
+                          data-msg-pattern="@PatternMessage"
+                          @attributes="AdditionalAttributes"
+                          class="td-input">@CurrentValue</textarea>
+            }
+            else
+            {
+                <input id="@_fieldId"
+                       type="@ResolvedType"
+                       name="@FieldName"
+                       value="@CurrentValue"
+                       placeholder="@Placeholder"
+                       required="@Required"
+                       minlength="@MinLength"
+                       maxlength="@MaxLength"
+                       pattern="@Pattern"
+                       autocomplete="@Autocomplete"
+                       autocapitalize="@AutoCapitalize"
+                       inputmode="@InputMode"
+                       spellcheck="@SpellcheckValue"
+                       aria-required="@(Required ? "true" : null)"
+                       aria-describedby="@DescribedBy"
+                       aria-errormessage="@_clientErrorId"
+                       data-msg-required="@RequiredMessage"
+                       data-msg-type="@TypeMessage"
+                       data-msg-minlength="@MinLengthMessage"
+                       data-msg-maxlength="@MaxLengthMessage"
+                       data-msg-pattern="@PatternMessage"
+                       @attributes="AdditionalAttributes"
+                       class="td-input" />
+            }
+        </div>
+
+        @if (IsPassword)
+        {
+            <button type="button"
+                    class="td-text-button"
+                    data-td-secret-toggle
+                    data-show="@ShowSecretText"
+                    data-hide="@HideSecretText"
+                    aria-pressed="false"
+                    aria-controls="@_fieldId">
+                @ShowSecretText
+            </button>
+        }
+
+        @if (ShowsCounter)
+        {
+            <p class="td-field__counter" id="@_counterId" data-td-counter>@InitialCounter</p>
+        }
+
+        <p class="td-field__error" id="@_clientErrorId" data-td-client-error hidden></p>
+
+        <div class="td-field__server" id="@_serverErrorId" data-td-server-error>
+            <ValidationMessage For="ValueExpression" />
+        </div>
+    </div>
+</td-textbox>
+
+@code {
+    private readonly string _fieldId = $"td-field-{Guid.NewGuid():N}";
+    private string _hintId => $"{_fieldId}-hint";
+    private string _clientErrorId => $"{_fieldId}-client-error";
+    private string _serverErrorId => $"{_fieldId}-server-error";
+    private string _counterId => $"{_fieldId}-counter";
+
+    /// <summary>Etiqueta visible. Es obligatoria para el compilador. Si otra <see cref="TDLabel"/> ya etiqueta el campo, pasa una cadena vacía.</summary>
+    [Parameter, EditorRequired] public string Label { get; set; } = "";
+
+    /// <summary>Ayuda bajo el campo. Úsala para una pista que no cabe en <see cref="Placeholder"/>.</summary>
+    [Parameter] public string? Hint { get; set; }
+
+    /// <summary>Texto de ejemplo dentro del campo vacío.</summary>
+    [Parameter] public string? Placeholder { get; set; }
+
+    /// <summary>Tipo HTML. Acepta <c>text</c>, <c>email</c>, <c>password</c>, <c>search</c>, <c>tel</c>, <c>url</c> y <c>number</c>. Cualquier otro valor se trata como <c>text</c>. <c>password</c> muestra el botón de revelar la clave.</summary>
+    [Parameter] public string InputType { get; set; } = "text";
+
+    /// <summary>Pinta un área de varias líneas. En ese modo no hay botón de contraseña.</summary>
+    [Parameter] public bool Multiline { get; set; }
+
+    /// <summary>Filas iniciales del área de texto. Solo aplica con <see cref="Multiline"/>.</summary>
+    [Parameter] public int Rows { get; set; } = 5;
+
+    /// <summary>El navegador exige un valor y se muestra <see cref="RequiredText"/> junto a la etiqueta.</summary>
+    [Parameter] public bool Required { get; set; }
+
+    /// <summary>Cantidad mínima de caracteres.</summary>
+    [Parameter] public int? MinLength { get; set; }
+
+    /// <summary>Cantidad máxima de caracteres. También la usa el contador.</summary>
+    [Parameter] public int? MaxLength { get; set; }
+
+    /// <summary>Muestra «largo / máximo». Solo aparece si <see cref="MaxLength"/> es mayor que cero.</summary>
+    [Parameter] public bool ShowCounter { get; set; }
+
+    /// <summary>Expresión regular del atributo HTML <c>pattern</c>. Valida al enviar; no formatea mientras se escribe. Para una máscara visual usa <see cref="TDMask"/>.</summary>
+    [Parameter] public string? Pattern { get; set; }
+
+    /// <summary>Atributo HTML <c>autocomplete</c>, por ejemplo <c>email</c>, <c>current-password</c> o <c>off</c>.</summary>
+    [Parameter] public string? Autocomplete { get; set; }
+
+    /// <summary>Teclado del móvil: <c>numeric</c>, <c>decimal</c>, <c>email</c> o <c>tel</c>.</summary>
+    [Parameter] public string? InputMode { get; set; }
+
+    /// <summary>Corrector ortográfico. Si se omite, queda activo solo cuando <see cref="Multiline"/> es verdadero.</summary>
+    [Parameter] public bool? Spellcheck { get; set; }
+
+    /// <summary>Marca junto a la etiqueta cuando <see cref="Required"/> es verdadero. El defecto está en inglés: en español usa «Obligatorio».</summary>
+    [Parameter] public string RequiredText { get; set; } = "Required";
+
+    /// <summary>Mensaje cuando el valor falta.</summary>
+    [Parameter] public string RequiredMessage { get; set; } = "";
+
+    /// <summary>Mensaje cuando el valor no cumple el tipo, por ejemplo un correo o una URL.</summary>
+    [Parameter] public string TypeMessage { get; set; } = "";
+
+    /// <summary>Mensaje cuando el texto es más corto que <see cref="MinLength"/>.</summary>
+    [Parameter] public string MinLengthMessage { get; set; } = "";
+
+    /// <summary>Mensaje cuando el texto supera <see cref="MaxLength"/>.</summary>
+    [Parameter] public string MaxLengthMessage { get; set; } = "";
+
+    /// <summary>Mensaje cuando el texto no cumple <see cref="Pattern"/>.</summary>
+    [Parameter] public string PatternMessage { get; set; } = "";
+
+    /// <summary>Texto del botón que revela la contraseña. El defecto está en inglés. Solo se usa con <c>InputType="password"</c>.</summary>
+    [Parameter] public string ShowSecretText { get; set; } = "Show password";
+
+    /// <summary>Texto del botón que vuelve a ocultar la contraseña. El defecto está en inglés.</summary>
+    [Parameter] public string HideSecretText { get; set; } = "Hide password";
+
+    /// <summary>Texto accesible cuando quedan varios caracteres. <c>{0}</c> es la cantidad. El defecto está en inglés.</summary>
+    [Parameter] public string CharactersRemainingText { get; set; } = "{0} characters remaining";
+
+    /// <summary>Texto accesible cuando queda un carácter. <c>{0}</c> es la cantidad. El defecto está en inglés.</summary>
+    [Parameter] public string CharacterRemainingText { get; set; } = "{0} character remaining";
+
+    private string ResolvedType
+    {
+        get
+        {
+            var type = InputType.Trim().ToLowerInvariant();
+            return type is "text" or "email" or "password" or "search" or "tel" or "url" or "number"
+                ? type
+                : "text";
+        }
+    }
+
+    private bool IsPassword => !Multiline && ResolvedType == "password";
+
+    private bool ShowsCounter => ShowCounter && MaxLength is > 0;
+
+    private bool ResolvedSpellcheck => Spellcheck ?? Multiline;
+
+    private string SpellcheckValue => ResolvedSpellcheck ? "true" : "false";
+
+    private string FieldName =>
+        string.IsNullOrEmpty(NameAttributeValue) ? FieldIdentifier.FieldName : NameAttributeValue;
+
+    private string? InitialCounter
+    {
+        get
+        {
+            if (!ShowCounter || MaxLength is not int maxLength)
+            {
+                return null;
+            }
+
+            var length = CurrentValue?.Length ?? 0;
+            return $"{length.ToString(System.Globalization.CultureInfo.InvariantCulture)} / {maxLength.ToString(System.Globalization.CultureInfo.InvariantCulture)}";
+        }
+    }
+
+    private string AutoCapitalize =>
+        ResolvedType is "email" or "password" or "url" ? "none" : "sentences";
+
+    private string DescribedBy
+    {
+        get
+        {
+            var ids = new List<string>();
+            if (!string.IsNullOrWhiteSpace(Hint))
+            {
+                ids.Add(_hintId);
+            }
+
+            ids.Add(_clientErrorId);
+            ids.Add(_serverErrorId);
+            if (ShowsCounter)
+            {
+                ids.Add(_counterId);
+            }
+
+            return string.Join(' ', ids);
+        }
+    }
+
+    protected override bool TryParseValueFromString(
+        string? value,
+        out string? result,
+        [NotNullWhen(false)] out string? validationErrorMessage)
+    {
+        result = value;
+        validationErrorMessage = null;
+        return true;
+    }
+}

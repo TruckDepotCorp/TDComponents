@@ -1,0 +1,65 @@
+@namespace TDComponents.Components
+
+<td-fab class="td-fab-host">
+    @if (!string.IsNullOrEmpty(Href) && !HasMenu)
+    {
+        <a class="td-fab @(Extended ? "td-fab--extended" : null) @(Size == TDSize.Small ? "td-fab--sm" : null) @(Dark ? "td-fab--dark" : null)"
+           href="@Href"
+           aria-label="@AriaLabel">
+            @Icon
+            @if (Extended)
+            {
+                <span>@Label</span>
+            }
+        </a>
+    }
+    else
+    {
+        <button type="button"
+                class="td-fab @(Extended ? "td-fab--extended" : null) @(Size == TDSize.Small ? "td-fab--sm" : null) @(Dark ? "td-fab--dark" : null)"
+                aria-expanded="@(HasMenu ? "false" : null)"
+                aria-haspopup="@(HasMenu ? "menu" : null)"
+                data-td-fab
+                aria-label="@AriaLabel">
+            @Icon
+            @if (Extended)
+            {
+                <span>@Label</span>
+            }
+        </button>
+    }
+    @if (HasMenu)
+    {
+        <div class="td-fab__menu" hidden role="menu" data-td-fab-menu>
+            @ChildContent
+        </div>
+    }
+</td-fab>
+
+@code {
+    /// <summary>Nombre accesible. Es imprescindible cuando el botón no muestra texto.</summary>
+    [Parameter] public string AriaLabel { get; set; } = "Acción principal";
+
+    /// <summary>Texto visible. Solo se muestra si <see cref="Extended"/> es verdadero.</summary>
+    [Parameter] public string? Label { get; set; }
+
+    /// <summary>Destino del enlace. Se usa cuando no hay <see cref="ChildContent"/>. Si hay menú, el control es un botón y este valor se ignora.</summary>
+    [Parameter] public string? Href { get; set; }
+
+    /// <summary>Muestra <see cref="Label"/> junto al ícono. Úsalo cuando el ícono solo no dice qué hace el botón.</summary>
+    [Parameter] public bool Extended { get; set; }
+
+    /// <summary>Variante oscura, para que contraste sobre un fondo claro.</summary>
+    [Parameter] public bool Dark { get; set; }
+
+    /// <summary><see cref="TDSize.Small"/> reduce el botón. <see cref="TDSize.Large"/> se ve igual que <see cref="TDSize.Medium"/>.</summary>
+    [Parameter] public TDSize Size { get; set; } = TDSize.Medium;
+
+    /// <summary>Ícono del botón.</summary>
+    [Parameter] public RenderFragment? Icon { get; set; }
+
+    /// <summary>Acciones del menú. Su presencia activa el modo menú. No existe un parámetro <c>Menu</c>.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private bool HasMenu => ChildContent is not null;
+}

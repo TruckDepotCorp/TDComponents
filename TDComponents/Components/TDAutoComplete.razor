@@ -1,0 +1,48 @@
+@namespace TDComponents.Components
+
+<td-autocomplete class="td-field">
+    @if (!string.IsNullOrWhiteSpace(Label))
+    {
+        <label class="td-field__label">@Label</label>
+    }
+    <div class="td-ac">
+        <input class="td-input"
+               type="search"
+               name="@Name"
+               value="@Value"
+               placeholder="@Placeholder"
+               autocomplete="off"
+               data-td-ac
+               aria-autocomplete="list"
+               aria-expanded="false" />
+        <ul class="td-ac__list" hidden data-td-ac-list role="listbox">
+            @foreach (var option in Options)
+            {
+                <li>
+                    <button type="button"
+                            class="td-ac__option"
+                            data-td-ac-pick="@option.Value"
+                            data-label="@option.Label"
+                            role="option">@option.Label</button>
+                </li>
+            }
+        </ul>
+    </div>
+</td-autocomplete>
+
+@code {
+    /// <summary>Nombre del texto que se envía. El valor es lo que quedó escrito, no un identificador obligatorio.</summary>
+    [Parameter] public string? Name { get; set; }
+
+    /// <summary>Etiqueta del campo.</summary>
+    [Parameter] public string? Label { get; set; }
+
+    /// <summary>Texto inicial.</summary>
+    [Parameter] public string? Value { get; set; }
+
+    /// <summary>Texto del campo vacío.</summary>
+    [Parameter] public string Placeholder { get; set; } = "Escribe para buscar…";
+
+    /// <summary>Sugerencias. Se filtran por <c>Label</c>. Al elegir una, el campo recibe su <c>Value</c>.</summary>
+    [Parameter] public IReadOnlyList<TDOption> Options { get; set; } = [];
+}

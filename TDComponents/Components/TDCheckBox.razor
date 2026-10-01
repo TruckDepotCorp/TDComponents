@@ -1,0 +1,54 @@
+@namespace TDComponents.Components
+
+<td-checkbox>
+    <label class="td-checkfield @(Disabled ? "is-disabled" : null)">
+        <input class="td-sr"
+               type="checkbox"
+               name="@Name"
+               value="@Value"
+               checked="@Checked"
+               disabled="@Disabled"
+               data-td-checkbox
+               data-tri="@(TriState ? "true" : null)"
+               data-state="@StateToken"
+               aria-checked="@AriaChecked"
+               @attributes="AdditionalAttributes" />
+        <span class="td-checkfield__box" aria-hidden="true">
+            <svg class="td-checkfield__tick" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
+            <svg class="td-checkfield__dash" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path></svg>
+        </span>
+        <span class="td-checkfield__text">@Label</span>
+    </label>
+</td-checkbox>
+
+@code {
+    /// <summary>Nombre del campo en el post. Sin este valor la casilla no viaja con el formulario.</summary>
+    [Parameter] public string? Name { get; set; }
+
+    /// <summary>Literal que se envía cuando la casilla está marcada. El defecto es <c>true</c>.</summary>
+    [Parameter] public string Value { get; set; } = "true";
+
+    /// <summary>Texto que explica qué se está aceptando o marcando.</summary>
+    [Parameter] public string Label { get; set; } = "";
+
+    /// <summary>Empieza marcada.</summary>
+    [Parameter] public bool Checked { get; set; }
+
+    /// <summary>La persona no puede cambiarla.</summary>
+    [Parameter] public bool Disabled { get; set; }
+
+    /// <summary>Permite el estado mixto, además de marcada y desmarcada. Úsalo en la casilla padre de un grupo.</summary>
+    [Parameter] public bool TriState { get; set; }
+
+    /// <summary>Con <c>true</c> pinta el guion y anuncia el estado mixto. Úsalo junto con <see cref="TriState"/> cuando la selección hija está a medias.</summary>
+    [Parameter] public bool? Indeterminate { get; set; }
+
+    /// <summary>Atributos HTML extra del input.</summary>
+    [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string StateToken =>
+        Indeterminate == true ? "mixed" : Checked ? "on" : "off";
+
+    private string AriaChecked =>
+        Indeterminate == true ? "mixed" : Checked ? "true" : "false";
+}

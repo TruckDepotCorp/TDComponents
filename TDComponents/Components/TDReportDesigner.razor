@@ -1,0 +1,30 @@
+@namespace TDComponents.Components
+
+<td-studio class="td-studio" data-kind="reportdesigner" data-td-studio
+           data-report="@Report" data-rows="@Rows"
+           data-numero="@Numero" data-cliente="@Cliente" data-rut="@Rut"
+           data-fecha="@Fecha" data-vendedor="@Vendedor"
+           data-bodega="@Bodega" data-fecha-corte="@FechaCorte" data-responsable="@Responsable"></td-studio>
+
+@code {
+    /// <summary>Plantilla de demostración. El defecto es factura.</summary>
+    [Parameter] public string Report { get; set; } = "factura";
+    /// <summary>Filas de detalle del ejemplo. El defecto es 8.</summary>
+    [Parameter] public int Rows { get; set; } = 8;
+    /// <summary>Número del documento.</summary>
+    [Parameter] public string? Numero { get; set; }
+    /// <summary>Nombre del cliente.</summary>
+    [Parameter] public string? Cliente { get; set; }
+    /// <summary>RUT del cliente.</summary>
+    [Parameter] public string? Rut { get; set; }
+    /// <summary>Fecha del documento.</summary>
+    [Parameter] public string? Fecha { get; set; }
+    /// <summary>Nombre del vendedor.</summary>
+    [Parameter] public string? Vendedor { get; set; }
+    /// <summary>Bodega del documento.</summary>
+    [Parameter] public string? Bodega { get; set; }
+    /// <summary>Fecha de corte, para informes de inventario.</summary>
+    [Parameter] public string? FechaCorte { get; set; }
+    /// <summary>Persona responsable del informe.</summary>
+    [Parameter] public string? Responsable { get; set; }
+}
