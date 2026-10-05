@@ -1,30 +1,36 @@
 @namespace TDComponents.Components
 
-<div class="td-field">
-    @if (!string.IsNullOrWhiteSpace(Label))
-    {
-        <TDLabel For="@_id" Required="Required">@Label</TDLabel>
-    }
-    <input id="@_id"
-           class="td-input"
-           type="@InputType"
-           name="@Name"
-           value="@Value"
-           min="@Min"
-           max="@Max"
-           required="@Required"
-           disabled="@Disabled" />
-    @if (!string.IsNullOrWhiteSpace(Hint))
-    {
-        <p class="td-field__hint">@Hint</p>
-    }
-</div>
+<TDFormText Value="Value" ValueChanged="ValueChanged" ValueExpression="ValueExpression" ExplicitName="@Name" Fallback="fecha" Context="posted">
+    <div class="td-field">
+        @if (!string.IsNullOrWhiteSpace(Label))
+        {
+            <TDLabel For="@_id" Required="Required">@Label</TDLabel>
+        }
+        <input id="@_id"
+               class="td-input"
+               type="@InputType"
+               name="@posted"
+               value="@Value"
+               min="@Min"
+               max="@Max"
+               required="@Required"
+               disabled="@Disabled" />
+        @if (!string.IsNullOrWhiteSpace(Hint))
+        {
+            <p class="td-field__hint">@Hint</p>
+        }
+        @if (ValueExpression is not null)
+        {
+            <div class="td-field__server"><ValidationMessage For="ValueExpression" /></div>
+        }
+    </div>
+</TDFormText>
 
 @code {
     private readonly string _id = $"td-date-{Guid.NewGuid():N}";
 
-    /// <summary>Nombre del valor enviado.</summary>
-    [Parameter] public string Name { get; set; } = "fecha";
+    /// <summary>Nombre del valor enviado. Si se omite y el campo usa <c>@bind-Value</c>, el post usa el nombre del modelo.</summary>
+    [Parameter] public string? Name { get; set; }
 
     /// <summary>Qué se captura. <see cref="TDDateMode.Date"/>, <see cref="TDDateMode.DateTime"/> o <see cref="TDDateMode.Time"/> cambian el formato de <see cref="Value"/>, <see cref="Min"/> y <see cref="Max"/>.</summary>
     [Parameter] public TDDateMode Mode { get; set; } = TDDateMode.Date;
@@ -35,7 +41,7 @@
     /// <summary>Ayuda bajo el campo.</summary>
     [Parameter] public string? Hint { get; set; }
 
-    /// <summary>Valor inicial en el formato del modo: <c>yyyy-MM-dd</c>, <c>yyyy-MM-ddTHH:mm</c> o <c>HH:mm</c>.</summary>
+    /// <summary>Valor en el formato del modo: <c>yyyy-MM-dd</c>, <c>yyyy-MM-ddTHH:mm</c> o <c>HH:mm</c>. Acepta <c>@bind-Value</c>.</summary>
     [Parameter] public string? Value { get; set; }
 
     /// <summary>Mínimo, en el mismo formato que <see cref="Value"/>. Úsalo para no permitir días anteriores.</summary>

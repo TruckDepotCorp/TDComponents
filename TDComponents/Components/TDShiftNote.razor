@@ -1,0 +1,25 @@
+@namespace TDComponents.Components
+
+<article class="td-op">
+    <p class="td-op__kicker">Relevo</p>
+    <h2>@From dejó el turno</h2>
+    <p class="td-op__where">@At</p>
+    <p class="td-op__note">@Note</p>
+    <p class="td-op__status @(OpenTasks > 0 ? "is-warn" : "is-ok")">
+        @(OpenTasks == 0 ? "No quedan tareas abiertas de ese turno." : $"{OpenTasks.ToString(System.Globalization.CultureInfo.CurrentCulture)} {(OpenTasks == 1 ? "tarea sigue abierta" : "tareas siguen abiertas")}.")
+    </p>
+</article>
+
+@code {
+    /// <summary>Quién entrega el turno.</summary>
+    [Parameter] public string From { get; set; } = "";
+
+    /// <summary>Cuándo lo dejó, en lenguaje claro.</summary>
+    [Parameter] public string At { get; set; } = "";
+
+    /// <summary>Lo que el siguiente turno tiene que saber.</summary>
+    [Parameter] public string Note { get; set; } = "";
+
+    /// <summary>Tareas que siguen abiertas. Cero significa que el turno anterior cerró su cola.</summary>
+    [Parameter] public int OpenTasks { get; set; }
+}

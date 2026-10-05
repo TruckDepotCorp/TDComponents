@@ -1,7 +1,8 @@
 @namespace TDComponents.Components
 
+<TDFormText Value="Value" ValueChanged="ValueChanged" ValueExpression="ValueExpression" ExplicitName="@Name" Fallback="valor" Context="posted">
 <td-select class="td-select"
-           data-name="@Name"
+           data-name="@posted"
            data-multiple="@(Multiple ? "true" : null)"
            data-searchable="@(Searchable ? "true" : null)"
            data-chips="@(Chips ? "true" : "false")"
@@ -16,7 +17,7 @@
     }
     @foreach (var value in SelectedValues)
     {
-        <input type="hidden" name="@Name" value="@value" data-td-select-value />
+        <input type="hidden" name="@posted" value="@value" data-td-select-value />
     }
     <div id="@_id"
          class="td-select__trigger @(Disabled ? "is-disabled" : null) @(Clearable && SelectedValues.Count > 0 ? "has-clear" : null)"
@@ -113,14 +114,19 @@
     {
         <p class="td-field__hint">@Hint</p>
     }
+    @if (ValueExpression is not null)
+    {
+        <div class="td-field__server"><ValidationMessage For="ValueExpression" /></div>
+    }
 </td-select>
+</TDFormText>
 
 @code {
     private readonly string _id = $"td-sel-{Guid.NewGuid():N}";
     private string _listId => $"{_id}-list";
 
-    /// <summary>Nombre de cada valor enviado. En selección múltiple se repite, una vez por valor.</summary>
-    [Parameter] public string Name { get; set; } = "valor";
+    /// <summary>Nombre de cada valor enviado. En selección múltiple se repite, una vez por valor. Si se omite y el campo usa <c>@bind-Value</c>, el post usa el nombre del modelo.</summary>
+    [Parameter] public string? Name { get; set; }
 
     /// <summary>Etiqueta del desplegable.</summary>
     [Parameter] public string? Label { get; set; }
@@ -134,7 +140,7 @@
     /// <summary>Opciones. <c>Group</c> agrupa, <c>Hint</c> es la segunda línea y <c>Disabled</c> bloquea esa opción.</summary>
     [Parameter] public IReadOnlyList<TDOption> Options { get; set; } = [];
 
-    /// <summary>Selección simple inicial. No uses <c>@bind-Value</c>: este componente no tiene <c>ValueChanged</c>.</summary>
+    /// <summary>Selección simple. Acepta <c>@bind-Value</c>. En selección múltiple usa <see cref="Values"/>.</summary>
     [Parameter] public string? Value { get; set; }
 
     /// <summary>Selección múltiple inicial. Úsala junto con <see cref="Multiple"/>.</summary>

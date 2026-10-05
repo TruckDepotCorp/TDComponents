@@ -1,0 +1,34 @@
+@namespace TDComponents.Components
+
+<article class="td-op">
+    <p class="td-op__kicker">Temperatura</p>
+    <h2>@Product</h2>
+    <p class="td-op__hero"><span>@Reading.ToString("0.#", System.Globalization.CultureInfo.CurrentCulture)</span> <small>@Unit</small></p>
+    <p class="td-op__pair"><span>Rango</span> <b>@Min.ToString("0.#", System.Globalization.CultureInfo.CurrentCulture) a @Max.ToString("0.#", System.Globalization.CultureInfo.CurrentCulture) @Unit</b></p>
+    <p class="td-op__status @RangeClass">@RangeText</p>
+</article>
+
+@code {
+    /// <summary>Producto o carga que se mide.</summary>
+    [Parameter] public string Product { get; set; } = "";
+
+    /// <summary>Lectura tomada.</summary>
+    [Parameter] public decimal Reading { get; set; }
+
+    /// <summary>Mínimo aceptado.</summary>
+    [Parameter] public decimal Min { get; set; }
+
+    /// <summary>Máximo aceptado.</summary>
+    [Parameter] public decimal Max { get; set; }
+
+    /// <summary>Unidad de la lectura. Si se omite, se muestra °C.</summary>
+    [Parameter] public string Unit { get; set; } = "°C";
+
+    private bool InRange => Reading >= Min && Reading <= Max;
+
+    private string RangeClass => InRange ? "is-ok" : "is-bad";
+
+    private string RangeText => InRange
+        ? "Dentro del rango. Puedes seguir la revisión."
+        : "Fuera de rango. No ingreses el producto y avísale a calidad.";
+}

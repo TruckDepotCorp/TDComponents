@@ -1,0 +1,48 @@
+@namespace TDComponents.Components
+
+<article class="td-op" data-td-replen data-needed="@Needed" data-unit="@Unit">
+    <p class="td-op__kicker">Reposición · @Sku</p>
+    <h2>@Name</h2>
+    <p class="td-op__where">Sacar de @From</p>
+    <p class="td-op__where">Llevar a @To</p>
+    <p class="td-op__pair"><span>Hay que mover</span> <b>@Needed.ToString(System.Globalization.CultureInfo.CurrentCulture)</b> @Unit</p>
+    <p class="td-op__hero"><span data-td-replen-read>@Moved</span> <small>de @Needed @Unit movidas</small></p>
+    <input type="hidden" name="@ResolvedField" value="@Moved" data-td-replen-value />
+    <div class="td-op__step">
+        <button type="button" data-td-replen="-1" disabled="@(Moved <= 0)">Devolver una</button>
+        <button type="button" data-td-replen="1" disabled="@(Moved >= Needed)">Mover una</button>
+    </div>
+    <p class="td-op__status" data-td-replen-status>@StatusText</p>
+</article>
+
+@code {
+    /// <summary>Código del artículo.</summary>
+    [Parameter] public string Sku { get; set; } = "";
+
+    /// <summary>Nombre del artículo.</summary>
+    [Parameter] public string Name { get; set; } = "";
+
+    /// <summary>Ubicación de reserva, de donde se saca.</summary>
+    [Parameter] public string From { get; set; } = "";
+
+    /// <summary>Ubicación de picking, a donde se lleva.</summary>
+    [Parameter] public string To { get; set; } = "";
+
+    /// <summary>Unidades que pide la reposición.</summary>
+    [Parameter] public int Needed { get; set; }
+
+    /// <summary>Unidades ya movidas.</summary>
+    [Parameter] public int Moved { get; set; }
+
+    /// <summary>Unidad, por ejemplo unidades.</summary>
+    [Parameter] public string Unit { get; set; } = "unidades";
+
+    /// <summary>Campo del post con las unidades movidas. Si se omite, el post usa movidas.</summary>
+    [Parameter] public string? Field { get; set; }
+
+    private string ResolvedField => string.IsNullOrWhiteSpace(Field) ? "movidas" : Field;
+
+    private string StatusText => Moved >= Needed
+        ? "Reposición completa. Puedes confirmar el movimiento."
+        : $"Faltan {(Needed - Moved).ToString(System.Globalization.CultureInfo.CurrentCulture)} {Unit} por llevar a la ubicación de picking.";
+}

@@ -1,0 +1,32 @@
+@namespace TDComponents.Components
+
+<article class="td-op">
+    <p class="td-op__kicker">Decisión</p>
+    <h2>@Product</h2>
+    <p class="td-op__status @TDMobileToneCss.Class(Tone)">@Decision</p>
+    <p class="td-op__next">@Consequence</p>
+    @if (!string.IsNullOrWhiteSpace(ActionHref) && !string.IsNullOrWhiteSpace(ActionLabel))
+    {
+        <a class="td-op__go td-op__go--button" href="@ActionHref">@ActionLabel</a>
+    }
+</article>
+
+@code {
+    /// <summary>Producto sobre el que se decide.</summary>
+    [Parameter] public string Product { get; set; } = "";
+
+    /// <summary>Decisión escrita: Aceptar a stock, Devolver al proveedor o Mandar a calidad.</summary>
+    [Parameter] public string Decision { get; set; } = "";
+
+    /// <summary>Qué pasa si se confirma: qué entra, qué se devuelve o qué queda detenido.</summary>
+    [Parameter] public string Consequence { get; set; } = "";
+
+    /// <summary>Énfasis. No reemplaza <see cref="Decision"/>.</summary>
+    [Parameter] public TDMobileTone Tone { get; set; } = TDMobileTone.Neutral;
+
+    /// <summary>Destino de la confirmación.</summary>
+    [Parameter] public string? ActionHref { get; set; }
+
+    /// <summary>Texto de la acción. Dice la consecuencia.</summary>
+    [Parameter] public string? ActionLabel { get; set; }
+}

@@ -1,0 +1,74 @@
+@namespace TDComponents.Components
+
+<TDFormFile ValueExpression="Field" ExplicitName="@Name" Fallback="foto" Context="posted">
+    <td-photo class="td-field @SizeClass">
+        @if (!string.IsNullOrWhiteSpace(Label))
+        {
+            <TDLabel For="@_id">@Label</TDLabel>
+        }
+        <div class="td-photo__row">
+            <button id="@_id"
+                    type="button"
+                    class="td-btnicon"
+                    data-td-photo-open
+                    aria-label="@(string.IsNullOrWhiteSpace(Label) ? "Tomar o subir una foto" : Label)"
+                    aria-describedby="@_statusId">
+                <span class="td-btnicon__glyph" aria-hidden="true">photo_camera</span>
+            </button>
+            <div class="td-photo__meta">
+                <p id="@_statusId" class="td-photo__status" data-td-photo-status aria-live="polite">@Hint</p>
+                <figure class="td-image td-photo__view" data-td-image>
+                    <button type="button"
+                            class="td-image__frame"
+                            data-td-image-open
+                            data-td-photo-preview-open
+                            hidden
+                            aria-label="@($"Ampliar {AltText}")">
+                        <img data-td-photo-preview alt="@AltText" />
+                    </button>
+                    <dialog class="td-image__dlg" data-td-image-dlg>
+                        <form method="dialog" class="td-image__zoom">
+                            <div class="td-image__canvas" data-td-image-canvas style="--z:1;--r:0deg">
+                                <img data-td-photo-large alt="@AltText" />
+                            </div>
+                            <div class="td-image__tools">
+                                <button type="button" data-td-image-zoom="-0.2" aria-label="Alejar">−</button>
+                                <button type="button" data-td-image-zoom="0.2" aria-label="Acercar">+</button>
+                                <button type="button" data-td-image-rot aria-label="Girar">↻</button>
+                                <button type="submit" aria-label="Cerrar">Cerrar</button>
+                            </div>
+                        </form>
+                    </dialog>
+                </figure>
+            </div>
+        </div>
+        <input type="file" accept="image/*" class="td-sr" data-td-photo-pick tabindex="-1" aria-hidden="true" />
+        <input type="file" name="@posted" accept="image/jpeg" class="td-sr" data-td-photo-file tabindex="-1" aria-hidden="true" />
+    </td-photo>
+</TDFormFile>
+
+@code {
+    private readonly string _id = $"td-photo-{Guid.NewGuid():N}";
+    private readonly string _statusId = $"td-photo-status-{Guid.NewGuid():N}";
+
+    /// <summary>Nombre del archivo en el post. El formulario tiene que usar <c>multipart/form-data</c>. Si se omite y hay <see cref="Field"/>, el post usa el nombre del modelo.</summary>
+    [Parameter] public string? Name { get; set; }
+
+    /// <summary>Texto visible y nombre accesible del botón de cámara.</summary>
+    [Parameter] public string? Label { get; set; }
+
+    /// <summary>Qué va a pasar al tocar el botón, antes de elegir la foto.</summary>
+    [Parameter] public string Hint { get; set; } = "Toca la cámara para tomar una foto o elegir una de la galería. Se comprime antes de enviarla.";
+
+    /// <summary>Tamaño del botón y de la miniatura. <see cref="TDSize.Small"/>, <see cref="TDSize.Medium"/> o <see cref="TDSize.Large"/>. El defecto es mediano.</summary>
+    [Parameter] public TDSize Size { get; set; } = TDSize.Medium;
+
+    private string SizeClass => Size switch
+    {
+        TDSize.Small => "td-photo--sm",
+        TDSize.Large => "td-photo--lg",
+        _ => ""
+    };
+
+    private string AltText => string.IsNullOrWhiteSpace(Label) ? "Foto" : Label;
+}

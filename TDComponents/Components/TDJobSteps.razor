@@ -1,0 +1,36 @@
+@namespace TDComponents.Components
+
+<section class="td-msteps" aria-label="@Title">
+    <h2>@Title</h2>
+    @if (Steps is null || Steps.Count == 0)
+    {
+        <p>Este flujo no tiene pasos.</p>
+    }
+    else
+    {
+        var index = Math.Clamp(Current, 0, Steps.Count - 1);
+        <p class="td-msteps__now">Paso @(index + 1) de @Steps.Count · @Steps[index]</p>
+        <ol>
+            @for (var i = 0; i < Steps.Count; i++)
+            {
+                var state = i < index ? "Hecho" : i == index ? "Ahora" : "Pendiente";
+                <li class="@(i == index ? "is-on" : i < index ? "is-done" : null)" aria-current="@(i == index ? "step" : null)">
+                    <b>@(i + 1)</b>
+                    <span>@Steps[i]</span>
+                    <em>@state</em>
+                </li>
+            }
+        </ol>
+    }
+</section>
+
+@code {
+    /// <summary>Nombre del flujo, por ejemplo Recepción del pallet 18.</summary>
+    [Parameter] public string Title { get; set; } = "Flujo";
+
+    /// <summary>Nombres de los pasos, en orden.</summary>
+    [Parameter] public IReadOnlyList<string>? Steps { get; set; }
+
+    /// <summary>Índice del paso activo, desde cero. Un valor fuera de rango se acerca al extremo válido.</summary>
+    [Parameter] public int Current { get; set; }
+}

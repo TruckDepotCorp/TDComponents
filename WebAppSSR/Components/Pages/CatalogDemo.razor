@@ -105,7 +105,30 @@
             break;
 
         case "textarea":
+            <EditForm Model="_form" FormName="demo-textarea" OnSubmit="Ignore" Enhance>
+                <TDTextBox @bind-Value="_form.Request" Label="Solicitud" Multiline="true" Rows="4" MaxLength="280" ShowCounter="true" Hint="Qué necesitas que hagamos." />
+            </EditForm>
+            break;
+
         case "password":
+            <EditForm Model="_form" FormName="demo-password" OnSubmit="Ignore" Enhance>
+                <TDTextBox @bind-Value="_form.Password" Label="Contraseña de acceso" InputType="password" ShowSecretText="Mostrar contraseña" HideSecretText="Ocultar contraseña" />
+            </EditForm>
+            break;
+
+        case "editform":
+            <TDEditForm Model="_flota" FormName="demo-editform" OnSubmit="Ignore" Enhance
+                        Title="Alta de flota"
+                        Lead="El nombre queda en el despacho. Si sales sin guardar, lo escrito se pierde."
+                        SubmitLabel="Guardar flota"
+                        PendingText="Guardando la flota…"
+                        HelpHref="/c/fieldset" HelpLabel="Ver cómo agrupar campos"
+                        ConfirmLeave="true">
+                <TDTextBox @bind-Value="_flota.Nombre" Label="Nombre de la flota" Required="true" RequiredText="Obligatorio" RequiredMessage="Escribe el nombre de la flota." Placeholder="Transportes del Sur" Hint="Nombre con el que aparece en el despacho." />
+                <TDTextBox @bind-Value="_flota.Solicitud" Label="Solicitud" Required="true" RequiredText="Obligatorio" RequiredMessage="Describe qué hay que hacer." Multiline="true" Rows="4" Hint="Qué necesitas que hagamos." />
+            </TDEditForm>
+            break;
+
         case "form":
             <EditForm Model="_form" FormName="@($"demo-{Id}")" OnSubmit="Ignore" Enhance>
                 <TDTextBox @bind-Value="_form.Fleet" Label="Nombre de la flota" Placeholder="Transportes del Sur" Hint="Nombre con el que aparece en el despacho." />
@@ -321,6 +344,24 @@
         case "fileinput":
         case "upload":
             <TDFileInput Name="guia" Label="Guía de despacho" Accept="image/*,.pdf" Hint="PDF o foto de la guía firmada." />
+            break;
+
+        case "photo":
+            <EditForm Model="_form" FormName="demo-photo" OnSubmit="Ignore" Enhance enctype="multipart/form-data">
+                <div class="td-demo-grid">
+                    <TDPhotoButton Name="fotoChica" Label="Foto pequeña" Size="TDSize.Small" Hint="Toca la cámara. Luego toca la imagen para verla en grande." />
+                    <TDPhotoButton Name="foto" Label="Foto mediana" Hint="Toca la cámara. Luego toca la imagen para verla en grande." />
+                    <TDPhotoButton Name="fotoGrande" Label="Foto grande" Size="TDSize.Large" Hint="Toca la cámara. Luego toca la imagen para verla en grande." />
+                </div>
+                <TDButton ButtonType="TDButtonType.Submit">Guardar fotos</TDButton>
+            </EditForm>
+            break;
+
+        case "photocapture":
+            <EditForm Model="_form" FormName="demo-photocapture" OnSubmit="Ignore" Enhance enctype="multipart/form-data">
+                <TDPhotoCapture Name="fotos" Label="Fotos del repuesto" Hint="Abre la cámara. Cada toque agrega una foto sin cerrarla. Quita las que no quieras." />
+                <TDButton ButtonType="TDButtonType.Submit">Guardar la colección</TDButton>
+            </EditForm>
             break;
 
         case "listbox":
@@ -668,6 +709,26 @@
             <TDGallery Items="_gallery" />
             break;
 
+        case "maps":
+            <TDMaps />
+            break;
+
+        case "maptrace":
+            <TDMaps Title="Recorrido de Camila Rojas" Units="_recorrido" MatchRoute="true" MapId="recorrido" />
+            break;
+
+        case "mapuser":
+            <TDMapUser Name="María Soto" Role="Operadora de recepción" />
+            break;
+
+        case "locate":
+            <TDLocate />
+            break;
+
+        case "maproute":
+            <TDMapRoute />
+            break;
+
         case "imageview":
             <div class="td-demo-grid">
                 <TDImage Alt="Disco de freno" Caption="Disco ventilado 45 mm · clic para ampliar" Background="linear-gradient(135deg,#6E757D,#1F2327)" />
@@ -806,6 +867,48 @@
             <CatalogStudioDemo Id="@Id" />
             break;
 
+        case "mphone":
+        case "mappbar":
+        case "mbottom":
+        case "mscan":
+        case "mqty":
+        case "mjobs":
+        case "mbin":
+        case "msheet":
+        case "mshift":
+        case "mpick":
+        case "msteps":
+        case "mcards":
+        case "micon":
+            <CatalogMobileDemo Id="@Id" />
+            break;
+
+        case "omuelle":
+        case "oconteo":
+        case "oincidencia":
+        case "oruta":
+        case "opallet":
+        case "orelevo":
+        case "oreponer":
+        case "oubicacion":
+        case "ocalidad":
+        case "odespacho":
+            <CatalogOpsDemo Id="@Id" />
+            break;
+
+        case "recibo":
+        case "rlinea":
+        case "aviso":
+        case "rsello":
+        case "rlote":
+        case "revision":
+        case "dano":
+        case "rtemp":
+        case "etiqueta":
+        case "decision":
+            <CatalogInboundDemo Id="@Id" />
+            break;
+
         default:
             <CatalogPreview Id="@Id" />
             break;
@@ -816,6 +919,21 @@
     [Parameter] public string Id { get; set; } = "";
 
     private readonly DemoForm _form = new() { Fleet = "Transportes del Sur" };
+    private readonly FlotaAlta _flota = new() { Nombre = "Transportes del Sur" };
+    private readonly TDMapUnit[] _recorrido =
+    [
+        new("cr", "Camila Rojas", 14.599, -90.514, "Piloto", "En ruta", "Volvo FH", "ABCD-12", "Pedido OC-00481 · recorrido del turno", "Hace 1 minuto",
+        [
+            new(14.526, -90.588),
+            new(14.538, -90.572),
+            new(14.552, -90.558),
+            new(14.566, -90.546),
+            new(14.578, -90.534),
+            new(14.590, -90.524),
+            new(14.598, -90.518),
+            new(14.599, -90.514)
+        ])
+    ];
 
     private const string _html = "<h2>Nota de despacho</h2><p>Retiro en bodega <b>Santiago centro</b> antes de las 14 h. Pedido <a href=\"/c/grid\">OC-00481</a>.</p><ul><li>Pastilla BR-4521-AD</li><li>Disco ventilado 45 mm</li></ul>";
 
@@ -956,6 +1074,12 @@
     ];
 
     private static void Ignore() { }
+
+    private sealed class FlotaAlta
+    {
+        public string? Nombre { get; set; }
+        public string? Solicitud { get; set; }
+    }
 
     private sealed class DemoForm
     {

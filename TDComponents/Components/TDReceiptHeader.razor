@@ -1,0 +1,39 @@
+@namespace TDComponents.Components
+
+<article class="td-op">
+    <p class="td-op__kicker">Entrada · @Document</p>
+    <h2>@Supplier</h2>
+    <p class="td-op__where">@Dock</p>
+    <p class="td-op__hero"><span>@ReceivedLines.ToString(System.Globalization.CultureInfo.CurrentCulture)</span> <small>de @ExpectedLines.ToString(System.Globalization.CultureInfo.CurrentCulture) líneas recibidas</small></p>
+    <p class="td-op__status @TDMobileToneCss.Class(Tone)">@Status</p>
+    <p class="td-op__next">@ProgressText</p>
+</article>
+
+@code {
+    /// <summary>Orden de compra o guía que se está recibiendo.</summary>
+    [Parameter] public string Document { get; set; } = "";
+
+    /// <summary>Proveedor que entrega.</summary>
+    [Parameter] public string Supplier { get; set; } = "";
+
+    /// <summary>Muelle donde está el camión.</summary>
+    [Parameter] public string Dock { get; set; } = "";
+
+    /// <summary>Líneas que trae el documento.</summary>
+    [Parameter] public int ExpectedLines { get; set; }
+
+    /// <summary>Líneas ya recibidas.</summary>
+    [Parameter] public int ReceivedLines { get; set; }
+
+    /// <summary>Estado escrito: En recepción, Completa o Con diferencias.</summary>
+    [Parameter] public string Status { get; set; } = "";
+
+    /// <summary>Énfasis del estado. No reemplaza <see cref="Status"/>.</summary>
+    [Parameter] public TDMobileTone Tone { get; set; } = TDMobileTone.Neutral;
+
+    private string ProgressText => ReceivedLines == ExpectedLines && ExpectedLines > 0
+        ? "Todas las líneas de la orden ya se recibieron."
+        : ReceivedLines > ExpectedLines
+            ? "Hay líneas de más. Revísalas antes de cerrar la entrada."
+            : $"Faltan {(ExpectedLines - ReceivedLines).ToString(System.Globalization.CultureInfo.CurrentCulture)} {(ExpectedLines - ReceivedLines == 1 ? "línea" : "líneas")} por recibir.";
+}

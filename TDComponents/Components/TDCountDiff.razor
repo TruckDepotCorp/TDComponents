@@ -1,0 +1,47 @@
+@namespace TDComponents.Components
+
+<article class="td-op" data-td-count data-expected="@Expected" data-unit="@Unit">
+    <p class="td-op__kicker">Conteo</p>
+    <h2>@Sku</h2>
+    <p class="td-op__where">@Location</p>
+    <p class="td-op__pair"><span>En el sistema</span> <b>@Expected.ToString(System.Globalization.CultureInfo.CurrentCulture)</b> @Unit</p>
+    <p class="td-op__hero"><span data-td-count-read>@Counted</span> <small>@Unit contadas</small></p>
+    <input type="hidden" name="@ResolvedName" value="@Counted" data-td-count-value />
+    <div class="td-op__step">
+        <button type="button" data-td-count="-1" disabled="@(Counted <= 0)">Quitar una</button>
+        <button type="button" data-td-count="1">Sumar una</button>
+    </div>
+    <p class="td-op__status @DiffClass" data-td-count-status>@DiffText</p>
+</article>
+
+@code {
+    /// <summary>Código del artículo contado.</summary>
+    [Parameter] public string Sku { get; set; } = "";
+
+    /// <summary>Dónde se contó.</summary>
+    [Parameter] public string Location { get; set; } = "";
+
+    /// <summary>Existencia que tiene el sistema.</summary>
+    [Parameter] public int Expected { get; set; }
+
+    /// <summary>Unidades que la persona ya contó.</summary>
+    [Parameter] public int Counted { get; set; }
+
+    /// <summary>Unidad, por ejemplo unidades.</summary>
+    [Parameter] public string Unit { get; set; } = "unidades";
+
+    /// <summary>Campo del post con las unidades contadas. Si se omite, el post usa contado.</summary>
+    [Parameter] public string? Name { get; set; }
+
+    private string ResolvedName => string.IsNullOrWhiteSpace(Name) ? "contado" : Name;
+
+    private int Diff => Counted - Expected;
+
+    private string DiffClass => Diff == 0 ? "is-ok" : Diff < 0 ? "is-bad" : "is-warn";
+
+    private string DiffText => Diff == 0
+        ? "El conteo coincide con el sistema."
+        : Diff < 0
+            ? $"Faltan {(-Diff).ToString(System.Globalization.CultureInfo.CurrentCulture)} {Unit}. Vuelve a contar o deja la incidencia."
+            : $"Sobran {Diff.ToString(System.Globalization.CultureInfo.CurrentCulture)} {Unit}. Revisa antes de cerrar el conteo.";
+}

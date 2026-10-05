@@ -1,0 +1,18 @@
+@namespace WebAppSSR.Components
+
+<TDShopFrame>
+    <TDShopBar Action="" />
+    <main class="td-mxmain">
+        <TDShopHead Kicker="Inventario · Editar" Title="Editar producto" />
+        <TDSaveBar>
+            <div class="td-mxstack">
+                <label class="td-mxfield"><span>Nombre</span><input data-td-mx-name value="Mouse alámbrico" /></label>
+                <label class="td-mxfield"><span>Descripción</span><textarea rows="3" placeholder="Opcional — detalle visible en la ficha"></textarea></label>
+                <TDMargin />
+                <label class="td-mxfield"><span>SKU</span><input value="" placeholder="Ej. MS-ALM-001" /></label>
+                <label class="td-mxfield"><span>Se compra empacado</span><input type="checkbox" checked /></label>
+            </div>
+        </TDSaveBar>
+    </main>
+    <TDShopMenu Active="Inventario" />
+</TDShopFrame>

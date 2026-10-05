@@ -1,0 +1,31 @@
+@namespace TDComponents.Components
+
+<section class="td-mxcard">
+    <header class="td-mxcard__head"><span class="td-mxkicker">Direcciones</span></header>
+    @if (Used.Count == 0)
+    {
+        <p class="td-mxemptyline">Sin direcciones registradas.</p>
+    }
+    else
+    {
+        <ul class="td-mxaddrs">
+            @foreach (var item in Used)
+            {
+                <li><TDMiscIcon Name="pin" Size="18" /><span>@if (!string.IsNullOrWhiteSpace(item.Label)) { <strong>@item.Label</strong> }@item.Line</span></li>
+            }
+        </ul>
+    }
+</section>
+
+@code {
+    /// <summary>Direcciones. Una lista vacía dice que no hay. Si se omite, queda el ejemplo.</summary>
+    [Parameter] public IReadOnlyList<TDShopAddress>? Items { get; set; }
+
+    private IReadOnlyList<TDShopAddress> Used => Items ?? Demo;
+
+    private static readonly TDShopAddress[] Demo =
+    [
+        new("Jute:", "Frente al Parque"),
+        new("Chapas:", "Frente a la cancha")
+    ];
+}

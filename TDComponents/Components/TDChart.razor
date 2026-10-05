@@ -1,8 +1,41 @@
 @namespace TDComponents.Components
+@using System.Text.Json
 
-<td-chart class="td-chart" data-kind="@Kind" data-td-chart></td-chart>
+<td-chart class="td-chart" data-kind="@Kind" data-td-chart data-model="@ModelJson"></td-chart>
 
 @code {
-    /// <summary>Gráfico que se pinta. chline es el defecto. Un valor desconocido también se pinta como línea. Los datos son los de demostración del cliente.</summary>
+    /// <summary>Gráfico que se pinta. chline es el defecto. Un valor desconocido también se pinta como línea. Línea, columnas y pie usan la geometría de ese Kind. El resto, cuando recibe series, las pinta como columnas.</summary>
     [Parameter] public string Kind { get; set; } = "chline";
+
+    /// <summary>Etiquetas del eje. En un pie, cada etiqueta es una porción. Si se omite y hay series, el eje se numera.</summary>
+    [Parameter] public IReadOnlyList<string>? Categories { get; set; }
+
+    /// <summary>Series del sistema. Si se omite, el gráfico muestra los datos de demostración del catálogo. Una lista vacía deja el gráfico sin cifras.</summary>
+    [Parameter] public IReadOnlyList<TDChartSeries>? Series { get; set; }
+
+    /// <summary>Título visible. Si se omite, la línea y el pie usan el título del catálogo.</summary>
+    [Parameter] public string? Title { get; set; }
+
+    /// <summary>Unidad que acompaña a cada cifra, por ejemplo CLP o u. Si se omite en un gráfico con series, el número va solo.</summary>
+    [Parameter] public string? Unit { get; set; }
+
+    private string? ModelJson
+    {
+        get
+        {
+            if (Series is null)
+            {
+                return null;
+            }
+
+            var payload = new
+            {
+                title = Title,
+                unit = Unit,
+                categories = Categories ?? Array.Empty<string>(),
+                series = Series.Select(series => new { name = series.Name, values = series.Values })
+            };
+            return JsonSerializer.Serialize(payload).Replace("<", "\\u003c", StringComparison.Ordinal);
+        }
+    }
 }

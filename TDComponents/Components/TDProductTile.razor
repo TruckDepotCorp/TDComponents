@@ -1,0 +1,30 @@
+@namespace TDComponents.Components
+
+<button type="button" class="td-mxproduct @(Stock <= 0 ? "is-out" : null)" data-td-mx-item data-text="@Name @Sku" data-tags="@Category" data-td-mx-add data-name="@Name" data-sku="@Sku" data-price="@Price.ToString(System.Globalization.CultureInfo.InvariantCulture)" data-stock="@Stock" disabled="@(Stock <= 0)">
+    <span class="td-mxproduct__photo" style="background-image:url('@Photo')"></span>
+    <span class="td-mxproduct__sku">@Sku</span>
+    <strong>@Name</strong>
+    <span class="td-mxproduct__meta"><b>@Money</b><small>@(Stock <= 0 ? "Agotado" : $"{Stock} u.")</small></span>
+</button>
+
+@code {
+    /// <summary>Nombre del producto.</summary>
+    [Parameter] public string Name { get; set; } = "Mouse alámbrico";
+
+    /// <summary>Código.</summary>
+    [Parameter] public string Sku { get; set; } = "MS-ALM";
+
+    /// <summary>Precio de venta.</summary>
+    [Parameter] public decimal Price { get; set; } = 60m;
+
+    /// <summary>Existencia. Cero bloquea el producto.</summary>
+    [Parameter] public int Stock { get; set; }
+
+    /// <summary>Categoría usada por el filtro.</summary>
+    [Parameter] public string Category { get; set; } = "Accesorios";
+
+    /// <summary>Foto. Vacío usa un fondo neutro.</summary>
+    [Parameter] public string Photo { get; set; } = "_content/TDComponents/img/misc/foto-1.png";
+
+    private string Money => $"Q {Price.ToString("N2", System.Globalization.CultureInfo.GetCultureInfo("en-US"))}";
+}

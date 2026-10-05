@@ -1,0 +1,31 @@
+@namespace TDComponents.Components
+
+<header class="td-mxbar">
+    <button type="button" class="td-mxbar__icon" data-td-mx-open aria-label="Menú"><TDMiscIcon Name="menu" Size="22" /></button>
+    <span class="td-mxbar__brand">
+        <span class="td-mxbar__mark">@Mark</span>
+        <span class="td-mxbar__name">@Brand</span>
+    </span>
+    @if (!string.IsNullOrWhiteSpace(Sync))
+    {
+        <span class="td-mxbar__sync"><i></i><span class="td-mxbar__synctext">@Sync</span></span>
+    }
+    @if (!string.IsNullOrWhiteSpace(Action))
+    {
+        <button type="button" class="td-mxbar__go" data-td-mx-say="@Action"><TDMiscIcon Name="plus" Size="16" />@Action</button>
+    }
+</header>
+
+@code {
+    /// <summary>Nombre del negocio.</summary>
+    [Parameter] public string Brand { get; set; } = "Emprendela";
+
+    /// <summary>Inicial del sello.</summary>
+    [Parameter] public string Mark { get; set; } = "E";
+
+    /// <summary>Estado de sincronización. Vacío lo oculta.</summary>
+    [Parameter] public string Sync { get; set; } = "Sincronizado";
+
+    /// <summary>Acción principal de la barra. Vacío la oculta.</summary>
+    [Parameter] public string? Action { get; set; } = "Nuevo";
+}

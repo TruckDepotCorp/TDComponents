@@ -1,0 +1,24 @@
+@namespace WebAppSSR.Components
+
+<TDShopFrame>
+    <TDShopBar Action="Nueva venta" />
+    <main class="td-mxmain">
+        <TDShopHead Kicker="Operación" Title="Ventas" />
+        <TDShopKpis Items="indicadores" />
+        <div class="td-mxcard">
+            <TDSaleRow />
+            <TDSaleRow Number="V-0011" When="09:40" Client="Don Luis (Jute)" Items="5 art." Method="Crédito" Status="Por cobrar" Total="Q 315.50" Tone="TDShopTone.Warning" />
+            <TDSaleRow Number="V-0008" When="Ayer" Client="Ana López" Items="1 art." Method="Efectivo" Status="Pagada" Total="Q 60.00" />
+        </div>
+    </main>
+    <TDShopMenu Active="Ventas" />
+</TDShopFrame>
+
+@code {
+    private readonly TDShopKpi[] indicadores =
+    [
+        new("Total del período", "Q 915.50", "3 ventas"),
+        new("Ticket promedio", "Q 305.17", "Por venta"),
+        new("Crédito pendiente", "Q 315.50", "1 venta", TDShopTone.Warning)
+    ];
+}

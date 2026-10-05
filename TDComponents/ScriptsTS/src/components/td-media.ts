@@ -285,7 +285,16 @@ export function handleMediaClick(target: Element): boolean {
 
     const imageDl = target.closest('[data-td-image-dl]');
     if (imageDl instanceof HTMLElement) {
-        const frame = imageDl.closest('[data-td-image]')?.querySelector<HTMLElement>('.td-image__frame');
+        const root = imageDl.closest('[data-td-image]');
+        const photo = root?.querySelector('img');
+        if (photo?.src) {
+            const file = document.createElement('a');
+            file.href = photo.src;
+            file.download = photo.alt || 'imagen';
+            file.click();
+            return true;
+        }
+        const frame = root?.querySelector<HTMLElement>('.td-image__frame');
         const canvas = document.createElement('canvas');
         canvas.width = 640;
         canvas.height = 400;

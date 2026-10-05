@@ -1,0 +1,42 @@
+@namespace TDComponents.Components
+
+<div class="td-mqty" data-td-qty data-min="@Min" data-max="@Max" data-unit="@Unit">
+    <p class="td-mqty__label">@Label</p>
+    <p class="td-mqty__value"><span data-td-qty-read>@Value</span> <small>@Unit</small></p>
+    <input type="hidden" name="@ResolvedName" value="@Value" data-td-qty-value />
+    <div class="td-mqty__keys">
+        @foreach (var key in Keys)
+        {
+            <button type="button" data-td-qty-key="@key">@key</button>
+        }
+        <button type="button" data-td-qty-key="minus">Restar</button>
+        <button type="button" data-td-qty-key="0">0</button>
+        <button type="button" data-td-qty-key="plus">Sumar</button>
+    </div>
+    <button type="button" class="td-mqty__clear" data-td-qty-key="back">Borrar el último dígito</button>
+    <p class="td-mqty__hint" data-td-qty-hint>Entre @Min y @Max @Unit</p>
+</div>
+
+@code {
+    private static readonly string[] Keys = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
+
+    /// <summary>Qué cantidad se está tomando. Por ejemplo Cantidad a guardar.</summary>
+    [Parameter] public string Label { get; set; } = "Cantidad";
+
+    /// <summary>Cantidad inicial.</summary>
+    [Parameter] public int Value { get; set; }
+
+    /// <summary>Unidad visible, por ejemplo unidades.</summary>
+    [Parameter] public string Unit { get; set; } = "unidades";
+
+    /// <summary>Mínimo aceptado.</summary>
+    [Parameter] public int Min { get; set; }
+
+    /// <summary>Máximo aceptado. Por encima, el teclado no sube.</summary>
+    [Parameter] public int Max { get; set; } = 999;
+
+    /// <summary>Nombre del campo en el post. Si se omite, el post usa cantidad.</summary>
+    [Parameter] public string? Name { get; set; }
+
+    private string ResolvedName => string.IsNullOrWhiteSpace(Name) ? "cantidad" : Name;
+}

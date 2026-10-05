@@ -42,7 +42,7 @@ Fuente: parámetros reales de `TDComponents/Components`. El texto del catálogo 
 <TDThemePicker />
 ```
 
-No declara parámetros. Los temas incluidos son Modern, Material, Material Expressive y Fluent, en claro y oscuro.
+No declara parámetros. Los temas incluidos son Modern, Material, Material Expressive y Fluent, en claro y oscuro. Al elegir uno, el claro u oscuro queda en la cookie `td-theme` y la familia en `td-theme-family`. Cada cookie dura un año.
 
 ## TDOrganizationChart
 

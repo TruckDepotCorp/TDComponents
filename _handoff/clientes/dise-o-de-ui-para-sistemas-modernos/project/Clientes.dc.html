@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<meta name="design_doc_mode" content="canvas">
+<link rel="stylesheet" href="_ds/truck-depot-design-system-de84d30e-4ffa-49a5-8cd0-7d755af25dd5/colors_and_type.css">
+<link rel="stylesheet" href="_ds/truck-depot-design-system-de84d30e-4ffa-49a5-8cd0-7d755af25dd5/styles.css">
+<script src="_ds/truck-depot-design-system-de84d30e-4ffa-49a5-8cd0-7d755af25dd5/_ds_bundle.js"></script>
+<style>body{margin:0;background:#e9eaec;font-family:var(--font-ui);color:var(--fg)}a{color:var(--td-red)}a:hover{color:var(--red-700)}*{box-sizing:border-box}.dv-turn{padding:40px 44px 32px;border-bottom:1px solid rgba(0,0,0,.08)}.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 20px}.dv-tid{font:600 10px var(--font-mono);padding:3px 7px;background:#0A0B0C;color:#fff;border-radius:4px;text-decoration:none}.dv-tname{font:600 13px/1.2 var(--font-ui);color:#0A0B0C}.dv-opts{display:flex;flex-wrap:wrap;gap:36px;align-items:flex-start}.dv-opt{flex:none;display:flex;flex-direction:column;gap:9px}.dv-oid{font:600 10.5px var(--font-mono);padding:3px 7px;background:rgba(0,0,0,.08);color:#0A0B0C;border-radius:5px;text-decoration:none}.dv-olabel{display:flex;align-items:baseline;gap:8px;font:400 12px/1.3 var(--font-ui);color:#4B5158}.dv-next{margin:22px 0 0;font:13px/1.5 var(--font-ui);color:#4B5158}input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}</style>
+</helmet>
+
+<section class="dv-turn" id="t3">
+<div class="dv-thd"><a class="dv-tid" href="#t3">3</a><span class="dv-tname">Editar cliente — datos, crédito y direcciones en un solo lugar</span></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;max-width:1280px;margin:0 0 32px">
+<div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:18px 20px;display:flex;flex-direction:column;gap:6px"><div style="font:700 11px var(--font-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--td-red)">01 · Todo se edita aquí</div><div style="font-size:14px;line-height:1.45;color:var(--fg-2);text-wrap:pretty">Antes el crédito y las direcciones se editaban dentro de la ficha, con su propio "Guardar". Ahora la ficha es solo lectura y la edición vive en un formulario.</div></div>
+<div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:18px 20px;display:flex;flex-direction:column;gap:6px"><div style="font:700 11px var(--font-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--td-red)">02 · Sin "0 = sin restricción"</div><div style="font-size:14px;line-height:1.45;color:var(--fg-2);text-wrap:pretty">El límite usa un interruptor explícito "Sin límite"; aviso si el nuevo límite queda por debajo de la deuda actual.</div></div>
+<div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:18px 20px;display:flex;flex-direction:column;gap:6px"><div style="font:700 11px var(--font-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--td-red)">03 · Direcciones claras</div><div style="font-size:14px;line-height:1.45;color:var(--fg-2);text-wrap:pretty">Una dirección por defecto; con "Varias direcciones" aparece la lista con etiqueta, y quitar con icono en lugar de texto rojo.</div></div>
+</div>
+<div class="dv-opts">
+<sc-for list="{{ framesE }}" as="f" hint-placeholder-count="3">
+<div class="dv-opt" id="{{ f.id }}">
+<div class="dv-olabel"><a class="dv-oid" href="#{{ f.id }}">{{ f.id }}</a>{{ f.label }}</div>
+<div style="width:{{ f.fw }}px;height:{{ f.fh }}px;background:rgba(10,11,12,.55);border-radius:10px;overflow:hidden;display:flex;justify-content:center;align-items:{{ f.align }};padding:{{ f.outer }};box-shadow:var(--shadow-md);position:relative">
+<div style="width:100%;max-width:{{ f.mw }}px;height:{{ f.mh }};max-height:100%;background:#fff;border-radius:{{ f.radius }};box-shadow:var(--shadow-lg);display:flex;flex-direction:column;overflow:hidden;container-type:inline-size;position:relative">
+<div style="height:3px;background:var(--td-red);flex:none"></div>
+<div style="display:flex;align-items:flex-start;gap:12px;padding:{{ f.pad }};padding-bottom:16px;border-bottom:1px solid var(--divider);flex:none">
+<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px"><div style="font:700 11px var(--font-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--fg-3)">Clientes · Editar</div><div style="font-family:var(--font-display);font-weight:800;font-style:italic;text-transform:uppercase;font-size:clamp(26px,5.2cqi,36px);line-height:.95">Editar cliente</div></div>
+<button aria-label="Cerrar" style="width:40px;height:40px;flex:none;display:flex;align-items:center;justify-content:center;background:transparent;border:0;border-radius:5px;color:var(--fg-2);cursor:pointer" style-hover="background:var(--n-100)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button>
+</div>
+<div style="flex:1;overflow:auto;padding:{{ f.pad }};padding-top:20px">
+<div style="display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start">
+<div style="flex:1 1 300px;min-width:0;display:flex;flex-direction:column;gap:14px">
+<div style="font:700 11px var(--font-ui);letter-spacing:.14em;text-transform:uppercase;padding-bottom:8px;border-bottom:1px solid var(--divider)">Datos</div>
+<label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 13px var(--font-ui);color:var(--fg-2)">Nombre <span style="color:var(--td-red)">*</span></span><input value="{{ eName }}" onChange="{{ onEName }}" style="height:44px;width:100%;padding:0 12px;border:1px solid {{ eNameBd }};border-radius:5px;font:400 15px var(--font-ui);color:var(--fg);outline-color:var(--td-red)"></label>
+<label style="display:flex;flex-direction:column;gap:6px"><span style="font:600 13px var(--font-ui);color:var(--fg-2)">Teléfono</span><span style="display:flex;height:44px;border:1px solid var(--border-strong);border-radius:5px;overflow:hidden"><span style="padding:0 10px;display:flex;align-items:center;background:var(--n-50);border-right:1px solid var(--border);font:600 14px var(--font-ui);color:var(--fg-2)">+502</span><input value="{{ ePhone }}" onChange="{{ onEPhone }}" inputmode="tel" placeholder="Opcional" style="flex:1;min-width:0;border:0;padding:0 12px;font:500 15px var(--font-mono);outline:none"></span></label>
+<label style="display:flex;flex-direction:column;gap:6px"><span style="display:flex;justify-content:space-between;font:600 13px var(--font-ui);color:var(--fg-2)"><span>Notas</span><span style="font:500 12px var(--font-mono);color:var(--fg-3)">{{ eNotesCount }}/200</span></span><textarea value="{{ eNotes }}" onChange="{{ onENotes }}" maxlength="200" rows="3" placeholder="Ej. paga los viernes, prefiere transferencia" style="width:100%;padding:10px 12px;border:1px solid var(--border-strong);border-radius:5px;font:400 15px/1.4 var(--font-ui);resize:vertical;outline-color:var(--td-red)"></textarea></label>
+</div>
+<div style="flex:1 1 320px;min-width:0;display:flex;flex-direction:column;gap:14px">
+<div style="font:700 11px var(--font-ui);letter-spacing:.14em;text-transform:uppercase;padding-bottom:8px;border-bottom:1px solid var(--divider)">Crédito</div>
+<div style="border:1px solid var(--border);border-radius:8px;overflow:hidden">
+<div style="display:flex;gap:12px;align-items:flex-start;padding:14px"><div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px"><span style="font:700 14px var(--font-ui)">Puede comprar al crédito</span><span style="font-size:13px;color:var(--fg-2)">Permite ventas al fiado desde "Nueva venta".</span></div>
+<button onClick="{{ tCredit }}" role="switch" style="width:44px;height:26px;flex:none;border:0;border-radius:999px;background:{{ crTrack }};padding:3px;cursor:pointer;display:flex;justify-content:{{ crJust }}"><span style="width:20px;height:20px;border-radius:999px;background:#fff;box-shadow:var(--shadow-xs)"></span></button></div>
+<sc-if value="{{ eCredit }}" hint-placeholder-val="{{ true }}">
+<div style="padding:14px;border-top:1px solid var(--border);background:var(--n-50);display:flex;flex-direction:column;gap:10px">
+<div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">
+<label style="flex:1 1 140px;display:flex;flex-direction:column;gap:6px"><span style="font:600 13px var(--font-ui);color:var(--fg-2)">Límite de crédito</span><span style="display:flex;height:44px;border:1px solid var(--border-strong);border-radius:5px;overflow:hidden;background:{{ limBg }}"><span style="width:34px;display:flex;align-items:center;justify-content:center;background:var(--n-50);border-right:1px solid var(--border);font:700 14px var(--font-ui);color:var(--fg-2)">Q</span><input type="number" value="{{ eLimit }}" onChange="{{ onELimit }}" disabled="{{ eNoLimit }}" style="flex:1;min-width:0;border:0;padding:0 12px;font:600 16px var(--font-ui);background:transparent;outline:none"></span></label>
+<button onClick="{{ tNoLimit }}" style="height:44px;padding:0 14px;display:flex;align-items:center;gap:8px;border:1px solid {{ nlBd }};background:{{ nlBg }};color:{{ nlFg }};border-radius:5px;font:600 13px var(--font-ui);cursor:pointer"><span style="width:16px;height:16px;border-radius:3px;border:2px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:11px">{{ nlMark }}</span>Sin límite</button>
+</div>
+<span style="font-size:13px;color:var(--fg-2)">Deuda actual: <b style="color:var(--fg)">{{ debtLabel }}</b></span>
+<sc-if value="{{ limWarn }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px;font-weight:600;color:var(--danger)">El límite queda por debajo de la deuda: no podrá comprar más al crédito.</span></sc-if>
+</div>
+</sc-if>
+</div>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:8px;border-bottom:1px solid var(--divider);margin-top:6px"><span style="font:700 11px var(--font-ui);letter-spacing:.14em;text-transform:uppercase">Direcciones</span>
+<button onClick="{{ tMulti }}" style="display:flex;align-items:center;gap:8px;border:0;background:transparent;font:600 13px var(--font-ui);color:var(--fg-2);cursor:pointer;padding:0">Varias<span style="width:36px;height:22px;border-radius:999px;background:{{ muTrack }};padding:3px;display:flex;justify-content:{{ muJust }}"><span style="width:16px;height:16px;border-radius:999px;background:#fff"></span></span></button></div>
+<sc-for list="{{ eAddrs }}" as="a" hint-placeholder-count="2">
+<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--border);border-radius:5px">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--fg-3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"></path><circle cx="12" cy="10" r="3"></circle></svg>
+<span style="flex:1;min-width:0;font-size:14px"><b>{{ a.l }}</b> {{ a.a }}</span>
+<button onClick="{{ a.remove }}" aria-label="Quitar dirección" style="width:32px;height:32px;flex:none;border:0;background:transparent;color:var(--fg-3);border-radius:5px;display:flex;align-items:center;justify-content:center;cursor:pointer" style-hover="background:var(--red-50);color:var(--danger)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
+</div>
+</sc-for>
+<sc-if value="{{ canAddAddr }}" hint-placeholder-val="{{ true }}">
+<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr) auto;gap:8px">
+<input value="{{ naL }}" onChange="{{ onNaL }}" placeholder="Etiqueta" style="height:42px;min-width:0;padding:0 10px;border:1px solid var(--border-strong);border-radius:5px;font:400 14px var(--font-ui);outline-color:var(--td-red)">
+<input value="{{ naA }}" onChange="{{ onNaA }}" placeholder="Dirección" style="height:42px;min-width:0;padding:0 10px;border:1px solid var(--border-strong);border-radius:5px;font:400 14px var(--font-ui);outline-color:var(--td-red)">
+<button onClick="{{ addAddr }}" aria-label="Agregar dirección" style="width:42px;height:42px;border:1px solid var(--td-ink);background:var(--td-ink);color:#fff;border-radius:5px;display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg></button>
+</div>
+</sc-if>
+</div>
+</div>
+</div>
+<div style="flex:none;display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:12px {{ f.padX }};border-top:1px solid var(--border)">
+<span style="flex:1 1 140px;display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:{{ dirtyColor }}"><span style="width:8px;height:8px;border-radius:999px;background:{{ dirtyDot }}"></span>{{ dirtyLabel }}</span>
+<div style="display:flex;gap:8px;flex:{{ f.ctaFlex }} 1 auto">
+<button onClick="{{ resetDraft }}" style="height:48px;flex:1;padding:0 20px;background:#fff;border:1px solid var(--border-strong);border-radius:5px;font:700 14px var(--font-ui);letter-spacing:.08em;text-transform:uppercase;cursor:pointer">Cancelar</button>
+<button onClick="{{ saveDraft }}" disabled="{{ saveOff }}" style="height:48px;flex:1;padding:0 22px;white-space:nowrap;background:{{ saveBg }};color:{{ saveFg }};border:0;border-radius:5px;font:700 14px var(--font-ui);letter-spacing:.08em;text-transform:uppercase;cursor:{{ saveCur }}">Guardar cambios</button>
+</div>
+</div>
+<sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;left:50%;bottom:84px;transform:translateX(-50%);background:var(--td-ink);color:#fff;padding:10px 16px;border-radius:5px;font:600 13px var(--font-ui);box-shadow:var(--shadow-lg);white-space:nowrap;z-index:9">{{ toast }}</div></sc-if>
+</div>
+</div>
+</div>
+</sc-for>
+</div>
+<p class="dv-next">Prueba: baja el límite a 300, activa "Sin límite", quita o agrega direcciones y guarda — los cambios se reflejan en <a class="dv-oid" href="#2a">2a</a> y <a class="dv-oid" href="#1a">1a</a>.</p>
+</section>
+
+<section class="dv-turn" id="t2">
+<div class="dv-thd"><a class="dv-tid" href="#t2">2</a><span class="dv-tname">Ficha del cliente — crédito, cobro y movimientos</span></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;max-width:1280px;margin:0 0 32px">
+<div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:18px 20px;display:flex;flex-direction:column;gap:6px"><div style="font:700 11px var(--font-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--td-red)">01 · Uso del crédito</div><div style="font-size:14px;line-height:1.45;color:var(--fg-2);text-wrap:pretty">Deuda, límite y disponible con barra de uso; ámbar al pasar del 80%.</div></div>
+<div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:18px 20px;display:flex;flex-direction:column;gap:6px"><div style="font:700 11px var(--font-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--td-red)">02 · Cobro directo</div><div style="font-size:14px;line-height:1.45;color:var(--fg-2);text-wrap:pretty">Registrar un abono sin salir de la ficha: montos rápidos, método y saldo restante antes de confirmar.</div></div>
+<div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:18px 20px;display:flex;flex-direction:column;gap:6px"><div style="font:700 11px var(--font-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--td-red)">03 · Historial visible</div><div style="font-size:14px;line-height:1.45;color:var(--fg-2);text-wrap:pretty">Los últimos movimientos se ven de inmediato en vez de esconderse tras "Ver historial de crédito".</div></div>
+</div>
+<div class="dv-opts">
+<sc-for list="{{ framesD }}" as="f" hint-placeholder-count="3">
+<div class="dv-opt" id="{{ f.id }}">
+<div class="dv-olabel"><a class="dv-oid" href="#{{ f.id }}">{{ f.id }}</a>{{ f.label }}</div>
+<div style="width:{{ f.fw }}px;height:{{ f.fh }}px;background:rgba(10,11,12,.55);border-radius:10px;overflow:hidden;display:flex;justify-content:center;align-items:{{ f.align }};padding:{{ f.outer }};box-shadow:var(--shadow-md);position:relative">
+<div style="width:100%;max-width:{{ f.mw }}px;height:{{ f.mh }};max-height:100%;background:#fff;border-radius:{{ f.radius }};box-shadow:var(--shadow-lg);display:flex;flex-direction:column;overflow:hidden;container-type:inline-size;position:relative">
+<div style="height:3px;background:var(--td-red);flex:none"></div>
+<div style="display:flex;align-items:center;gap:14px;padding:{{ f.pad }};padding-bottom:16px;border-bottom:1px solid var(--divider);flex:none;flex-wrap:wrap">
+<span style="width:52px;height:52px;flex:none;border-radius:8px;background:var(--td-ink);color:#fff;display:flex;align-items:center;justify-content:center;font:900 italic 22px var(--font-display)">{{ dInit }}</span>
+<div style="flex:1 1 160px;min-width:0;display:flex;flex-direction:column;gap:4px">
+<div style="font-family:var(--font-display);font-weight:800;font-style:italic;text-transform:uppercase;font-size:clamp(24px,4.6cqi,34px);line-height:.95">{{ dName }}</div>
+<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="font:500 13px var(--font-mono);color:var(--fg-2)">{{ dPhone }}</span><sc-if value="{{ dCredit }}" hint-placeholder-val="{{ true }}"><span style="height:22px;padding:0 8px;border-radius:999px;background:var(--info-bg);color:var(--info);font:700 11px var(--font-ui);display:flex;align-items:center">Crédito</span></sc-if></div>
+</div>
+<div style="display:flex;gap:6px;flex:none">
+<button aria-label="Llamar" style="width:40px;height:40px;border:1px solid var(--border-strong);background:#fff;border-radius:5px;display:flex;align-items:center;justify-content:center;cursor:pointer" style-hover="background:var(--n-50)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"></path></svg></button>
+<button aria-label="Mensaje" style="width:40px;height:40px;border:1px solid var(--border-strong);background:#fff;border-radius:5px;display:flex;align-items:center;justify-content:center;cursor:pointer" style-hover="background:var(--n-50)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"></path></svg></button>
+<button style="height:40px;padding:0 14px;display:flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--border-strong);border-radius:5px;font:700 13px var(--font-ui);letter-spacing:.08em;text-transform:uppercase;cursor:pointer" style-hover="background:var(--n-50)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"></path></svg>Editar</button>
+<button aria-label="Cerrar" style="width:40px;height:40px;border:0;background:transparent;border-radius:5px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--fg-2)" style-hover="background:var(--n-100)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button>
+</div>
+</div>
+
+<div style="flex:1;overflow:auto;padding:{{ f.pad }};padding-top:20px">
+<div style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start">
+<div style="flex:1 1 320px;min-width:0;display:flex;flex-direction:column;gap:16px">
+<div style="border:1px solid var(--border);border-radius:8px;overflow:hidden">
+<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--border)">
+<div style="background:#fff;padding:12px 14px;display:flex;flex-direction:column;gap:2px"><span style="font:600 11px var(--font-ui);letter-spacing:.12em;text-transform:uppercase;color:var(--fg-3)">Deuda</span><span style="font:800 24px/1 var(--font-display);color:{{ debtColor }}">{{ debtLabel }}</span></div>
+<div style="background:#fff;padding:12px 14px;display:flex;flex-direction:column;gap:2px"><span style="font:600 11px var(--font-ui);letter-spacing:.12em;text-transform:uppercase;color:var(--fg-3)">Límite</span><span style="font:800 24px/1 var(--font-display)">{{ limitLabel }}</span></div>
+<div style="background:#fff;padding:12px 14px;display:flex;flex-direction:column;gap:2px"><span style="font:600 11px var(--font-ui);letter-spacing:.12em;text-transform:uppercase;color:var(--fg-3)">Disponible</span><span style="font:800 24px/1 var(--font-display);color:var(--success)">{{ availLabel }}</span></div>
+</div>
+<div style="padding:12px 14px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:6px">
+<div style="height:8px;border-radius:999px;background:var(--n-100);overflow:hidden"><div style="height:100%;width:{{ usePct }};background:{{ useColor }};border-radius:999px;transition:width 180ms"></div></div>
+<span style="font-size:12px;color:var(--fg-2)">{{ useLabel }}</span>
+</div>
+</div>
+
+<div style="border:1px solid var(--border);border-radius:8px;padding:16px;background:var(--n-50);display:flex;flex-direction:column;gap:12px">
+<div style="font:700 16px var(--font-ui)">Registrar cobro</div>
+<sc-if value="{{ hasDebt }}" hint-placeholder-val="{{ true }}">
+<span style="display:flex;height:48px;border:1px solid var(--border-strong);border-radius:5px;overflow:hidden;background:#fff"><span style="width:40px;display:flex;align-items:center;justify-content:center;background:var(--n-50);border-right:1px solid var(--border);font:700 15px var(--font-ui);color:var(--fg-2)">Q</span><input type="number" value="{{ cAmt }}" onChange="{{ onCAmt }}" placeholder="0.00" style="flex:1;min-width:0;border:0;padding:0 12px;font:800 22px var(--font-display);outline:none"></span>
+<div style="display:flex;flex-wrap:wrap;gap:6px"><sc-for list="{{ quick }}" as="qk" hint-placeholder-count="3"><button onClick="{{ qk.select }}" style="height:32px;flex:none;white-space:nowrap;padding:0 12px;border-radius:999px;border:1px solid var(--border-strong);background:#fff;font:600 13px var(--font-ui);cursor:pointer" style-hover="border-color:var(--td-ink)">{{ qk.label }}</button></sc-for></div>
+<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));padding:3px;gap:3px;background:var(--n-200);border-radius:5px"><sc-for list="{{ cMethods }}" as="m" hint-placeholder-count="3"><button onClick="{{ m.select }}" style="height:34px;border:0;border-radius:4px;background:{{ m.bg }};color:{{ m.fg }};box-shadow:{{ m.sh }};font:700 12px var(--font-ui);cursor:pointer">{{ m.label }}</button></sc-for></div>
+<div style="display:flex;justify-content:space-between;font-size:13px;color:var(--fg-2)"><span>Saldo después del cobro</span><b style="color:{{ remColor }}">{{ remLabel }}</b></div>
+<sc-if value="{{ cErr }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px;font-weight:600;color:var(--danger)">{{ cErr }}</span></sc-if>
+<button onClick="{{ doCobro }}" disabled="{{ cOff }}" style="height:48px;border:0;border-radius:5px;background:{{ cBg }};color:{{ cFg }};font:700 14px var(--font-ui);letter-spacing:.08em;text-transform:uppercase;cursor:{{ cCur }}">Registrar cobro</button>
+</sc-if>
+<sc-if value="{{ noDebt }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--success);font-weight:600"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21.801 10A10 10 0 1 1 17 3.335"></path><path d="m9 11 3 3L22 4"></path></svg>Sin saldo pendiente.</span></sc-if>
+</div>
+</div>
+
+<div style="flex:1 1 300px;min-width:0;display:flex;flex-direction:column;gap:16px">
+<div style="border:1px solid var(--border);border-radius:8px;overflow:hidden">
+<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-bottom:1px solid var(--divider)"><span style="font:700 11px var(--font-ui);letter-spacing:.14em;text-transform:uppercase">Movimientos de crédito</span><a href="#" style="font:600 13px var(--font-ui);text-decoration:none">Ver todo</a></div>
+<sc-for list="{{ movs }}" as="mv" hint-placeholder-count="3">
+<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--divider)">
+<span style="width:30px;height:30px;flex:none;border-radius:5px;background:{{ mv.bg }};color:{{ mv.color }};display:flex;align-items:center;justify-content:center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="{{ mv.d1 }}"></path><path d="{{ mv.d2 }}"></path></svg></span>
+<span style="flex:1;min-width:0;display:flex;flex-direction:column"><span style="font:600 14px var(--font-ui)">{{ mv.t }}</span><span style="font-size:12px;color:var(--fg-3)">{{ mv.d }}</span></span>
+<span style="font:800 17px var(--font-display);color:{{ mv.color }}">{{ mv.amtLabel }}</span>
+</div>
+</sc-for>
+</div>
+<div style="border:1px solid var(--border);border-radius:8px;overflow:hidden">
+<div style="padding:12px 14px;border-bottom:1px solid var(--divider);font:700 11px var(--font-ui);letter-spacing:.14em;text-transform:uppercase">Direcciones</div>
+<sc-for list="{{ dAddrs }}" as="a" hint-placeholder-count="2">
+<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--divider);font-size:14px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--fg-3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"></path><circle cx="12" cy="10" r="3"></circle></svg><span><b>{{ a.l }}</b> {{ a.a }}</span></div>
+</sc-for>
+<sc-if value="{{ noAddrs }}" hint-placeholder-val="{{ false }}"><div style="padding:12px 14px;font-size:13px;color:var(--fg-3)">Sin direcciones registradas.</div></sc-if>
+</div>
+<sc-if value="{{ dNotes }}" hint-placeholder-val="{{ false }}"><div style="padding:12px 14px;border-radius:8px;background:var(--n-50);font-size:13px;line-height:1.4;color:var(--fg-2)"><b style="color:var(--fg)">Notas:</b> {{ dNotes }}</div></sc-if>
+</div>
+</div>
+</div>
+<sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;left:50%;bottom:24px;transform:translateX(-50%);background:var(--td-ink);color:#fff;padding:10px 16px;border-radius:5px;font:600 13px var(--font-ui);box-shadow:var(--shadow-lg);white-space:nowrap;z-index:9">{{ toast }}</div></sc-if>
+</div>
+</div>
+</div>
+</sc-for>
+</div>
+<p class="dv-next">Prueba: "Todo" y "Registrar cobro" — la deuda baja aquí y en <a class="dv-oid" href="#1a">1a</a>. Selecciona otro cliente en la lista para ver su ficha.</p>
+</section>
+
+<section class="dv-turn" id="t1">
+<div class="dv-thd"><a class="dv-tid" href="#t1">1</a><span class="dv-tname">Lista de clientes</span></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;max-width:1440px;margin:0 0 32px">
+<div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:18px 20px;display:flex;flex-direction:column;gap:6px"><div style="font:700 11px var(--font-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--td-red)">01 · Búsqueda</div><div style="font-size:14px;line-height:1.45;color:var(--fg-2);text-wrap:pretty">Buscar por nombre o teléfono — la lista crecerá; los filtros muestran conteo.</div></div>
+<div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:18px 20px;display:flex;flex-direction:column;gap:6px"><div style="font:700 11px var(--font-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--td-red)">02 · Riesgo de un vistazo</div><div style="font-size:14px;line-height:1.45;color:var(--fg-2);text-wrap:pretty">Cada fila muestra cuánto del límite está usado. Ordenada por deuda mayor primero.</div></div>
+<div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:18px 20px;display:flex;flex-direction:column;gap:6px"><div style="font:700 11px var(--font-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--td-red)">03 · Cobrar solo si aplica</div><div style="font-size:14px;line-height:1.45;color:var(--fg-2);text-wrap:pretty">"Cobrar" aparece únicamente en clientes con saldo; en móvil la fila completa abre la ficha.</div></div>
+</div>
+<div class="dv-opts">
+<sc-for list="{{ framesL }}" as="f" hint-placeholder-count="3">
+<div class="dv-opt" id="{{ f.id }}">
+<div class="dv-olabel"><a class="dv-oid" href="#{{ f.id }}">{{ f.id }}</a>{{ f.label }}</div>
+<div style="width:{{ f.fw }}px;height:{{ f.fh }}px;background:var(--n-50);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--shadow-md);container-type:inline-size;position:relative">
+<header style="flex:none;height:60px;display:flex;align-items:center;gap:12px;padding:0 {{ f.padX }};background:var(--td-ink);color:#fff">
+<button aria-label="Menú" style="width:40px;height:40px;border:0;background:transparent;color:#fff;display:flex;align-items:center;justify-content:center;border-radius:5px;cursor:pointer;margin-left:-8px"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16"></path><path d="M4 12h16"></path><path d="M4 18h16"></path></svg></button>
+<div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0"><span style="width:30px;height:30px;border-radius:5px;background:var(--td-red);display:flex;align-items:center;justify-content:center;font:900 italic 18px var(--font-display)">E</span><span style="font:800 italic 22px var(--font-display);text-transform:uppercase">Emprendela</span></div>
+<span style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--n-300)"><span style="width:8px;height:8px;border-radius:999px;background:#4ade80"></span><span style="display:{{ f.syncText }}">Sincronizado</span></span>
+</header>
+<main style="flex:1;overflow:auto;padding:{{ f.pad }};padding-bottom:{{ f.mainPadB }};display:grid;grid-template-columns:minmax(0,1fr);align-content:start;grid-auto-rows:max-content;gap:18px">
+<div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px">
+<div style="display:flex;flex-direction:column;gap:4px"><span style="font:700 11px var(--font-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--fg-3)">Catálogo</span><span style="font-family:var(--font-display);font-weight:800;font-style:italic;text-transform:uppercase;font-size:clamp(32px,4.2cqi,48px);line-height:.95">Clientes</span></div>
+<div style="display:flex;gap:8px;flex-wrap:wrap">
+<button style="height:44px;padding:0 16px;display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--border-strong);border-radius:5px;font:700 13px var(--font-ui);letter-spacing:.08em;text-transform:uppercase;cursor:pointer" style-hover="background:var(--n-50)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path><path d="M12 7v5l4 2"></path></svg>Historial de cobros</button>
+<sc-if value="{{ f.ctaTop }}" hint-placeholder-val="{{ true }}"><button style="height:44px;padding:0 18px;display:flex;align-items:center;gap:8px;background:var(--td-red);border:0;border-radius:5px;color:#fff;font:700 13px var(--font-ui);letter-spacing:.08em;text-transform:uppercase;cursor:pointer" style-hover="background:var(--red-600)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>Agregar cliente</button></sc-if>
+</div>
+</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax({{ f.kpiMin }},1fr));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:8px;overflow:hidden">
+<sc-for list="{{ kpis }}" as="k" hint-placeholder-count="3"><div style="background:#fff;padding:14px 16px;display:flex;flex-direction:column;gap:4px"><span style="font:600 11px var(--font-ui);letter-spacing:.12em;text-transform:uppercase;color:var(--fg-3)">{{ k.label }}</span><span style="font:800 28px/1 var(--font-display);color:{{ k.color }}">{{ k.value }}</span><span style="font-size:12px;color:var(--fg-2)">{{ k.sub }}</span></div></sc-for>
+</div>
+<div style="background:#fff;border:1px solid var(--border);border-radius:8px;overflow:hidden">
+<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:12px 14px;border-bottom:1px solid var(--divider)">
+<div style="flex:1 1 220px;display:flex;height:40px;border:1px solid var(--border-strong);border-radius:5px;overflow:hidden"><span style="width:38px;flex:none;display:flex;align-items:center;justify-content:center;color:var(--fg-3)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path></svg></span><input value="{{ q }}" onChange="{{ onQ }}" placeholder="Buscar por nombre o teléfono" style="flex:1;min-width:0;border:0;font:400 14px var(--font-ui);outline:none"></div>
+<div style="display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;max-width:100%"><sc-for list="{{ filters }}" as="fl" hint-placeholder-count="3"><button onClick="{{ fl.select }}" style="height:32px;flex:none;white-space:nowrap;padding:0 12px;border-radius:999px;border:1px solid {{ fl.bd }};background:{{ fl.bg }};color:{{ fl.fg }};font:600 12px var(--font-ui);cursor:pointer;display:flex;align-items:center;gap:6px">{{ fl.label }}<span style="font:700 11px var(--font-mono);opacity:.7">{{ fl.n }}</span></button></sc-for></div>
+</div>
+<sc-for list="{{ rows }}" as="r" hint-placeholder-count="4">
+<div onClick="{{ r.select }}" style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--divider);cursor:pointer;background:{{ r.bg }};box-shadow:{{ r.sh }}" style-hover="background:var(--n-50)">
+<span style="width:40px;height:40px;flex:none;border-radius:5px;background:var(--n-100);display:flex;align-items:center;justify-content:center;font:800 italic 16px var(--font-display)">{{ r.init }}</span>
+<span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="display:flex;align-items:center;gap:8px;min-width:0"><span style="font:700 15px var(--font-ui);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.name }}</span><sc-if value="{{ r.credit }}" hint-placeholder-val="{{ false }}"><span style="flex:none;height:20px;padding:0 7px;border-radius:999px;background:var(--info-bg);color:var(--info);font:700 10px var(--font-ui);display:flex;align-items:center">Crédito</span></sc-if></span><span style="font:500 12px var(--font-mono);color:var(--fg-3)">{{ r.phone }}</span></span>
+<sc-if value="{{ f.usage }}" hint-placeholder-val="{{ true }}"><span style="width:180px;flex:none;display:flex;flex-direction:column;gap:4px"><span style="height:6px;border-radius:999px;background:var(--n-100);overflow:hidden"><span style="display:block;height:100%;width:{{ r.pct }};background:{{ r.useColor }}"></span></span><span style="font-size:11px;color:var(--fg-3)">{{ r.useLabel }}</span></span></sc-if>
+<span style="flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:2px;min-width:84px"><span style="font:800 18px/1 var(--font-display);color:{{ r.debtColor }}">{{ r.debtLabel }}</span><span style="font-size:11px;color:var(--fg-3)">{{ r.sub }}</span></span>
+<sc-if value="{{ f.cobrarBtn }}" hint-placeholder-val="{{ true }}"><span style="width:88px;flex:none;display:flex;justify-content:flex-end"><sc-if value="{{ r.hasDebt }}" hint-placeholder-val="{{ false }}"><button onClick="{{ r.cobrar }}" style="height:36px;padding:0 14px;background:#fff;border:1px solid var(--td-ink);border-radius:5px;font:700 12px var(--font-ui);letter-spacing:.08em;text-transform:uppercase;cursor:pointer" style-hover="background:var(--td-ink);color:#fff">Cobrar</button></sc-if></span></sc-if>
+<sc-if value="{{ f.chev }}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9CA3AB" stroke-width="2" stroke-linecap="round" style="flex:none"><path d="m9 18 6-6-6-6"></path></svg></sc-if>
+</div>
+</sc-for>
+<sc-if value="{{ noRows }}" hint-placeholder-val="{{ false }}"><div style="padding:32px 16px;text-align:center;font-size:14px;color:var(--fg-2)">Sin clientes con este filtro.</div></sc-if>
+</div>
+</main>
+<sc-if value="{{ f.fab }}" hint-placeholder-val="{{ false }}"><button style="position:absolute;right:16px;bottom:16px;height:56px;padding:0 20px;border:0;border-radius:8px;background:var(--td-red);color:#fff;display:flex;align-items:center;gap:8px;font:700 14px var(--font-ui);letter-spacing:.08em;text-transform:uppercase;box-shadow:var(--shadow-red);cursor:pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>Cliente</button></sc-if>
+</div>
+</div>
+</sc-for>
+</div>
+<p class="dv-next">Prueba: toca una fila para cargarla en <a class="dv-oid" href="#2a">2a</a> y <a class="dv-oid" href="#3a">3a</a>; filtra "Me deben". Siguiente: "formulario Agregar cliente" · "historial de cobros".</p>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  static INIT = [
+    { id: 1, name: 'Don Luis (Jute)', phone: '7879497', notes: '', credit: true, limit: 500, multi: true, addrs: [{ l: 'Jute:', a: 'Frente al Parque' }, { l: 'Chapas:', a: 'Frente a la cancha' }],
+      movs: [{ t: 'Venta V-0011 · 5 art.', d: 'Hace 7 días', amt: 315.5 }, { t: 'Cobro · Efectivo', d: 'Hace 12 días', amt: -100 }, { t: 'Venta V-0003 · 2 art.', d: 'Hace 15 días', amt: 200 }] },
+    { id: 2, name: 'Taller El Progreso', phone: '77651200', notes: 'Paga los viernes.', credit: true, limit: 2000, multi: false, addrs: [{ l: '', a: '4a calle 3-20, zona 1' }], movs: [{ t: 'Cobro · Transferencia', d: 'Hace 3 días', amt: -540 }, { t: 'Venta V-0007 · 6 art.', d: 'Hace 9 días', amt: 540 }] },
+    { id: 3, name: 'Carlos Méndez', phone: '55123344', notes: '', credit: true, limit: 0, multi: false, addrs: [], movs: [] },
+    { id: 4, name: 'Ana López', phone: '44219087', notes: '', credit: false, limit: 0, multi: false, addrs: [], movs: [] },
+    { id: 5, name: 'Doña Marta (Chapas)', phone: '30102299', notes: '', credit: false, limit: 0, multi: false, addrs: [{ l: '', a: 'Chapas, frente a la iglesia' }], movs: [] }
+  ];
+  state = { clients: JSON.parse(JSON.stringify(Component.INIT)), sel: 1, q: '', filt: 'Todos', cAmt: '', cM: 'Efectivo', draft: null, naL: '', naA: '', toast: '' };
+  flash(t) { this.setState({ toast: t }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ toast: '' }), 2400); }
+  renderVals() {
+    const s = this.state;
+    const Q = n => 'Q ' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const debtOf = c => Math.max(0, c.movs.reduce((a, m) => a + m.amt, 0));
+    const init = n => n.replace(/\(.*?\)/g, '').trim().split(/\s+/).slice(0, 2).map(w => w[0]).join('').toUpperCase();
+    const fmtPh = p => p ? (p.length === 8 ? p.slice(0, 4) + ' ' + p.slice(4) : p) : 'Sin teléfono';
+    const use = c => { const d = debtOf(c); if (!c.credit) return { pct: '0%', color: 'var(--n-300)', label: 'Sin crédito' }; if (!c.limit) return { pct: d ? '100%' : '0%', color: 'var(--info)', label: d ? 'Sin límite' : 'Sin límite · sin deuda' }; const p = Math.min(100, d / c.limit * 100); return { pct: p + '%', color: p >= 100 ? 'var(--danger)' : p >= 80 ? 'var(--warning)' : 'var(--success)', label: `${Math.round(p)}% de ${Q(c.limit)}` }; };
+    const chip = on => ({ bg: on ? 'var(--td-ink)' : '#fff', fg: on ? '#fff' : 'var(--fg)', bd: on ? 'var(--td-ink)' : 'var(--border-strong)' });
+    const cs = s.clients;
+    const q = s.q.trim().toLowerCase();
+    const pass = { 'Todos': () => true, 'Me deben': c => debtOf(c) > 0, 'Con crédito': c => c.credit };
+    const filters = Object.keys(pass).map(label => ({ label, n: cs.filter(pass[label]).length, ...chip(s.filt === label), select: () => this.setState({ filt: label }) }));
+    const pick = id => this.setState({ sel: id, draft: null, cAmt: '' });
+    const rows = cs.filter(pass[s.filt]).filter(c => !q || c.name.toLowerCase().includes(q) || c.phone.includes(q.replace(/\s/g, ''))).sort((a, b) => debtOf(b) - debtOf(a)).map(c => {
+      const d = debtOf(c), u = use(c), on = c.id === s.sel;
+      return { name: c.name, phone: fmtPh(c.phone), init: init(c.name), credit: c.credit, debtLabel: d ? Q(d) : '—', debtColor: d ? '#a96500' : 'var(--fg-3)', sub: d ? (c.movs.find(m => m.amt > 0)?.d || '') : 'Sin saldo', hasDebt: d > 0, pct: u.pct, useColor: u.color, useLabel: u.label,
+        bg: on ? 'var(--red-50)' : '#fff', sh: on ? 'inset 3px 0 0 var(--td-red)' : 'none', select: () => pick(c.id), cobrar: e => { e.stopPropagation(); pick(c.id); this.flash(`Cobro a ${c.name}`); } };
+    });
+    const owed = cs.reduce((a, c) => a + debtOf(c), 0);
+    const kpis = [
+      { label: 'Te deben en total', value: Q(owed), sub: 'Suma de saldos', color: owed ? '#a96500' : 'var(--fg)' },
+      { label: 'Clientes con saldo', value: String(cs.filter(c => debtOf(c) > 0).length), sub: `de ${cs.length} clientes`, color: 'var(--fg)' },
+      { label: 'Con crédito activo', value: String(cs.filter(c => c.credit).length), sub: 'Pueden comprar al fiado', color: 'var(--fg)' }
+    ];
+    // Detail
+    const c = cs.find(x => x.id === s.sel) || cs[0];
+    const debt = debtOf(c), u = use(c);
+    const amt = parseFloat(s.cAmt) || 0;
+    const cErr = amt > debt ? `El monto supera la deuda (${Q(debt)}).` : null;
+    const cOff = amt <= 0 || !!cErr;
+    const quick = [['Todo · ' + Q(debt), debt], ['Q 100', 100], ['Q 200', 200]].filter(([, v]) => v <= debt && v > 0).map(([label, v]) => ({ label, select: () => this.setState({ cAmt: String(v) }) }));
+    const cMethods = ['Efectivo', 'Transferencia', 'Tarjeta'].map(label => { const on = s.cM === label; return { label, bg: on ? '#fff' : 'transparent', fg: on ? 'var(--fg)' : 'var(--fg-2)', sh: on ? 'var(--shadow-xs)' : 'none', select: () => this.setState({ cM: label }) }; });
+    const upd = (id, fn) => this.setState(st => ({ clients: st.clients.map(x => x.id === id ? fn(JSON.parse(JSON.stringify(x))) : x) }));
+    const doCobro = () => { if (cOff) return; upd(c.id, x => { x.movs.unshift({ t: `Cobro · ${s.cM}`, d: 'Ahora', amt: -amt }); return x; }); this.setState({ cAmt: '' }); this.flash(`Cobro registrado · ${Q(amt)}`); };
+    const movs = c.movs.slice(0, 5).map(m => { const inc = m.amt > 0; return { t: m.t, d: m.d, amtLabel: (inc ? '+ ' : '− ') + Q(Math.abs(m.amt)), color: inc ? '#a96500' : 'var(--success)', bg: inc ? 'var(--warning-bg)' : 'var(--success-bg)', d1: inc ? 'M7 7h10v10' : 'M17 7 7 17', d2: inc ? 'M7 17 17 7' : 'M17 17H7V7' }; });
+    if (!movs.length) movs.push({ t: 'Sin movimientos', d: 'Aún no hay ventas al crédito', amtLabel: '', color: 'var(--fg-3)', bg: 'var(--n-100)', d1: 'M5 12h14', d2: '' });
+    // Edit
+    const base = { name: c.name, phone: c.phone, notes: c.notes, credit: c.credit, limit: c.limit ? String(c.limit) : '', noLimit: !c.limit, multi: c.multi, addrs: c.addrs };
+    const dr = s.draft || base;
+    const setD = p => this.setState(st => ({ draft: { ...(st.draft || base), ...p } }));
+    const dirty = JSON.stringify(dr) !== JSON.stringify(base);
+    const nameErr = !dr.name.trim();
+    const limN = parseFloat(dr.limit) || 0;
+    const saveOff = !dirty || nameErr || (dr.credit && !dr.noLimit && limN <= 0);
+    const canAddAddr = dr.multi || dr.addrs.length === 0;
+    const W = [['Escritorio · 1280 px', 1280, 860, 920, 'auto', 'center', '32px', '12px', '24px 28px', '28px', 'none'], ['Tablet · 768 px', 768, 1024, 720, 'auto', 'center', '24px', '12px', '22px 24px', '24px', '1'], ['Móvil · 390 px — hoja completa', 390, 844, 390, '100%', 'flex-end', '28px 0 0', '16px 16px 0 0', '16px', '16px', '1']];
+    const mf = p => W.map(([label, fw, fh, mw, mh, align, outer, radius, pad, padX, ctaFlex], i) => ({ id: p + 'abc'[i], label, fw, fh, mw, mh, align, outer, radius, pad, padX, ctaFlex }));
+    const framesE = mf('3').map((f, i) => ({ ...f, mw: i === 0 ? 860 : f.mw }));
+    const LW = [['Escritorio · 1440 px', 1440, 900, '28px 32px', '32px'], ['Tablet · 768 px', 768, 1024, '24px', '24px'], ['Móvil · 390 px', 390, 844, '16px', '16px']];
+    const framesL = LW.map(([label, fw, fh, pad, padX], i) => ({ id: '1' + 'abc'[i], label, fw, fh, pad, padX, syncText: i === 2 ? 'none' : 'inline', ctaTop: i < 2, fab: i === 2, mainPadB: i === 2 ? '96px' : pad.split(' ')[0], kpiMin: i === 2 ? '150px' : '200px', usage: i < 2, cobrarBtn: i < 2, chev: i === 2 }));
+    return {
+      framesL, framesD: mf('2'), framesE, kpis, filters, rows, noRows: !rows.length, q: s.q, onQ: e => this.setState({ q: e.target.value }), toast: s.toast,
+      dName: c.name, dPhone: fmtPh(c.phone), dInit: init(c.name), dCredit: c.credit, dNotes: c.notes,
+      debtLabel: Q(debt), debtColor: debt ? '#a96500' : 'var(--fg)', limitLabel: c.credit ? (c.limit ? Q(c.limit) : 'Sin límite') : '—', availLabel: c.credit ? (c.limit ? Q(Math.max(0, c.limit - debt)) : '∞') : '—',
+      usePct: u.pct, useColor: u.color, useLabel: c.credit ? (c.limit ? `${u.label} usado` : 'Crédito sin límite') : 'Este cliente no compra al crédito',
+      hasDebt: debt > 0, noDebt: debt <= 0, cAmt: s.cAmt, onCAmt: e => this.setState({ cAmt: e.target.value }), quick, cMethods,
+      remLabel: Q(Math.max(0, debt - amt)), remColor: debt - amt <= 0 ? 'var(--success)' : 'var(--fg)', cErr, cOff, doCobro,
+      cBg: cOff ? 'var(--n-200)' : 'var(--td-red)', cFg: cOff ? 'var(--n-500)' : '#fff', cCur: cOff ? 'not-allowed' : 'pointer',
+      movs, dAddrs: c.addrs, noAddrs: !c.addrs.length,
+      eName: dr.name, onEName: e => setD({ name: e.target.value }), eNameBd: nameErr ? 'var(--danger)' : 'var(--border-strong)',
+      ePhone: dr.phone, onEPhone: e => setD({ phone: e.target.value.replace(/[^\d]/g, '') }),
+      eNotes: dr.notes, onENotes: e => setD({ notes: e.target.value }), eNotesCount: dr.notes.length,
+      eCredit: dr.credit, tCredit: () => setD({ credit: !dr.credit }), crTrack: dr.credit ? 'var(--td-ink)' : 'var(--n-300)', crJust: dr.credit ? 'flex-end' : 'flex-start',
+      eLimit: dr.noLimit ? '' : dr.limit, onELimit: e => setD({ limit: e.target.value }), eNoLimit: dr.noLimit, tNoLimit: () => setD({ noLimit: !dr.noLimit }),
+      limBg: dr.noLimit ? 'var(--n-100)' : '#fff', nlBg: dr.noLimit ? 'var(--td-ink)' : '#fff', nlFg: dr.noLimit ? '#fff' : 'var(--fg)', nlBd: dr.noLimit ? 'var(--td-ink)' : 'var(--border-strong)', nlMark: dr.noLimit ? '✓' : '',
+      limWarn: dr.credit && !dr.noLimit && limN > 0 && limN < debt,
+      tMulti: () => setD({ multi: !dr.multi, addrs: !dr.multi ? dr.addrs : dr.addrs.slice(0, 1) }), muTrack: dr.multi ? 'var(--td-ink)' : 'var(--n-300)', muJust: dr.multi ? 'flex-end' : 'flex-start',
+      eAddrs: dr.addrs.map((a, i) => ({ ...a, remove: () => setD({ addrs: dr.addrs.filter((_, j) => j !== i) }) })), canAddAddr,
+      naL: s.naL, naA: s.naA, onNaL: e => this.setState({ naL: e.target.value }), onNaA: e => this.setState({ naA: e.target.value }),
+      addAddr: () => { if (!s.naA.trim()) return this.flash('Escribe la dirección'); const l = s.naL.trim(); setD({ addrs: [...dr.addrs, { l: l ? (l.endsWith(':') ? l : l + ':') : '', a: s.naA.trim() }] }); this.setState({ naL: '', naA: '' }); },
+      dirtyLabel: dirty ? 'Cambios sin guardar' : 'Sin cambios', dirtyColor: dirty ? '#a96500' : 'var(--fg-3)', dirtyDot: dirty ? 'var(--warning)' : 'var(--n-300)',
+      saveOff, saveBg: saveOff ? 'var(--n-200)' : 'var(--td-red)', saveFg: saveOff ? 'var(--n-500)' : '#fff', saveCur: saveOff ? 'not-allowed' : 'pointer',
+      resetDraft: () => this.setState({ draft: null }),
+      saveDraft: () => { if (saveOff) return; upd(c.id, x => ({ ...x, name: dr.name.trim(), phone: dr.phone, notes: dr.notes, credit: dr.credit, limit: dr.noLimit ? 0 : limN, multi: dr.multi, addrs: dr.addrs })); this.setState({ draft: null }); this.flash('Cliente actualizado'); }
+    };
+  }
+}
+</script>
+</body>
+</html>

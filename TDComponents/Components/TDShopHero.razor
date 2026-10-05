@@ -1,0 +1,31 @@
+@namespace TDComponents.Components
+
+<section class="td-mxhero" aria-label="@Label">
+    <span class="td-mxhero__chevrons" aria-hidden="true"></span>
+    <div>
+        <span class="td-mxkicker td-mxkicker--light">@Label</span>
+        <strong class="td-mxhero__amount">@Amount</strong>
+    </div>
+    <div class="td-mxhero__stats">
+        <div><span>Ventas</span><b>@Sales</b></div>
+        <div><span>Gastos</span><b>@Expenses</b></div>
+        <div><span>Tickets</span><b>@Tickets</b></div>
+    </div>
+</section>
+
+@code {
+    /// <summary>Qué cifra domina la tarjeta.</summary>
+    [Parameter] public string Label { get; set; } = "Ganancia estimada de hoy";
+
+    /// <summary>Cifra principal, ya con moneda.</summary>
+    [Parameter] public string Amount { get; set; } = "Q 0.00";
+
+    /// <summary>Ventas del día.</summary>
+    [Parameter] public string Sales { get; set; } = "Q 0.00";
+
+    /// <summary>Gastos del día.</summary>
+    [Parameter] public string Expenses { get; set; } = "Q 0.00";
+
+    /// <summary>Cantidad de tickets.</summary>
+    [Parameter] public string Tickets { get; set; } = "0";
+}

@@ -1,0 +1,34 @@
+@namespace TDComponents.Components
+
+<button type="button" class="td-mxtile @(Primary ? "is-primary" : null)" data-td-mx-tile data-needs-cash="@NeedsText" data-ready="@Ready" data-blocked="@Blocked" data-td-mx-say="@Title">
+    <span class="td-mxtile__icon"><TDMiscIcon Name="@Icon" Size="22" /></span>
+    <span><strong>@Title</strong><small data-td-mx-tilesub>@(NeedsCash && !CashOpen ? Blocked : Detail)</small></span>
+</button>
+
+@code {
+    /// <summary>Acción.</summary>
+    [Parameter] public string Title { get; set; } = "Nueva venta";
+
+    /// <summary>Línea secundaria cuando se puede hacer.</summary>
+    [Parameter] public string Detail { get; set; } = "Cobrar a un cliente";
+
+    /// <summary>Ícono: receipt, bag, cash, box.</summary>
+    [Parameter] public string Icon { get; set; } = "receipt";
+
+    /// <summary>La primera acción del mosaico.</summary>
+    [Parameter] public bool Primary { get; set; }
+
+    /// <summary>Solo se puede usar con la caja abierta.</summary>
+    [Parameter] public bool NeedsCash { get; set; }
+
+    /// <summary>True si la caja ya está abierta.</summary>
+    [Parameter] public bool CashOpen { get; set; }
+
+    /// <summary>Texto cuando la caja está abierta.</summary>
+    [Parameter] public string Ready { get; set; } = "Cobrar a un cliente";
+
+    /// <summary>Texto cuando la caja está cerrada.</summary>
+    [Parameter] public string Blocked { get; set; } = "Requiere caja abierta";
+
+    private string NeedsText => NeedsCash ? "true" : "false";
+}

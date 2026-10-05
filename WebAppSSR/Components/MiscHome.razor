@@ -1,0 +1,23 @@
+@namespace WebAppSSR.Components
+
+<TDShopFrame>
+    <TDShopBar />
+    <main class="td-mxmain">
+        <TDShopHead Kicker="Lunes, 5 de octubre · Maxi Technogia" Title="Buenas tardes, José" />
+        <div class="td-mxsplit">
+            <TDShopHero />
+            <TDShopCash />
+        </div>
+        <div class="td-mxtiles">
+            <TDShopTile Title="Nueva venta" Detail="Cobrar a un cliente" Icon="receipt" Primary="true" NeedsCash="true" />
+            <TDShopTile Title="Nueva compra" Detail="Ingresar mercadería" Icon="bag" />
+            <TDShopTile Title="Caja" Detail="Cerrada" Icon="cash" />
+            <TDShopTile Title="Producto" Detail="Agregar al inventario" Icon="box" />
+        </div>
+        <div class="td-mxsplit">
+            <TDShopAlerts />
+            <TDShopEmpty />
+        </div>
+    </main>
+    <TDShopMenu />
+</TDShopFrame>

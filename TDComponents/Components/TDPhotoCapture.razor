@@ -1,0 +1,78 @@
+@namespace TDComponents.Components
+@using Microsoft.AspNetCore.Http
+
+<td-photos class="td-field @SizeClass">
+    @if (!string.IsNullOrWhiteSpace(Label))
+    {
+        <TDLabel For="@_id">@Label</TDLabel>
+    }
+    <div class="td-photo__row">
+        <button id="@_id"
+                type="button"
+                class="td-btnicon"
+                data-td-photos-open
+                aria-label="@(string.IsNullOrWhiteSpace(Label) ? "Tomar varias fotos" : Label)"
+                aria-describedby="@_statusId">
+            <span class="td-btnicon__glyph" aria-hidden="true">photo_camera</span>
+        </button>
+        <div class="td-photo__meta">
+            <p id="@_statusId" class="td-photo__status" data-td-photo-status aria-live="polite">@Hint</p>
+            <ul class="td-photos__strip" data-td-photos-strip></ul>
+        </div>
+    </div>
+    <dialog class="td-photos__cam" data-td-photos-cam aria-label="Cámara">
+        <video data-td-photos-video autoplay muted playsinline></video>
+        <div class="td-photos__dock">
+            <ul class="td-photos__strip td-photos__strip--dock" data-td-photos-strip></ul>
+            <button type="button" class="td-photos__shutter" data-td-photos-shot>Tomar foto</button>
+            <button type="button" class="td-photos__done" data-td-photos-done>Cerrar cámara</button>
+        </div>
+    </dialog>
+    <input type="file" name="@PostedName" accept="image/jpeg" multiple class="td-sr" data-td-photos-file tabindex="-1" aria-hidden="true" />
+</td-photos>
+
+@code {
+    private readonly string _id = $"td-photos-{Guid.NewGuid():N}";
+    private readonly string _statusId = $"td-photos-status-{Guid.NewGuid():N}";
+
+    /// <summary>Nombre de las fotos en el post. El formulario tiene que usar <c>multipart/form-data</c>. Si se omite y hay <see cref="Field"/>, el post usa el nombre del modelo. Sin los dos, el nombre es <c>fotos</c>.</summary>
+    [Parameter] public string? Name { get; set; }
+
+    /// <summary>Texto visible y nombre accesible del botón que abre la cámara.</summary>
+    [Parameter] public string? Label { get; set; }
+
+    /// <summary>Qué va a pasar antes de abrir la cámara.</summary>
+    [Parameter] public string Hint { get; set; } = "Abre la cámara y toma las fotos seguidas. Cada una entra en la colección y puedes quitar las que no quieras.";
+
+    /// <summary>Tamaño del botón que abre la cámara. <see cref="TDSize.Small"/>, <see cref="TDSize.Medium"/> o <see cref="TDSize.Large"/>. El defecto es mediano.</summary>
+    [Parameter] public TDSize Size { get; set; } = TDSize.Medium;
+
+    private string SizeClass => Size switch
+    {
+        TDSize.Small => "td-photo--sm",
+        TDSize.Large => "td-photo--lg",
+        _ => ""
+    };
+
+    private string PostedName
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(Name))
+            {
+                return Name;
+            }
+
+            if (Field is not null)
+            {
+                var modelField = FieldIdentifier.Create(Field).FieldName;
+                if (!string.IsNullOrEmpty(modelField))
+                {
+                    return modelField;
+                }
+            }
+
+            return "fotos";
+        }
+    }
+}

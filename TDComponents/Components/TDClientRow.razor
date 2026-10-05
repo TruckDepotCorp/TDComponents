@@ -1,0 +1,77 @@
+@namespace TDComponents.Components
+
+<article class="td-mxrow @(Selected ? "is-on" : null)" data-td-mx-item data-text="@SearchText" data-tags="@Tags">
+    <span class="td-mxavatar">@Initials</span>
+    <span class="td-mxrow__who">
+        <span><strong>@Name</strong>@if (Credit) { <em class="td-mxpill td-mxpill--info">Crédito</em> }</span>
+        <small>@Phone</small>
+    </span>
+    @if (ShowUsage)
+    {
+        <span class="td-mxusage">
+            <span class="td-mxbarline"><i style="width:@Percent%;background:@BarColor"></i></span>
+            <small>@Usage</small>
+        </span>
+    }
+    <span class="td-mxrow__debt">
+        <strong>@Debt</strong>
+        <small>@DebtDetail</small>
+    </span>
+    @if (HasDebt && !string.IsNullOrWhiteSpace(ChargeLabel))
+    {
+        <button type="button" class="td-mxbtn td-mxbtn--ink" data-td-mx-say="@($"Cobro a {Name}")">@ChargeLabel</button>
+    }
+</article>
+
+@code {
+    /// <summary>Nombre del cliente.</summary>
+    [Parameter] public string Name { get; set; } = "Don Luis (Jute)";
+
+    /// <summary>Teléfono ya formateado.</summary>
+    [Parameter] public string Phone { get; set; } = "7879 497";
+
+    /// <summary>Compra al crédito.</summary>
+    [Parameter] public bool Credit { get; set; } = true;
+
+    /// <summary>Saldo ya formateado, o un guion si no debe.</summary>
+    [Parameter] public string Debt { get; set; } = "Q 415.50";
+
+    /// <summary>Cuándo fue el último movimiento, o Sin saldo.</summary>
+    [Parameter] public string DebtDetail { get; set; } = "Hace 7 días";
+
+    /// <summary>Hay saldo, así que aparece Cobrar.</summary>
+    [Parameter] public bool HasDebt { get; set; } = true;
+
+    /// <summary>Porcentaje usado del límite, de 0 a 100.</summary>
+    [Parameter] public int Percent { get; set; } = 83;
+
+    /// <summary>Texto bajo la barra de uso.</summary>
+    [Parameter] public string Usage { get; set; } = "83% de Q 500.00";
+
+    /// <summary>Muestra la barra de uso. En móvil se puede ocultar.</summary>
+    [Parameter] public bool ShowUsage { get; set; } = true;
+
+    /// <summary>Fila marcada.</summary>
+    [Parameter] public bool Selected { get; set; } = true;
+
+    /// <summary>Texto del botón de cobro. Vacío lo oculta.</summary>
+    [Parameter] public string? ChargeLabel { get; set; } = "Cobrar";
+
+    /// <summary>Marcas para el filtro: deuda, credito.</summary>
+    [Parameter] public string Tags { get; set; } = "deuda credito";
+
+    private string SearchText => $"{Name} {Phone}";
+
+    private string Initials
+    {
+        get
+        {
+            var clean = System.Text.RegularExpressions.Regex.Replace(Name, @"\(.*?\)", "").Trim();
+            var parts = clean.Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2);
+            var letters = string.Concat(parts.Select(part => char.ToUpperInvariant(part[0])));
+            return string.IsNullOrEmpty(letters) ? "•" : letters;
+        }
+    }
+
+    private string BarColor => Percent >= 100 ? "var(--td-color-danger)" : Percent >= 80 ? "var(--td-color-warning)" : "var(--td-color-success)";
+}

@@ -1,0 +1,35 @@
+@namespace TDComponents.Components
+
+<div class="td-mxkpis" aria-label="Indicadores">
+    @foreach (var item in Used)
+    {
+        <div class="td-mxkpi @ToneClass(item.Tone)">
+            <span>@item.Label</span>
+            <strong>@item.Value</strong>
+            <small>@item.Detail</small>
+        </div>
+    }
+</div>
+
+@code {
+    /// <summary>Indicadores. Si se omite, queda la franja de clientes.</summary>
+    [Parameter] public IReadOnlyList<TDShopKpi>? Items { get; set; }
+
+    private IReadOnlyList<TDShopKpi> Used => Items ?? Demo;
+
+    private static string ToneClass(TDShopTone tone) => tone switch
+    {
+        TDShopTone.Warning => "is-warn",
+        TDShopTone.Danger => "is-danger",
+        TDShopTone.Success => "is-ok",
+        TDShopTone.Info => "is-info",
+        _ => ""
+    };
+
+    private static readonly TDShopKpi[] Demo =
+    [
+        new("Te deben en total", "Q 415.50", "Suma de saldos", TDShopTone.Warning),
+        new("Clientes con saldo", "2", "de 5 clientes"),
+        new("Con crédito activo", "3", "Pueden comprar al fiado")
+    ];
+}

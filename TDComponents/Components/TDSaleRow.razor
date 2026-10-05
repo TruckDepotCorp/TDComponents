@@ -1,0 +1,46 @@
+@namespace TDComponents.Components
+
+<article class="td-mxsale">
+    <span class="td-mxsale__no">@Number</span>
+    <span>@When</span>
+    <strong>@Client</strong>
+    <span>@Items</span>
+    <span>@Method</span>
+    <em class="td-mxpill @ToneClass">@Status</em>
+    <b>@Total</b>
+</article>
+
+@code {
+    /// <summary>Número de la venta.</summary>
+    [Parameter] public string Number { get; set; } = "V-0012";
+
+    /// <summary>Hora o momento.</summary>
+    [Parameter] public string When { get; set; } = "14:20";
+
+    /// <summary>Cliente.</summary>
+    [Parameter] public string Client { get; set; } = "Taller El Progreso";
+
+    /// <summary>Artículos.</summary>
+    [Parameter] public string Items { get; set; } = "6 art.";
+
+    /// <summary>Método de pago.</summary>
+    [Parameter] public string Method { get; set; } = "Transferencia";
+
+    /// <summary>Estado escrito.</summary>
+    [Parameter] public string Status { get; set; } = "Pagada";
+
+    /// <summary>Total ya formateado.</summary>
+    [Parameter] public string Total { get; set; } = "Q 540.00";
+
+    /// <summary>Tono del estado.</summary>
+    [Parameter] public TDShopTone Tone { get; set; } = TDShopTone.Success;
+
+    private string ToneClass => Tone switch
+    {
+        TDShopTone.Warning => "td-mxpill--warn",
+        TDShopTone.Danger => "td-mxpill--danger",
+        TDShopTone.Info => "td-mxpill--info",
+        TDShopTone.Success => "td-mxpill--ok",
+        _ => ""
+    };
+}

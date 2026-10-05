@@ -1,3 +1,77 @@
 @namespace TDComponents.Components
+@using System.Text.Json
 
-<td-studio class="td-studio" data-kind="scheduler" data-td-studio></td-studio>
+<td-studio class="td-studio" data-kind="scheduler" data-td-studio data-readonly="@(ReadOnly ? "true" : null)" data-field="@Name" data-agenda="@AgendaJson"></td-studio>
+
+@code {
+    /// <summary>Citas de la aplicación. Si se omite, el calendario muestra la semana de demostración del catálogo. Una lista vacía deja la agenda sin trabajos.</summary>
+    [Parameter] public IReadOnlyList<TDAppointment>? Appointments { get; set; }
+
+    /// <summary>Bahías, personas o equipos. Si se omite, se usan las cuatro bahías del catálogo.</summary>
+    [Parameter] public IReadOnlyList<TDScheduleResource>? Resources { get; set; }
+
+    /// <summary>Día que se abre, con formato yyyy-MM-dd. Si se omite, es hoy.</summary>
+    [Parameter] public string? Date { get; set; }
+
+    /// <summary>Vista inicial: day, week, month, agenda o resources. El defecto es week.</summary>
+    [Parameter] public string View { get; set; } = "week";
+
+    /// <summary>Nombre del campo oculto. Al guardar, mover o eliminar, el valor es un JSON de <c>TDAppointment</c> para el post del formulario.</summary>
+    [Parameter] public string? Name { get; set; }
+
+    /// <summary>Solo lectura. Se pueden cambiar el día y la vista, no los trabajos.</summary>
+    [Parameter] public bool ReadOnly { get; set; }
+
+    private bool HasAgenda => Appointments is not null || Resources is not null || !string.IsNullOrWhiteSpace(Date) || (!string.IsNullOrWhiteSpace(View) && !View.Equals("week", StringComparison.OrdinalIgnoreCase));
+
+    private string? AgendaJson
+    {
+        get
+        {
+            if (!HasAgenda)
+            {
+                return null;
+            }
+
+            var payload = new Dictionary<string, object?>();
+            if (!string.IsNullOrWhiteSpace(Date))
+            {
+                payload["date"] = Date;
+            }
+
+            var view = View.Trim().ToLowerInvariant() switch
+            {
+                "day" or "week" or "month" or "agenda" or "res" => View.Trim().ToLowerInvariant(),
+                "resources" or "recurso" or "recursos" => "res",
+                _ => "week"
+            };
+            payload["view"] = view;
+            if (Resources is not null)
+            {
+                payload["resources"] = Resources.Select(resource => new
+                {
+                    id = resource.Id,
+                    name = resource.Name,
+                    person = resource.Person,
+                    color = resource.Color
+                });
+            }
+
+            if (Appointments is not null)
+            {
+                payload["appointments"] = Appointments.Select(item => new
+                {
+                    id = item.Id,
+                    title = item.Title,
+                    date = item.Date,
+                    start = item.Start,
+                    end = item.End,
+                    resourceId = item.ResourceId,
+                    note = item.Note
+                });
+            }
+
+            return JsonSerializer.Serialize(payload).Replace("<", "\\u003c", StringComparison.Ordinal);
+        }
+    }
+}

@@ -1,0 +1,43 @@
+@namespace TDComponents.Components
+
+<article class="td-mscan">
+    <p class="td-mscan__kicker">Código leído</p>
+    <p class="td-mscan__code">@Code</p>
+    <h2>@Name</h2>
+    <p class="td-mscan__where">@Location</p>
+    <p class="td-mscan__stock"><b>@Stock.ToString(System.Globalization.CultureInfo.CurrentCulture)</b> @Unit en esta ubicación</p>
+    <p class="td-mscan__status @TDMobileToneCss.Class(Tone)">@Status</p>
+    @if (!string.IsNullOrWhiteSpace(ActionHref) && !string.IsNullOrWhiteSpace(ActionLabel))
+    {
+        <a class="td-mscan__go" href="@ActionHref">@ActionLabel</a>
+    }
+</article>
+
+@code {
+    /// <summary>Código que llegó del lector o de la cámara.</summary>
+    [Parameter] public string Code { get; set; } = "";
+
+    /// <summary>Nombre del artículo que el sistema resolvió.</summary>
+    [Parameter] public string Name { get; set; } = "";
+
+    /// <summary>Ubicación en palabras: pasillo, rack y nivel.</summary>
+    [Parameter] public string Location { get; set; } = "";
+
+    /// <summary>Existencia en esa ubicación.</summary>
+    [Parameter] public int Stock { get; set; }
+
+    /// <summary>Unidad de la existencia, por ejemplo unidades.</summary>
+    [Parameter] public string Unit { get; set; } = "unidades";
+
+    /// <summary>Estado en palabras. No depende solo del color.</summary>
+    [Parameter] public string Status { get; set; } = "";
+
+    /// <summary>Énfasis del estado. El texto sigue siendo <see cref="Status"/>.</summary>
+    [Parameter] public TDMobileTone Tone { get; set; } = TDMobileTone.Success;
+
+    /// <summary>Destino de la acción principal.</summary>
+    [Parameter] public string? ActionHref { get; set; }
+
+    /// <summary>Texto de la acción. Incluye la consecuencia, por ejemplo cuántas unidades y en qué ubicación.</summary>
+    [Parameter] public string? ActionLabel { get; set; }
+}

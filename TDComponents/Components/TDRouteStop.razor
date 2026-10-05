@@ -1,0 +1,33 @@
+@namespace TDComponents.Components
+
+<article class="td-op">
+    <p class="td-op__kicker">Parada @Sequence.ToString(System.Globalization.CultureInfo.CurrentCulture)</p>
+    <h2>@Customer</h2>
+    <p class="td-op__where">@Address</p>
+    <p class="td-op__hero"><span>@Packages.ToString(System.Globalization.CultureInfo.CurrentCulture)</span> <small>bultos</small></p>
+    <p class="td-op__pair"><span>Ventana</span> <b>@Window</b></p>
+    <p class="td-op__status @TDMobileToneCss.Class(Tone)">@Status</p>
+</article>
+
+@code {
+    /// <summary>Orden de la parada en la ruta, desde 1.</summary>
+    [Parameter] public int Sequence { get; set; } = 1;
+
+    /// <summary>Cliente o destino.</summary>
+    [Parameter] public string Customer { get; set; } = "";
+
+    /// <summary>Dirección en palabras.</summary>
+    [Parameter] public string Address { get; set; } = "";
+
+    /// <summary>Horario de entrega, en lenguaje claro.</summary>
+    [Parameter] public string Window { get; set; } = "";
+
+    /// <summary>Bultos de esta parada.</summary>
+    [Parameter] public int Packages { get; set; }
+
+    /// <summary>Estado escrito: En ruta, Entregada o Demorada.</summary>
+    [Parameter] public string Status { get; set; } = "";
+
+    /// <summary>Énfasis del estado. No reemplaza <see cref="Status"/>.</summary>
+    [Parameter] public TDMobileTone Tone { get; set; } = TDMobileTone.Neutral;
+}

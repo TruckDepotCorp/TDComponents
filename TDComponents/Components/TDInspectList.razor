@@ -1,0 +1,69 @@
+@namespace TDComponents.Components
+
+<article class="td-op" data-td-inspect>
+    <p class="td-op__kicker">Revisión</p>
+    <h2>@Product</h2>
+    @if (Checks is null || Checks.Count == 0)
+    {
+        <p class="td-op__empty">Esta revisión no tiene criterios.</p>
+    }
+    else
+    {
+        <p class="td-op__hero"><span data-td-inspect-pass>@Passed</span> <small>de @Checks.Count criterios cumplen</small></p>
+        <ol>
+            @foreach (var check in Checks)
+            {
+                <li data-td-inspect-row>
+                    <h3>@check.Label</h3>
+                    @if (!string.IsNullOrWhiteSpace(check.Note))
+                    {
+                        <p class="td-op__note">@check.Note</p>
+                    }
+                    <p class="td-op__status @ResultClass(check.Result)" data-td-inspect-result>@Shown(check.Result)</p>
+                    <input type="hidden" name="@($"{ResolvedPrefix}_{check.Id}")" value="@Shown(check.Result)" data-td-inspect-value />
+                    <div class="td-op__step">
+                        <button type="button" data-td-inspect-mark="Cumple" aria-pressed="@(Is(check.Result, "Cumple") ? "true" : "false")">Marcar que cumple</button>
+                        <button type="button" data-td-inspect-mark="No cumple" aria-pressed="@(Is(check.Result, "No cumple") ? "true" : "false")">Marcar que no cumple</button>
+                    </div>
+                </li>
+            }
+        </ol>
+        <p class="td-op__status @SummaryClass" data-td-inspect-summary>@Summary</p>
+    }
+</article>
+
+@code {
+    /// <summary>Producto que se está revisando.</summary>
+    [Parameter] public string Product { get; set; } = "";
+
+    /// <summary>Criterios. Vacío o nulo dice que la revisión no tiene criterios.</summary>
+    [Parameter] public IReadOnlyList<TDInspectCheck>? Checks { get; set; }
+
+    /// <summary>Prefijo de los campos del post. Cada criterio publica <c>{prefijo}_{Id}</c>. Si se omite, el prefijo es revision.</summary>
+    [Parameter] public string? FieldPrefix { get; set; }
+
+    private string ResolvedPrefix => string.IsNullOrWhiteSpace(FieldPrefix) ? "revision" : FieldPrefix;
+
+    private int Passed => Checks?.Count(check => Is(check.Result, "Cumple")) ?? 0;
+
+    private bool AnyFail => Checks?.Any(check => Is(check.Result, "No cumple")) == true;
+
+    private bool AnyPending => Checks?.Any(check => !Is(check.Result, "Cumple") && !Is(check.Result, "No cumple")) == true;
+
+    private string SummaryClass => AnyFail ? "is-bad" : AnyPending ? "is-warn" : "is-ok";
+
+    private string Summary => AnyFail
+        ? "Hay criterios que no cumplen. No aceptes el producto."
+        : AnyPending
+            ? "Faltan criterios por revisar."
+            : "La revisión está completa. Puedes decidir el ingreso.";
+
+    private static bool Is(string? result, string expected) =>
+        string.Equals(result?.Trim(), expected, StringComparison.OrdinalIgnoreCase);
+
+    private static string Shown(string? result) =>
+        Is(result, "Cumple") ? "Cumple" : Is(result, "No cumple") ? "No cumple" : "Pendiente";
+
+    private static string ResultClass(string? result) =>
+        Is(result, "Cumple") ? "is-ok" : Is(result, "No cumple") ? "is-bad" : "is-warn";
+}

@@ -1,0 +1,40 @@
+@namespace TDComponents.Components
+
+<article class="td-op">
+    <p class="td-op__kicker">Despacho</p>
+    <h2>@Order</h2>
+    <p class="td-op__pair"><span>Andén</span> <b>@Door</b></p>
+    <p class="td-op__pair"><span>Sale</span> <b>@Departs</b></p>
+    <p class="td-op__pair"><span>Sello</span> <b>@(string.IsNullOrWhiteSpace(Seal) ? "Sin sello" : Seal)</b></p>
+    <p class="td-op__status @TDMobileToneCss.Class(Tone)">@Status</p>
+    @if (!string.IsNullOrWhiteSpace(ActionHref) && !string.IsNullOrWhiteSpace(ActionLabel))
+    {
+        <a class="td-op__go td-op__go--button" href="@ActionHref">@ActionLabel</a>
+    }
+</article>
+
+@code {
+    /// <summary>Orden o guía que sale.</summary>
+    [Parameter] public string Order { get; set; } = "";
+
+    /// <summary>Andén o muelle de salida.</summary>
+    [Parameter] public string Door { get; set; } = "";
+
+    /// <summary>Hora de salida, en lenguaje claro.</summary>
+    [Parameter] public string Departs { get; set; } = "";
+
+    /// <summary>Número de sello. Vacío dice que todavía no se selló.</summary>
+    [Parameter] public string? Seal { get; set; }
+
+    /// <summary>Estado escrito: Listo, Falta sello o Demorado.</summary>
+    [Parameter] public string Status { get; set; } = "";
+
+    /// <summary>Énfasis del estado. No reemplaza <see cref="Status"/>.</summary>
+    [Parameter] public TDMobileTone Tone { get; set; } = TDMobileTone.Neutral;
+
+    /// <summary>Destino de la acción principal.</summary>
+    [Parameter] public string? ActionHref { get; set; }
+
+    /// <summary>Texto de la acción. Dice la consecuencia.</summary>
+    [Parameter] public string? ActionLabel { get; set; }
+}

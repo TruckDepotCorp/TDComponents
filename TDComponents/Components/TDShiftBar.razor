@@ -1,0 +1,25 @@
+@namespace TDComponents.Components
+
+<section class="td-mshift" aria-label="Turno">
+    <p class="td-mshift__who"><b>@Operator</b> <span>@Role</span></p>
+    <p class="td-mshift__site">@Site</p>
+    <p class="@(Online ? "is-ok" : "is-bad")">@(Online ? "En línea" : "Sin conexión. Los movimientos se guardan en este teléfono.")</p>
+    <p>@(Pending == 0 ? "Todo está sincronizado." : $"{Pending.ToString(System.Globalization.CultureInfo.CurrentCulture)} {(Pending == 1 ? "movimiento espera" : "movimientos esperan")} sincronizarse.")</p>
+</section>
+
+@code {
+    /// <summary>Nombre de quien opera el teléfono.</summary>
+    [Parameter] public string Operator { get; set; } = "";
+
+    /// <summary>Bodega o centro donde está el turno.</summary>
+    [Parameter] public string Site { get; set; } = "";
+
+    /// <summary>Puesto, por ejemplo Operadora de recepción.</summary>
+    [Parameter] public string Role { get; set; } = "";
+
+    /// <summary>Movimientos guardados en el teléfono que todavía no llegaron al servidor. Cero significa que todo está sincronizado.</summary>
+    [Parameter] public int Pending { get; set; }
+
+    /// <summary>Hay enlace con el servidor. Falso explica que el trabajo queda en el teléfono.</summary>
+    [Parameter] public bool Online { get; set; } = true;
+}

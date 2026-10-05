@@ -1,0 +1,33 @@
+@namespace TDComponents.Components
+
+<section class="td-mxcard td-mxcollect" data-td-mx-collect data-debt="@Debt.ToString(System.Globalization.CultureInfo.InvariantCulture)">
+    <header class="td-mxcard__head"><span class="td-mxkicker">Cobrar</span><strong data-td-mx-debt>@Money(Debt)</strong></header>
+    @if (Debt <= 0)
+    {
+        <p class="td-mxok"><TDMiscIcon Name="check" Size="16" />Sin saldo pendiente.</p>
+    }
+    else
+    {
+        <div class="td-mxquick">
+            <button type="button" data-td-mx-quick="@Debt.ToString(System.Globalization.CultureInfo.InvariantCulture)">Todo · @Money(Debt)</button>
+            @if (Debt >= 100) { <button type="button" data-td-mx-quick="100">Q 100</button> }
+            @if (Debt >= 200) { <button type="button" data-td-mx-quick="200">Q 200</button> }
+        </div>
+        <label class="td-mxfield"><span>Monto</span><input data-td-mx-amount inputmode="decimal" placeholder="0.00" /></label>
+        <div class="td-mxseg" role="group" aria-label="Método de pago">
+            <button type="button" class="is-on" data-td-mx-method="Efectivo">Efectivo</button>
+            <button type="button" data-td-mx-method="Transferencia">Transferencia</button>
+            <button type="button" data-td-mx-method="Tarjeta">Tarjeta</button>
+        </div>
+        <p class="td-mxremain">Quedaría <strong data-td-mx-remain>@Money(Debt)</strong></p>
+        <p class="td-mxwarn" data-td-mx-cerr hidden></p>
+        <button type="button" class="td-mxbtn" data-td-mx-charge disabled>Registrar cobro</button>
+    }
+</section>
+
+@code {
+    /// <summary>Deuda actual. Cero muestra que no hay saldo.</summary>
+    [Parameter] public decimal Debt { get; set; } = 415.50m;
+
+    private static string Money(decimal value) => $"Q {value.ToString("N2", System.Globalization.CultureInfo.GetCultureInfo("en-US"))}";
+}

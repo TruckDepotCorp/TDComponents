@@ -3,19 +3,20 @@ namespace TDComponents.Architecture;
 public static partial class TDArchitecture
 {
     /// <summary>
-    /// Gráficos. Siempre es <c>TDChart</c>. El valor de la constante es el <c>Kind</c>.
-    /// No existen series, <c>TDLineSeries</c> ni <c>TDBarChart</c>. El componente no recibe datos.
+    /// Gráficos. Siempre es <c>TDChart</c>. Las cifras del sistema van en <c>Series</c>.
+    /// Línea, columnas y pie conservan su forma. Los demás kinds, con series, se pintan como columnas.
+    /// Sin <c>Series</c> queda la lámina del catálogo. Una cifra suelta también puede ir en <see cref="Pantallas.Tablero"/>.
     /// </summary>
     public static class Charts
     {
         /// <summary>Línea, área, serie en el tiempo.</summary>
-        public const string Linea = """<TDChart Kind="chline" />""";
+        public const string Linea = """<TDChart Kind="chline" Categories="meses" Series="series" />""";
 
         /// <summary>Columnas, barras, comparar categorías.</summary>
-        public const string Columnas = """<TDChart Kind="chcol" />""";
+        public const string Columnas = """<TDChart Kind="chcol" Categories="meses" Series="series" />""";
 
         /// <summary>Pie, donut, torta, participación de un total.</summary>
-        public const string Pie = """<TDChart Kind="chpie" />""";
+        public const string Pie = """<TDChart Kind="chpie" Categories="bodegas" Series="stock" />""";
 
         /// <summary>Dispersión, burbujas, relación entre dos variables.</summary>
         public const string Dispersion = """<TDChart Kind="chscatter" />""";

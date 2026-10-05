@@ -8,7 +8,8 @@ type DevStatus = 'connected' | 'connecting' | 'disconnected' | 'error' | 'printi
 type Device = { id: string; name: string; model: string; conn: 'bt' | 'wifi'; addr: string; proto: string; dpi: number; width: number; status: DevStatus; rssi: number; battery?: number; fw: string; jobs: number; def?: boolean; unreachable?: boolean; err?: string };
 type ScanHit = { name: string; model: string; proto: string; rssi: number; battery: number; mac: string };
 type Read = { value: string; format: string; source: string; t: string; id: number };
-type Work = { id: number; date: string; res: string; s: number; e: number; title: string; note: string };
+type Work = { id: string; date: string; res: string; s: number; e: number; title: string; note: string };
+type Bay = { id: string; name: string; who: string; c: string };
 interface StudioState {
     msg: string;
     timer: number;
@@ -18,17 +19,19 @@ interface StudioState {
     print: { sel: string; copies: number; raw: string; log: { t: string; dir: string; msg: string }[]; devs: Device[]; scan: { pr: number; found: ScanHit[] } | null; wifi: boolean; wf: { name: string; ip: string; port: string; proto: string }; wfMsg: string; wfBad: boolean; scanTimer: number };
     hid: { on: boolean; ignore: boolean; minLen: number; gap: number; count: number; last: { code: string; t: string; name: string | null } | null; log: { code: string; t: string; name: string | null }[]; buf: string; lastAt: number };
     scan: { mode: 'single' | 'continuous'; on: boolean; formats: string[]; wedge: boolean; beep: boolean; vibrate: boolean; dedupe: number; reads: Read[]; last: Read | null; waiting: boolean; manual: string; err: string; lastCode: string; lastAt: number; buf: string; bufAt: number; sim: number; cams: { id: string; label: string }[]; camId: string; torch: boolean; torchOk: boolean };
-    sch: { view: 'day' | 'week' | 'month' | 'agenda' | 'res'; date: string; hide: string[]; events: Work[]; seq: number; dlg: Work | null; tried: boolean; skipClick: boolean; drag: { id: number; s: number; e: number; dur: number; col: string; grab: number; moved: boolean } | null };
+    sch: { view: 'day' | 'week' | 'month' | 'agenda' | 'res'; date: string; hide: string[]; resources: Bay[]; events: Work[]; seq: number; dlg: Work | null; tried: boolean; skipClick: boolean; field: string; readOnly: boolean; source: string; drag: { id: string; s: number; e: number; dur: number; col: string; grab: number; moved: boolean } | null };
 }
 
 const states = new WeakMap<HTMLElement, StudioState>();
 const NAMES: Record<LabelEl['type'], string> = { text: 'Texto', barcode: 'Código de barras', qr: 'Código QR', line: 'Línea', box: 'Recuadro' };
-const RES = [
-    { id: 't1', name: 'Bahía 1 · Frenos', who: 'J. Muñoz', c: '#ED2A24' },
-    { id: 't2', name: 'Bahía 2 · Motor', who: 'P. Soto', c: '#2A6FDB' },
-    { id: 't3', name: 'Bahía 3 · Suspensión', who: 'C. Vera', c: '#1E9E54' },
-    { id: 't4', name: 'Terreno', who: 'M. Rojas', c: '#E8920C' },
-];
+function defaultBays(): Bay[] {
+    return [
+        { id: 't1', name: 'Bahía 1 · Frenos', who: 'J. Muñoz', c: '#ED2A24' },
+        { id: 't2', name: 'Bahía 2 · Motor', who: 'P. Soto', c: '#2A6FDB' },
+        { id: 't3', name: 'Bahía 3 · Suspensión', who: 'C. Vera', c: '#1E9E54' },
+        { id: 't4', name: 'Terreno', who: 'M. Rojas', c: '#E8920C' },
+    ];
+}
 const FMT: [string, string][] = [['qr_code', 'QR'], ['code_128', 'Code 128'], ['ean_13', 'EAN-13'], ['ean_8', 'EAN-8'], ['code_39', 'Code 39'], ['data_matrix', 'DataMatrix']];
 
 function money(n: number): string { return `$ ${Math.round(n).toLocaleString('es-CL')}`; }
@@ -40,6 +43,58 @@ function parseIso(value: string): Date { const [y, m, d] = value.split('-').map(
 function addDays(value: string, days: number): string { const date = parseIso(value); date.setDate(date.getDate() + days); return iso(date); }
 function monday(value: string): string { const date = parseIso(value); return addDays(value, -((date.getDay() + 6) % 7)); }
 function hm(min: number): string { return `${String(Math.floor(min / 60)).padStart(2, '0')}:${String(min % 60).padStart(2, '0')}`; }
+function toMin(value: string): number {
+    const match = /^(\d{1,2}):(\d{2})$/.exec(value.trim());
+    if (!match) return 9 * 60;
+    return clamp(Number(match[1]) * 60 + Number(match[2]), 0, 24 * 60);
+}
+function publishSchedule(host: HTMLElement, state: StudioState): void {
+    const input = host.querySelector<HTMLInputElement>('[data-td-sch-out]');
+    if (!input) return;
+    input.value = JSON.stringify(state.sch.events.map((event) => ({
+        Id: event.id, Title: event.title, Date: event.date, Start: hm(event.s), End: hm(event.e), ResourceId: event.res, Note: event.note,
+    }))).replace(/</g, '\\u003c');
+}
+function applySchedule(host: HTMLElement, state: StudioState): void {
+    state.sch.readOnly = host.dataset.readonly === 'true';
+    state.sch.field = host.dataset.field || '';
+    const raw = host.dataset.agenda || '';
+    state.sch.source = raw;
+    if (!raw) return;
+    try {
+        const parsed = JSON.parse(raw) as {
+            date?: string;
+            view?: string;
+            resources?: { id?: string; name?: string; person?: string; color?: string }[];
+            appointments?: { id?: string; title?: string; date?: string; start?: string; end?: string; resourceId?: string; note?: string }[];
+        };
+        if (parsed.date && /^\d{4}-\d{2}-\d{2}$/.test(parsed.date)) state.sch.date = parsed.date;
+        if (parsed.view === 'day' || parsed.view === 'week' || parsed.view === 'month' || parsed.view === 'agenda' || parsed.view === 'res') state.sch.view = parsed.view;
+        if (Array.isArray(parsed.resources)) {
+            const palette = ['#ED2A24', '#2A6FDB', '#1E9E54', '#E8920C', '#7A4DFF', '#0E7C86'];
+            state.sch.resources = parsed.resources.filter((res) => res.id && res.name).map((res, index) => ({
+                id: String(res.id), name: String(res.name), who: res.person || '', c: res.color || palette[index % palette.length],
+            }));
+        }
+        if (Array.isArray(parsed.appointments)) {
+            const fallback = state.sch.resources[0]?.id || '';
+            state.sch.events = parsed.appointments.filter((item) => item.date && item.title).map((item, index) => ({
+                id: item.id ? String(item.id) : String(index + 1),
+                date: String(item.date),
+                res: item.resourceId ? String(item.resourceId) : fallback,
+                s: toMin(item.start || '09:00'),
+                e: toMin(item.end || '10:00'),
+                title: String(item.title),
+                note: item.note || '',
+            }));
+            state.sch.seq = 100;
+            state.sch.dlg = null;
+            state.sch.drag = null;
+        }
+    } catch {
+        /* Sin agenda válida queda la semana de demostración. */
+    }
+}
 
 function recOf(part: Part) {
     return { code: part.code, name: part.name, brand: part.brand, price: money(part.price), stock: String(part.stock), url: `https://uiuxblazor.dev/r/${part.code}` };
@@ -172,7 +227,7 @@ function fresh(): StudioState {
         },
         hid: { on: true, ignore: false, minLen: 4, gap: 60, count: 0, last: null, log: [], buf: '', lastAt: 0 },
         scan: { mode: 'continuous', on: false, formats: ['qr_code', 'code_128', 'ean_13', 'ean_8'], wedge: true, beep: true, vibrate: true, dedupe: 1500, reads: [], last: null, waiting: false, manual: '', err: '', lastCode: '', lastAt: 0, buf: '', bufAt: 0, sim: 0, cams: [], camId: '', torch: false, torchOk: false },
-        sch: { view: 'week', date: today, hide: [], seq: 100, dlg: null, tried: false, drag: null, skipClick: false, events: seed.map((row, index) => ({ id: index + 1, date: addDays(week, row[0]), res: row[1], s: row[2], e: row[3], title: row[4], note: '' })) },
+        sch: { view: 'week', date: today, hide: [], resources: defaultBays(), seq: 100, dlg: null, tried: false, drag: null, skipClick: false, field: '', readOnly: false, source: '', events: seed.map((row, index) => ({ id: String(index + 1), date: addDays(week, row[0]), res: row[1], s: row[2], e: row[3], title: row[4], note: '' })) },
     };
 }
 
@@ -191,7 +246,12 @@ function paint(host: HTMLElement): void {
     const active = document.activeElement;
     const mark = active instanceof HTMLElement && host.contains(active) ? active.getAttribute('data-st-in') : null;
     const pos = active instanceof HTMLInputElement || active instanceof HTMLTextAreaElement ? active.selectionStart : null;
+    if (host.dataset.kind === 'scheduler') {
+        state.sch.readOnly = host.dataset.readonly === 'true';
+        state.sch.field = host.dataset.field || '';
+    }
     host.innerHTML = `<p class="td-studio__msg" role="status">${esc(state.msg || '\u00a0')}</p>${render(host.dataset.kind || '', state)}`;
+    if (host.dataset.kind === 'scheduler') publishSchedule(host, state);
     if (host.dataset.kind === 'labeldesigner') host.dataset.lbScale = String(labelScale(state.label));
     restoreCamera(host);
     if (!mark) return;
@@ -404,6 +464,7 @@ function renderScanner(state: StudioState): string {
 
 function renderScheduler(state: StudioState): string {
     const sch = state.sch;
+    const RES = sch.resources;
     const days = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
     const months = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
     const week = monday(sch.date);
@@ -419,7 +480,7 @@ function renderScheduler(state: StudioState): string {
     const conflict = dlg ? sch.events.find((event) => event.id !== dlg.id && event.res === dlg.res && event.date === dlg.date && event.s < dlg.e && dlg.s < event.e) : undefined;
     const bad = dlg && !dlg.title.trim() ? 'Escribe un título' : dlg && dlg.e <= dlg.s ? 'La hora de término debe ser posterior al inicio' : '';
     return `<div class="td-studio__bar"><div class="td-ecom__seg">${([['day', 'Día'], ['week', 'Semana'], ['month', 'Mes'], ['agenda', 'Agenda'], ['res', 'Recursos']] as const).map(([key, label]) => `<button type="button" data-st="view:${key}" aria-pressed="${sch.view === key}">${label}</button>`).join('')}</div>
-        <div class="td-ecom__nav"><button type="button" data-st="prev">Anterior</button><button type="button" data-st="today">Hoy</button><button type="button" data-st="next">Siguiente</button><strong>${title}</strong><button type="button" data-st="new">Nuevo trabajo</button></div></div>
+        <div class="td-ecom__nav"><button type="button" data-st="prev">Anterior</button><button type="button" data-st="today">Hoy</button><button type="button" data-st="next">Siguiente</button><strong>${title}</strong>${sch.readOnly ? '' : '<button type="button" data-st="new">Nuevo trabajo</button>'}</div></div>
         <div class="td-ecom__chips">${RES.map((res) => `<button type="button" data-st="res:${res.id}" aria-pressed="${!sch.hide.includes(res.id)}" style="--c:${res.c}">${res.name}</button>`).join('')}</div>
         ${grid ? `<div class="td-studio__cal" style="--cols:${columns.length}"><div class="td-studio__hours">${hours.map((hour) => `<span>${hm(hour)}</span>`).join('')}</div>${columns.map((col) => `<section data-st-col="${col.key}"><header>${col.head}<small>${col.sub}</small></header><div class="td-studio__col" data-st="slot:${col.key}">${visible.filter((event) => { const drag = sch.drag?.id === event.id ? sch.drag : null; const date = drag?.col.startsWith('d:') ? drag.col.slice(2) : event.date; const res = drag?.col.startsWith('r:') ? drag.col.slice(2) : event.res; return date === col.date && (sch.view !== 'res' || res === col.res); }).map((event) => { const drag = sch.drag?.id === event.id ? sch.drag : null; const from = drag?.s ?? event.s; const to = drag?.e ?? event.e; const color = RES.find((res) => res.id === (drag?.col.startsWith('r:') ? drag.col.slice(2) : event.res))?.c || '#333'; return `<button type="button" class="td-studio__event" data-st="edit:${event.id}" style="top:${(from - start) / 60 * 48}px;height:${Math.max(22, (to - from) / 60 * 48 - 2)}px;--c:${color}"><b>${esc(event.title)}</b><small>${hm(from)}–${hm(to)}</small></button>`; }).join('')}</div></section>`).join('')}</div>` : ''}
         ${sch.view === 'agenda' ? Array.from({ length: 7 }, (_, index) => addDays(week, index)).map((date) => { const list = visible.filter((event) => event.date === date); return `<section><h3>${days[(parseIso(date).getDay() + 6) % 7]} ${parseIso(date).getDate()} · ${list.length} trabajos</h3><ul class="td-ecom__lines">${list.map((event) => `<li><button type="button" data-st="edit:${event.id}"><b>${hm(event.s)}–${hm(event.e)} ${esc(event.title)}</b><small>${RES.find((res) => res.id === event.res)?.name}</small></button></li>`).join('') || '<li>Sin trabajos</li>'}</ul></section>`; }).join('') : ''}
@@ -431,7 +492,7 @@ function renderScheduler(state: StudioState): string {
             <label>Recurso<select data-st-in="sres">${RES.map((res) => `<option value="${res.id}" ${dlg.res === res.id ? 'selected' : ''}>${res.name} · ${res.who}</option>`).join('')}</select></label>
             <label>Nota<textarea data-st-in="snote">${esc(dlg.note)}</textarea></label>
             ${sch.tried && bad ? `<p class="td-ecom__err" role="alert">${bad}</p>` : ''}${conflict ? `<p role="status">Choca con “${esc(conflict.title)}” (${hm(conflict.s)}–${hm(conflict.e)}) en el mismo recurso.</p>` : ''}
-            <div class="td-ecom__nav"><button type="button" data-st="save">Guardar</button>${dlg.id ? '<button type="button" data-st="sdel">Eliminar</button>' : ''}<button type="button" data-st="sclose">Cerrar</button></div></form>` : ''}`;
+            <div class="td-ecom__nav"><button type="button" data-st="save">Guardar</button>${dlg.id ? '<button type="button" data-st="sdel">Eliminar</button>' : ''}<button type="button" data-st="sclose">Cerrar</button></div></form>` : ''}${sch.field ? `<input type="hidden" name="${esc(sch.field)}" data-td-sch-out>` : ''}`;
 }
 
 function timeOpts(selected: number): string {
@@ -529,12 +590,12 @@ function act(host: HTMLElement, action: string): void {
     else if (name === 'view' && ['day', 'week', 'month', 'agenda', 'res'].includes(a)) state.sch.view = a as StudioState['sch']['view'];
     else if (name === 'prev' || name === 'next' || name === 'today') moveSchedule(state, name);
     else if (name === 'res') state.sch.hide = state.sch.hide.includes(a) ? state.sch.hide.filter((id) => id !== a) : [...state.sch.hide, a];
-    else if (name === 'new') state.sch.dlg = { id: 0, title: '', date: state.sch.date, s: 540, e: 600, res: 't1', note: '' };
-    else if (name === 'edit') state.sch.dlg = { ...state.sch.events.find((event) => event.id === Number(a))! };
+    else if (name === 'new') { if (state.sch.readOnly) return; state.sch.dlg = { id: '', title: '', date: state.sch.date, s: 540, e: 600, res: state.sch.resources[0]?.id || '', note: '' }; }
+    else if (name === 'edit') { if (state.sch.readOnly) return; const found = state.sch.events.find((event) => event.id === a); if (!found) return; state.sch.dlg = { ...found }; }
     else if (name === 'day') { state.sch.date = a; state.sch.view = 'day'; }
-    else if (name === 'slot') state.sch.dlg = { id: 0, title: '', date: a === 'd' ? b : state.sch.date, s: 540, e: 600, res: a === 'r' ? b : 't1', note: '' };
-    else if (name === 'save') saveWork(host, state);
-    else if (name === 'sdel' && state.sch.dlg) { state.sch.events = state.sch.events.filter((event) => event.id !== state.sch.dlg?.id); say(host, `Eliminado: ${state.sch.dlg.title}`); state.sch.dlg = null; return; }
+    else if (name === 'slot') { if (state.sch.readOnly) return; state.sch.dlg = { id: '', title: '', date: a === 'd' ? b : state.sch.date, s: 540, e: 600, res: a === 'r' ? b : (state.sch.resources[0]?.id || ''), note: '' }; }
+    else if (name === 'save') { if (state.sch.readOnly) return; saveWork(host, state); }
+    else if (name === 'sdel' && state.sch.dlg) { if (state.sch.readOnly) return; state.sch.events = state.sch.events.filter((event) => event.id !== state.sch.dlg?.id); say(host, `Eliminado: ${state.sch.dlg.title}`); state.sch.dlg = null; return; }
     else if (name === 'sclose') state.sch.dlg = null;
     paint(host);
 }
@@ -845,7 +906,7 @@ function saveWork(host: HTMLElement, state: StudioState): void {
     const dlg = state.sch.dlg;
     if (!dlg) return;
     if (!dlg.title.trim() || dlg.e <= dlg.s) { state.sch.tried = true; paint(host); return; }
-    if (!dlg.id) { dlg.id = state.sch.seq + 1; state.sch.seq += 1; state.sch.events = [...state.sch.events, { ...dlg, title: dlg.title.trim() }]; say(host, `Creado: ${dlg.title.trim()}`); }
+    if (!dlg.id) { state.sch.seq += 1; dlg.id = `n${state.sch.seq}`; state.sch.events = [...state.sch.events, { ...dlg, title: dlg.title.trim() }]; say(host, `Creado: ${dlg.title.trim()}`); }
     else { state.sch.events = state.sch.events.map((event) => event.id === dlg.id ? { ...dlg, title: dlg.title.trim() } : event); say(host, `Guardado: ${dlg.title.trim()}`); }
     state.sch.dlg = null;
 }
@@ -907,7 +968,8 @@ function beginDrag(host: HTMLElement, event: PointerEvent): void {
     const button = event.target instanceof Element ? event.target.closest('[data-st^="edit:"]') : null;
     if (!(button instanceof HTMLElement)) return;
     const state = states.get(host);
-    const work = state?.sch.events.find((item) => item.id === Number(button.dataset.st?.slice(5)));
+    if (state?.sch.readOnly) return;
+    const work = state?.sch.events.find((item) => item.id === button.dataset.st?.slice(5));
     if (!state || !work) return;
     state.sch.skipClick = false;
     const box = button.getBoundingClientRect();
@@ -942,7 +1004,7 @@ function moveDrag(event: PointerEvent): void {
         moveLabel(labelHost, event);
         return;
     }
-    const host = document.querySelector('td-studio[data-kind="scheduler"]');
+    const host = [...document.querySelectorAll('td-studio')].find((node) => node instanceof HTMLElement && states.get(node)?.sch.drag);
     if (!(host instanceof HTMLElement)) return;
     const state = states.get(host);
     const drag = state?.sch.drag;
@@ -1012,7 +1074,7 @@ function endDrag(event: PointerEvent): void {
         if (moved) { event.preventDefault(); paint(labelHost); }
         return;
     }
-    const host = document.querySelector('td-studio[data-kind="scheduler"]');
+    const host = [...document.querySelectorAll('td-studio')].find((node) => node instanceof HTMLElement && states.get(node)?.sch.drag);
     if (!(host instanceof HTMLElement)) return;
     const state = states.get(host);
     const drag = state?.sch.drag;
@@ -1172,6 +1234,7 @@ function applyScenario(host: HTMLElement, state: StudioState): void {
             state.scan.lastAt = Date.now();
         }
     }
+    if (kind === 'scheduler') applySchedule(host, state);
 }
 
 function watchLabel(host: HTMLElement): void {
@@ -1190,7 +1253,17 @@ function watchLabel(host: HTMLElement): void {
 
 export function bindStudio(root: ParentNode = document): void {
     root.querySelectorAll<HTMLElement>('td-studio').forEach((host) => {
-        if (states.has(host)) return;
+        if (states.has(host)) {
+            if (host.dataset.kind === 'scheduler') {
+                const current = states.get(host);
+                const next = host.dataset.agenda || '';
+                if (current && current.sch.source !== next) {
+                    applySchedule(host, current);
+                    paint(host);
+                }
+            }
+            return;
+        }
         const state = fresh();
         applyScenario(host, state);
         states.set(host, state);

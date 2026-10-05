@@ -1,0 +1,31 @@
+@namespace TDComponents.Components
+
+<section class="td-mxcard">
+    <header class="td-mxcard__head"><span class="td-mxkicker">@Title</span></header>
+    <ul class="td-mxmoves">
+        @foreach (var item in Used)
+        {
+            <li class="@(item.Incoming ? "is-in" : "is-out")">
+                <span><strong>@item.Title</strong><small>@item.When</small></span>
+                <b>@item.Amount</b>
+            </li>
+        }
+    </ul>
+</section>
+
+@code {
+    /// <summary>Título de la lista.</summary>
+    [Parameter] public string Title { get; set; } = "Movimientos";
+
+    /// <summary>Movimientos. Si se omite, queda el ejemplo de Don Luis.</summary>
+    [Parameter] public IReadOnlyList<TDShopMove>? Items { get; set; }
+
+    private IReadOnlyList<TDShopMove> Used => Items is { Count: > 0 } ? Items : Demo;
+
+    private static readonly TDShopMove[] Demo =
+    [
+        new("Venta V-0011 · 5 art.", "Hace 7 días", "+ Q 315.50", true),
+        new("Cobro · Efectivo", "Hace 12 días", "− Q 100.00", false),
+        new("Venta V-0003 · 2 art.", "Hace 15 días", "+ Q 200.00", true)
+    ];
+}

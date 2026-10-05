@@ -54,9 +54,11 @@ interface EcomState {
     timer: number;
     flashEnd: number;
     kind: string;
+    parts: Part[];
+    source: string;
 }
 
-export const PARTS: Part[] = [
+const DEMO_PARTS: Part[] = [
     { id: 1, code: 'BR-4521-AD', name: 'Pastilla de freno delantera', brand: 'Volvo', app: 'Volvo FH 460', cat: 'Frenos', stock: 42, price: 189990 },
     { id: 2, code: 'SU-1180-KT', name: 'Amortiguador de cabina', brand: 'Scania', app: 'Scania R450', cat: 'Suspensión', stock: 8, price: 246500 },
     { id: 3, code: 'MT-7702-FL', name: 'Filtro de aceite', brand: 'Mercedes-Benz', app: 'Mercedes-Benz Actros 2651', cat: 'Motor', stock: 120, price: 24990 },
@@ -82,6 +84,8 @@ export const PARTS: Part[] = [
     { id: 23, code: 'CA-1150-LI', name: 'Limpiaparabrisas 1000 mm', brand: 'Volvo', app: 'Volvo B8R', cat: 'Carrocería', stock: 85, price: 18900 },
     { id: 24, code: 'BR-3390-CA', name: 'Caliper de freno', brand: 'Iveco', app: 'Iveco Crossway', cat: 'Frenos', stock: 10, price: 368400 },
 ];
+
+export const PARTS = DEMO_PARTS;
 
 const GRAD = [
     'linear-gradient(135deg,#3A4047,#15181B)',
@@ -114,8 +118,12 @@ function esc(value: string): string {
     return value.replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char] ?? char));
 }
 
-function byId(id: number): Part | undefined {
-    return PARTS.find((part) => part.id === id);
+function byId(id: number, state?: EcomState): Part | undefined {
+    return (state?.parts ?? DEMO_PARTS).find((part) => part.id === id);
+}
+
+function lead(state: EcomState, index: number): Part {
+    return state.parts[index] ?? state.parts[0] ?? { id: 0, code: '', name: 'Sin productos', brand: '', app: '', cat: '', stock: 0, price: 0 };
 }
 
 function disc(part: Part): number {
@@ -189,6 +197,8 @@ function fresh(kind = 'ecard'): EcomState {
         timer: 0,
         flashEnd: Date.now() + (5 * 3600 + 23 * 60 + 41) * 1000,
         kind,
+        parts: DEMO_PARTS,
+        source: '',
         drawer: kind === 'ecart',
     };
 }
@@ -199,7 +209,7 @@ function norm(value: string): string {
 
 function cartMath(state: EcomState): { sub: number; off: number; ship: number; total: number; qty: number } {
     const sub = state.cart.reduce((sum, line) => {
-        const part = byId(line.id);
+        const part = byId(line.id, state);
         return part ? sum + sale(part) * line.qty : sum;
     }, 0);
     const off = state.couponOk ? Math.round(sub * 0.1) : 0;
@@ -256,7 +266,7 @@ function renderKind(kind: string, state: EcomState): string {
         case 'erecent': return recent(state);
         case 'estock': return stockAlert(state);
         case 'ewishmulti': return wishlists(state);
-        case 'etrack': return track();
+        case 'etrack': return track(state);
         case 'efbt': return bundle(state);
         case 'elocator': return locator(state);
         case 'ecredit': return credit(state);
@@ -274,11 +284,11 @@ function cards(state: EcomState): string {
         </div>
         <span>Favoritos ${state.wish.length} · Comparar ${state.cmp.length} · Carrito ${math.qty}</span>
     </div>
-    <div class="td-ecom__grid ${state.layout === 'list' ? 'is-list' : ''}">${PARTS.slice(0, 8).map((part) => card(part, state)).join('')}</div>`;
+    <div class="td-ecom__grid ${state.layout === 'list' ? 'is-list' : ''}">${state.parts.slice(0, 8).map((part) => card(part, state)).join('')}</div>`;
 }
 
 function detail(state: EcomState): string {
-    const part = byId(1)!;
+    const part = lead(state, 0);
     const factor = state.pv.q === 'orig' ? 1 : state.pv.q === 'alt' ? 0.72 : 0.55;
     const base = Math.round(part.price * factor);
     const tiers: [number, number][] = [[1, 0], [5, 5], [10, 10], [20, 15]];
@@ -325,9 +335,9 @@ function detail(state: EcomState): string {
 
 function cart(state: EcomState): string {
     const math = cartMath(state);
-    const lines = state.cart.map((line) => ({ line, part: byId(line.id) })).filter((row) => row.part);
+    const lines = state.cart.map((line) => ({ line, part: byId(line.id, state) })).filter((row) => row.part);
     const missing = Math.max(0, FREE - (math.sub - math.off));
-    const cross = PARTS.filter((part) => part.stock > 0 && !state.cart.some((line) => line.id === part.id)).slice(0, 3);
+    const cross = state.parts.filter((part) => part.stock > 0 && !state.cart.some((line) => line.id === part.id)).slice(0, 3);
     return `<div class="td-ecom__cart ${state.drawer ? 'is-open' : ''}">
         <button type="button" data-ec="drawer">${state.drawer ? 'Cerrar carrito' : `Abrir carrito · ${math.qty} productos`}</button>
         <aside class="td-ecom__drawer" ${state.drawer ? '' : 'hidden'} aria-label="Carrito">
@@ -391,7 +401,7 @@ function checkout(state: EcomState): string {
 }
 
 function facets(state: EcomState): string {
-    const maxPrice = Math.max(...PARTS.map((part) => part.price));
+    const maxPrice = Math.max(1, ...state.parts.map((part) => part.price));
     const cap = state.f.max || maxPrice;
     const pass = (part: Part, skip?: 'brand' | 'cat') =>
         (skip === 'brand' || !state.f.brand.length || state.f.brand.includes(part.brand))
@@ -400,12 +410,12 @@ function facets(state: EcomState): string {
         && part.price <= cap;
     const facet = (key: 'brand' | 'cat', values: string[]) => values.map((value) => {
         const on = state.f[key].includes(value);
-        const count = PARTS.filter((part) => part[key] === value && pass(part, key)).length;
+        const count = state.parts.filter((part) => part[key] === value && pass(part, key)).length;
         return `<label class="${!count && !on ? 'is-off' : ''}"><input type="checkbox" data-ec="facet:${key}:${encodeURIComponent(value)}" ${on ? 'checked' : ''} ${!count && !on ? 'disabled' : ''}>${esc(value)} <em>${count}</em></label>`;
     }).join('');
-    const brands = [...new Set(PARTS.map((part) => part.brand))].sort();
-    const cats = [...new Set(PARTS.map((part) => part.cat))];
-    let results = PARTS.filter((part) => pass(part));
+    const brands = [...new Set(state.parts.map((part) => part.brand))].sort();
+    const cats = [...new Set(state.parts.map((part) => part.cat))];
+    let results = state.parts.filter((part) => pass(part));
     results = [...results].sort(state.sort === 'lo' ? (a, b) => a.price - b.price : state.sort === 'hi' ? (a, b) => b.price - a.price : state.sort === 'rate' ? (a, b) => rating(b) - rating(a) : (a, b) => a.id - b.id);
     const chips = [
         ...state.f.brand.map((value) => ['brand', value] as const),
@@ -436,9 +446,9 @@ function facets(state: EcomState): string {
 
 function search(state: EcomState): string {
     const query = norm(state.q.trim());
-    const products = query.length >= 2 ? PARTS.filter((part) => norm(`${part.name} ${part.code} ${part.brand}`).includes(query)).slice(0, 5) : [];
-    const cats = query.length >= 2 ? [...new Set(PARTS.filter((part) => norm(`${part.name} ${part.cat}`).includes(query)).map((part) => part.cat))].slice(0, 3) : [];
-    const suggestions = query.length >= 2 ? [...new Set(PARTS.map((part) => part.name.toLowerCase()).filter((name) => norm(name).includes(query)))].slice(0, 4) : [];
+    const products = query.length >= 2 ? state.parts.filter((part) => norm(`${part.name} ${part.code} ${part.brand}`).includes(query)).slice(0, 5) : [];
+    const cats = query.length >= 2 ? [...new Set(state.parts.filter((part) => norm(`${part.name} ${part.cat}`).includes(query)).map((part) => part.cat))].slice(0, 3) : [];
+    const suggestions = query.length >= 2 ? [...new Set(state.parts.map((part) => part.name.toLowerCase()).filter((name) => norm(name).includes(query)))].slice(0, 4) : [];
     const open = state.qOpen && (query.length >= 2 || !query);
     return `<div class="td-ecom__search">
         <label>Buscar repuesto<input data-ec-in="q" value="${esc(state.q)}" placeholder="Pastilla, filtro, código…" role="combobox" aria-expanded="${open}" aria-autocomplete="list"></label>
@@ -446,7 +456,7 @@ function search(state: EcomState): string {
         <div class="td-ecom__suggest" ${open ? '' : 'hidden'} role="listbox">
             ${!query ? state.recentQ.map((item) => `<button type="button" role="option" data-ec="qgo:${encodeURIComponent(item)}">${esc(item)}<span data-ec="qrm:${encodeURIComponent(item)}">Quitar</span></button>`).join('') : ''}
             ${suggestions.map((item) => `<button type="button" role="option" data-ec="qgo:${encodeURIComponent(item)}">${esc(item)}</button>`).join('')}
-            ${cats.map((item) => `<button type="button" role="option" data-ec="qgo:${encodeURIComponent(item)}">Categoría · ${esc(item)} <em>${PARTS.filter((part) => part.cat === item).length}</em></button>`).join('')}
+            ${cats.map((item) => `<button type="button" role="option" data-ec="qgo:${encodeURIComponent(item)}">Categoría · ${esc(item)} <em>${state.parts.filter((part) => part.cat === item).length}</em></button>`).join('')}
             ${products.map((part) => { const [label, color] = stockOf(part.stock); return `<button type="button" role="option" data-ec="qgo:${encodeURIComponent(part.name)}"><i style="background:${GRAD[part.id % GRAD.length]}"></i><span><b>${esc(part.name)}</b><small>${esc(part.code)} · ${money(sale(part))}</small></span><em style="color:${color}">${label}</em></button>`; }).join('')}
             ${query.length >= 2 && !suggestions.length && !products.length ? '<p>Sin coincidencias. Prueba con el código o la marca.</p>' : ''}
         </div>
@@ -455,7 +465,7 @@ function search(state: EcomState): string {
 }
 
 function compare(state: EcomState): string {
-    const chosen = state.cmp.map(byId).filter((part): part is Part => !!part);
+    const chosen = state.cmp.map((id) => byId(id, state)).filter((part): part is Part => !!part);
     const rows: [string, (part: Part) => string | number, 'min' | 'max' | ''][] = [
         ['Precio', (part) => sale(part), 'min'],
         ['Marca', (part) => part.brand, ''],
@@ -474,7 +484,7 @@ function compare(state: EcomState): string {
         const winner = best === 'min' ? Math.min(...numeric) : best === 'max' ? Math.max(...numeric) : null;
         return `<tr class="${same ? 'is-same' : ''}"><th>${label}</th>${values.map((value) => `<td class="${winner != null && value === winner && !same ? 'is-best' : ''}">${formatCompare(label, value)}</td>`).join('')}</tr>`;
     }).join('');
-    const extras = PARTS.filter((part) => !state.cmp.includes(part.id)).slice(0, 6);
+    const extras = state.parts.filter((part) => !state.cmp.includes(part.id)).slice(0, 6);
     return `<div class="td-ecom__bar"><label class="td-ecom__switch"><input type="checkbox" data-ec="diff" ${state.cmpDiff ? 'checked' : ''}>Solo diferencias</label><span>${chosen.length} de 4</span></div>
         <div class="td-ecom__cmphead">${chosen.map((part) => `<div><button type="button" data-ec="cmpx:${part.id}" aria-label="Quitar ${esc(part.name)}">Quitar</button><strong>${esc(part.name)}</strong><small>${money(sale(part))}</small></div>`).join('') || '<p>Agrega productos para comparar. El máximo es 4.</p>'}</div>
         ${chosen.length ? `<table class="td-ecom__table"><tbody>${body}</tbody></table>` : ''}
@@ -490,7 +500,7 @@ function formatCompare(label: string, value: string | number): string {
 }
 
 function flashSale(state: EcomState): string {
-    const deal = byId(6)!;
+    const deal = lead(state, 5);
     const left = Math.max(0, state.flashEnd - Date.now());
     const hours = String(Math.floor(left / 3.6e6)).padStart(2, '0');
     const minutes = String(Math.floor(left % 3.6e6 / 6e4)).padStart(2, '0');
@@ -508,7 +518,7 @@ function flashSale(state: EcomState): string {
             <button type="button" data-ec="add:${deal.id}">Agregar al carrito</button>
         </div>
     </article>
-    <div class="td-ecom__grid">${PARTS.slice(8, 12).map((part, index) => `<div>${card(part, state)}<small>${[60, 35, 80, 20][index]}% vendido</small></div>`).join('')}</div>`;
+    <div class="td-ecom__grid">${state.parts.slice(8, 12).map((part, index) => `<div>${card(part, state)}<small>${[60, 35, 80, 20][index]}% vendido</small></div>`).join('')}</div>`;
 }
 
 function reviews(state: EcomState): string {
@@ -546,12 +556,12 @@ function reviews(state: EcomState): string {
 
 function finder(state: EcomState): string {
     const pf = state.pf;
-    const brands = [...new Set(PARTS.map((part) => part.brand))].sort();
-    const models = pf.brand ? [...new Set(PARTS.filter((part) => part.brand === pf.brand).map((part) => part.app.slice(pf.brand.length + 1)))].sort() : [];
+    const brands = [...new Set(state.parts.map((part) => part.brand))].sort();
+    const models = pf.brand ? [...new Set(state.parts.filter((part) => part.brand === pf.brand).map((part) => part.app.slice(pf.brand.length + 1)))].sort() : [];
     const years = pf.model ? ['2024', '2023', '2022', '2021', '2020', '2019', '2018', '2016'] : [];
-    const systems = pf.year ? [...new Set(PARTS.filter((part) => part.app === `${pf.brand} ${pf.model}`).map((part) => part.cat))] : [];
+    const systems = pf.year ? [...new Set(state.parts.filter((part) => part.app === `${pf.brand} ${pf.model}`).map((part) => part.cat))] : [];
     const ready = pf.tab === 'veh' ? !!pf.year : /^[A-Z]{4}-?\d{2}$/.test(pf.plate);
-    const fit = pf.done ? PARTS.filter((part) => part.app === `${pf.brand} ${pf.model}` && (!pf.sys || part.cat === pf.sys)) : [];
+    const fit = pf.done ? state.parts.filter((part) => part.app === `${pf.brand} ${pf.model}` && (!pf.sys || part.cat === pf.sys)) : [];
     const opts = (values: string[], selected: string) => `<option value="">Elige</option>${values.map((value) => `<option ${value === selected ? 'selected' : ''}>${esc(value)}</option>`).join('')}`;
     return `<div class="td-ecom__seg">
         <button type="button" data-ec="pftab:veh" aria-pressed="${pf.tab === 'veh'}">Por vehículo</button>
@@ -568,9 +578,9 @@ function finder(state: EcomState): string {
 }
 
 function quote(state: EcomState): string {
-    const lines = state.quote.map((line) => ({ line, part: byId(line.id) })).filter((row) => row.part);
+    const lines = state.quote.map((line) => ({ line, part: byId(line.id, state) })).filter((row) => row.part);
     const units = lines.reduce((sum, row) => sum + row.line.qty, 0);
-    const extras = PARTS.filter((part) => !state.quote.some((line) => line.id === part.id)).slice(0, 6);
+    const extras = state.parts.filter((part) => !state.quote.some((line) => line.id === part.id)).slice(0, 6);
     if (state.quoteSent) {
         return `<div class="td-ecom__done"><h2>Cotización enviada</h2><p>${units} unidades · ${lines.length} productos. Un asesor responderá en horario hábil.</p><button type="button" data-ec="qnew">Nueva cotización</button></div>`;
     }
@@ -593,13 +603,13 @@ function bulk(state: EcomState): string {
 }
 
 function recent(state: EcomState): string {
-    const items = state.recent.map(byId).filter((part): part is Part => !!part);
+    const items = state.recent.map((id) => byId(id, state)).filter((part): part is Part => !!part);
     return `<div class="td-ecom__bar"><span>${items.length} vistos</span><button type="button" data-ec="recentclear" ${items.length ? '' : 'disabled'}>Vaciar historial</button></div>
         ${items.length ? `<div class="td-ecom__grid">${items.map((part) => `<div>${card(part, state)}<button type="button" data-ec="recentx:${part.id}">Quitar del historial</button></div>`).join('')}</div>` : '<p>Todavía no hay productos vistos.</p>'}`;
 }
 
 function stockAlert(state: EcomState): string {
-    const items = PARTS.filter((part) => part.stock === 0).slice(0, 6);
+    const items = state.parts.filter((part) => part.stock === 0).slice(0, 6);
     return `<ul class="td-ecom__lines">${items.map((part) => {
         const on = !!state.stockSubs[part.id];
         return `<li><i style="background:${GRAD[part.id % GRAD.length]}"></i><div><b>${esc(part.name)}</b><small>${esc(part.code)} · Agotado</small></div><button type="button" data-ec="sub:${part.id}" aria-pressed="${on}">${on ? 'Te avisaremos' : 'Avisarme'}</button></li>`;
@@ -607,27 +617,29 @@ function stockAlert(state: EcomState): string {
 }
 
 function wishlists(state: EcomState): string {
-    const extras = PARTS.filter((part) => !state.lists.some((list) => list.items.includes(part.id))).slice(0, 4);
+    const extras = state.parts.filter((part) => !state.lists.some((list) => list.items.includes(part.id))).slice(0, 4);
     return `<form class="td-ecom__nav"><input data-ec-in="list" value="${esc(state.newList)}" placeholder="Nombre de la lista" aria-label="Nombre de la lista"><button type="button" data-ec="listadd">Crear lista</button></form>
         <div class="td-ecom__lists">${state.lists.map((list) => `<section><header><h3>${esc(list.name)}</h3><span>${list.items.length} ${list.items.length === 1 ? 'producto' : 'productos'}</span><button type="button" data-ec="listdel:${list.id}">Eliminar lista</button></header>
-            ${list.items.length ? `<ul>${list.items.map(byId).filter((part): part is Part => !!part).map((part) => `<li><b>${esc(part.name)}</b><small>${money(part.price)}</small>
+            ${list.items.length ? `<ul>${list.items.map((id) => byId(id, state)).filter((part): part is Part => !!part).map((part) => `<li><b>${esc(part.name)}</b><small>${money(part.price)}</small>
                 <select data-ec-ch="move:${list.id}:${part.id}" aria-label="Mover ${esc(part.name)}"><option value="">Mover a…</option>${state.lists.filter((other) => other.id !== list.id).map((other) => `<option value="${other.id}">${esc(other.name)}</option>`).join('')}</select>
                 <button type="button" data-ec="listrm:${list.id}:${part.id}">Quitar</button></li>`).join('')}</ul>` : '<p>Esta lista está vacía.</p>'}
         </section>`).join('')}</div>
         <div class="td-ecom__chips">${extras.map((part) => `<button type="button" data-ec="listitem:${part.id}">${esc(part.name)}</button>`).join('')}</div>`;
 }
 
-function track(): string {
+function track(state: EcomState): string {
     const steps = ['Pedido recibido', 'Preparando', 'Despachado', 'En ruta', 'Entregado'];
     const current = 2;
+    const lines = state.parts.slice(0, 2);
+    const rows = lines.length ? lines : [lead(state, 0)];
     return `<header><h2>OC-2026-00481</h2><p>Guía GD-88213-CL · Entrega estimada 23 de septiembre, entre 12 y 14 h</p></header>
         <ol class="td-ecom__steps">${steps.map((label, index) => `<li class="${index === current ? 'is-on' : ''} ${index < current ? 'is-done' : ''}"><b>${index < current ? '✓' : index + 1}</b>${label}</li>`).join('')}</ol>
-        <ul class="td-ecom__lines"><li><b>Pastilla de freno delantera</b><small>BR-4521-AD · 2</small></li><li><b>Alternador 24V 110A</b><small>EL-3310-AL · 1</small></li></ul>`;
+        <ul class="td-ecom__lines">${rows.map((part) => `<li><b>${esc(part.name)}</b><small>${esc(part.code)}</small></li>`).join('')}</ul>`;
 }
 
 function bundle(state: EcomState): string {
-    const main = byId(1)!;
-    const items = [main, ...PARTS.filter((part) => part.id !== main.id).slice(1, 3)];
+    const main = lead(state, 0);
+    const items = [main, ...state.parts.filter((part) => part.id !== main.id).slice(1, 3)];
     const on = (id: number) => state.fbtOff[id] !== false;
     const chosen = items.filter((part) => on(part.id));
     return `<h2>Comprados juntos</h2><div class="td-ecom__bundle">${items.map((part) => `<label><input type="checkbox" data-ec="fbt:${part.id}" ${on(part.id) ? 'checked' : ''} ${part.id === main.id ? 'disabled' : ''}><i style="background:${GRAD[part.id % GRAD.length]}"></i><b>${esc(part.name)}</b><span>${money(part.price)}</span></label>`).join('')}</div>
@@ -662,7 +674,7 @@ function credit(state: EcomState): string {
 }
 
 function returns(state: EcomState): string {
-    const items = [byId(1)!, byId(4)!];
+    const items = [lead(state, 0), lead(state, 3)];
     const reasons = ['Producto defectuoso', 'No es compatible con mi vehículo', 'Llegó el repuesto equivocado', 'Ya no lo necesito'];
     const methods: ['refund' | 'credit' | 'exchange', string][] = [['refund', 'Reembolso al medio de pago original'], ['credit', 'Nota de crédito'], ['exchange', 'Cambio por otro producto']];
     const error = state.rma.tried ? (state.rmaStep === 0 && !state.rma.item ? 'Elige un producto' : state.rmaStep === 1 && !state.rma.reason ? 'Elige un motivo' : '') : '';
@@ -711,7 +723,7 @@ function act(host: HTMLElement, action: string, event?: Event): void {
     if (!state) return;
     const [name, a = '', b = ''] = action.split(':');
     const id = Number(a);
-    const part = byId(id);
+    const part = byId(id, state);
     if (name === 'layout' && (a === 'grid' || a === 'list')) state.layout = a;
     else if (name === 'wish' && part) {
         state.wish = state.wish.includes(id) ? state.wish.filter((item) => item !== id) : [...state.wish, id];
@@ -725,7 +737,7 @@ function act(host: HTMLElement, action: string, event?: Event): void {
         if (state.cmp.length >= 4) { say(host, 'Máximo 4 productos para comparar'); return; }
         state.cmp = [...state.cmp, id];
     } else if ((name === 'add' || name === 'addpd') && (name === 'addpd' || part)) {
-        const target = name === 'addpd' ? byId(1) : part;
+        const target = name === 'addpd' ? lead(state, 0) : part;
         const qty = name === 'addpd' ? state.pv.qty : 1;
         if (!target || target.stock === 0) return;
         const current = state.cart.find((line) => line.id === target.id);
@@ -736,7 +748,7 @@ function act(host: HTMLElement, action: string, event?: Event): void {
         say(host, `${target.name} agregado al carrito`);
         return;
     } else if (name === 'buy') {
-        const target = byId(1)!;
+        const target = lead(state, 0);
         const current = state.cart.find((line) => line.id === target.id);
         state.cart = current ? state.cart.map((line) => line.id === target.id ? { ...line, qty: Math.min(target.stock, line.qty + state.pv.qty) } : line) : [...state.cart, { id: target.id, qty: state.pv.qty }];
         say(host, 'Listo para pagar. Revisa el checkout.');
@@ -744,7 +756,7 @@ function act(host: HTMLElement, action: string, event?: Event): void {
     } else if (name === 'drawer') state.drawer = !state.drawer;
     else if (name === 'line') {
         const delta = Number(b);
-        const item = byId(id);
+        const item = byId(id, state);
         state.cart = state.cart.map((line) => line.id === id ? { ...line, qty: Math.max(1, Math.min(item?.stock ?? 99, line.qty + delta)) } : line);
     } else if (name === 'rm' && part) {
         state.cart = state.cart.filter((line) => line.id !== id);
@@ -790,13 +802,13 @@ function act(host: HTMLElement, action: string, event?: Event): void {
         if (!state.quote.length) { say(host, 'Agrega al menos un producto'); return; }
         state.quoteSent = true;
     } else if (name === 'qnew') { state.quote = []; state.quoteNote = ''; state.quoteSent = false; }
-    else if (name === 'bulksample') state.bulkText = PARTS.slice(0, 4).map((item, index) => `${item.code}, ${index + 2}`).join('\n');
-    else if (name === 'bulkparse') state.bulkRows = parseBulk(state.bulkText);
+    else if (name === 'bulksample') state.bulkText = state.parts.slice(0, 4).map((item, index) => `${item.code}, ${index + 2}`).join('\n');
+    else if (name === 'bulkparse') state.bulkRows = parseBulk(state.bulkText, state);
     else if (name === 'bulkok') {
         const ok = (state.bulkRows ?? []).filter((row) => row.ok);
         if (!ok.length) return;
         ok.forEach((row) => {
-            const item = PARTS.find((part) => part.code === row.code);
+            const item = state.parts.find((part) => part.code === row.code);
             if (!item) return;
             const current = state.cart.find((line) => line.id === item.id);
             state.cart = current ? state.cart.map((line) => line.id === item.id ? { ...line, qty: line.qty + row.qty } : line) : [...state.cart, { id: item.id, qty: row.qty }];
@@ -818,8 +830,8 @@ function act(host: HTMLElement, action: string, event?: Event): void {
     else if (name === 'listitem' && part && state.lists[0]) state.lists = state.lists.map((list, index) => index === 0 ? { ...list, items: [...list.items, id] } : list);
     else if (name === 'fbt') state.fbtOff = { ...state.fbtOff, [id]: state.fbtOff[id] === false };
     else if (name === 'fbtadd') {
-        const main = byId(1)!;
-        const items = [main, ...PARTS.filter((item) => item.id !== main.id).slice(1, 3)].filter((item) => state.fbtOff[item.id] !== false);
+        const main = lead(state, 0);
+        const items = [main, ...state.parts.filter((item) => item.id !== main.id).slice(1, 3)].filter((item) => state.fbtOff[item.id] !== false);
         say(host, `Combo agregado al carrito · ${items.length} productos`);
         return;
     } else if (name === 'payinv') { state.paid = [...state.paid, a]; say(host, `${a} pagada`); return; }
@@ -860,10 +872,38 @@ function removeChip(state: EcomState, key: string, label: string): void {
     else state.f = { ...state.f, max: 0 };
 }
 
+function applyProducts(state: EcomState, raw: string): void {
+    state.source = raw;
+    if (!raw) return;
+    try {
+        const parsed = JSON.parse(raw) as { id?: number; code?: string; name?: string; brand?: string; price?: number; stock?: number; category?: string; fit?: string }[];
+        if (!Array.isArray(parsed)) return;
+        state.parts = parsed.filter((item) => item.code && item.name).map((item, index) => ({
+            id: Number(item.id) || index + 1,
+            code: String(item.code),
+            name: String(item.name),
+            brand: item.brand || '',
+            app: item.fit || '',
+            cat: item.category || '',
+            stock: Number(item.stock) || 0,
+            price: Number(item.price) || 0,
+        }));
+        state.cart = [];
+        state.wish = [];
+        state.cmp = [];
+        state.quote = [];
+        state.recent = [];
+        state.lists = [];
+    } catch {
+        /* Sin catálogo válido queda la tienda de demostración. */
+    }
+}
+
 function finderGo(host: HTMLElement, state: EcomState): void {
+    if (!state.parts.length) { say(host, 'No hay productos'); return; }
     if (state.pf.tab === 'plate') {
         if (!/^[A-Z]{4}-?\d{2}$/.test(state.pf.plate)) { say(host, 'Patente con formato ABCD-12'); return; }
-        const part = PARTS[state.pf.plate.charCodeAt(0) % PARTS.length];
+        const part = state.parts[state.pf.plate.charCodeAt(0) % state.parts.length];
         const [brand, ...rest] = part.app.split(' ');
         state.pf = { ...state.pf, brand, model: rest.join(' '), year: '2021', sys: '', done: true };
         paint(host);
@@ -872,12 +912,12 @@ function finderGo(host: HTMLElement, state: EcomState): void {
     if (state.pf.year) state.pf = { ...state.pf, done: true };
 }
 
-function parseBulk(text: string): BulkRow[] {
+function parseBulk(text: string, state: EcomState): BulkRow[] {
     return text.split(/\n/).map((line) => line.trim()).filter(Boolean).map((line) => {
         const cells = line.split(/[,;\t]|\s{2,}/).map((cell) => cell.trim()).filter(Boolean);
         const code = (cells[0] || '').toUpperCase();
         const qty = Number(cells[1]) || 1;
-        const part = PARTS.find((item) => item.code === code);
+        const part = state.parts.find((item) => item.code === code);
         return { code, qty, ok: !!part, name: part ? part.name : 'No encontrado' };
     });
 }
@@ -938,16 +978,20 @@ function armFlash(host: HTMLElement): void {
 export function bindEcom(root: ParentNode = document): void {
     root.querySelectorAll<HTMLElement>('td-ecom').forEach((host) => {
         const kind = host.dataset.kind || 'ecard';
+        const source = host.dataset.products || '';
         const current = states.get(host);
         if (current) {
-            if (current.kind !== kind || host.childElementCount === 0) {
-                states.set(host, fresh(kind));
+            if (current.kind !== kind || host.childElementCount === 0 || current.source !== source) {
+                const next = fresh(kind);
+                applyProducts(next, source);
+                states.set(host, next);
                 paint(host);
                 armFlash(host);
             }
             return;
         }
         const state = fresh(kind);
+        applyProducts(state, source);
         states.set(host, state);
         host.addEventListener('click', (event) => {
             const target = event.target instanceof Element ? event.target.closest('[data-ec]') : null;

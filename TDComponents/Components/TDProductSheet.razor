@@ -1,0 +1,63 @@
+@namespace TDComponents.Components
+
+<article class="td-mxsheet">
+    <header class="td-mxsheet__head">
+        <div>
+            <div class="td-mxkicker">@Kicker</div>
+            <h2 class="td-mxtitle">@Name</h2>
+            <p>@Meta</p>
+        </div>
+        @if (!string.IsNullOrWhiteSpace(EditLabel))
+        {
+            <button type="button" class="td-mxbtn td-mxbtn--ghost" data-td-mx-say="@EditLabel"><TDMiscIcon Name="edit" Size="15" />@EditLabel</button>
+        }
+    </header>
+    <div class="td-mxphotos">
+        @for (var i = 0; i < Photos.Count; i++)
+        {
+            <figure>
+                @if (i == 0) { <span>Principal</span> }
+                <img src="@Photos[i]" alt="@Name" />
+            </figure>
+        }
+    </div>
+    <div class="td-mxsheet__nums">
+        <div><span>Precio venta</span><strong>@Price</strong><small>Costo @Cost</small></div>
+        <div><span>Stock actual</span><strong class="@(Stock <= 0 ? "is-out" : null)">@Stock</strong><em class="td-mxpill @(Stock <= 0 ? "td-mxpill--danger" : "td-mxpill--ok")">@(Stock <= 0 ? "Agotado" : "En existencia")</em></div>
+    </div>
+    @ChildContent
+</article>
+
+@code {
+    /// <summary>Módulo y contexto.</summary>
+    [Parameter] public string Kicker { get; set; } = "Inventario · Producto";
+
+    /// <summary>Nombre del producto.</summary>
+    [Parameter] public string Name { get; set; } = "Mouse alámbrico";
+
+    /// <summary>SKU, categoría y unidad en una línea.</summary>
+    [Parameter] public string Meta { get; set; } = "sin SKU · sin categoría · Se compra por docena (12 u.)";
+
+    /// <summary>Precio ya formateado.</summary>
+    [Parameter] public string Price { get; set; } = "Q 60.00";
+
+    /// <summary>Costo ya formateado.</summary>
+    [Parameter] public string Cost { get; set; } = "Q 52.00";
+
+    /// <summary>Existencia.</summary>
+    [Parameter] public int Stock { get; set; }
+
+    /// <summary>Texto del botón de edición. Vacío lo oculta.</summary>
+    [Parameter] public string? EditLabel { get; set; } = "Editar";
+
+    /// <summary>Fotos. La primera es la principal.</summary>
+    [Parameter] public IReadOnlyList<string> Photos { get; set; } =
+    [
+        "_content/TDComponents/img/misc/foto-1.png",
+        "_content/TDComponents/img/misc/foto-2.png",
+        "_content/TDComponents/img/misc/foto-3.png"
+    ];
+
+    /// <summary>Ajuste de stock y enlaces debajo de la ficha.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

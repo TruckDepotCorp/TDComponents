@@ -1,0 +1,85 @@
+@namespace TDComponents.Components
+
+<div class="td-mxov" data-td-mx-ov></div>
+<nav class="td-mxnav" data-td-mx-nav aria-label="Menú principal">
+    <div class="td-mxnav__brand">
+        <span class="td-mxbar__mark">@Mark</span>
+        <span class="td-mxbar__name">@Brand</span>
+        <button type="button" class="td-mxbar__icon" data-td-mx-close aria-label="Cerrar menú"><TDMiscIcon Name="close" /></button>
+    </div>
+    <div class="td-mxnav__user">
+        <span class="td-mxnav__avatar">@Initial</span>
+        <span><strong>@User</strong><small>@Site</small></span>
+    </div>
+    <div class="td-mxnav__list">
+        @foreach (var item in Used)
+        {
+            if (!string.IsNullOrWhiteSpace(item.Group))
+            {
+                <div class="td-mxnav__group">@item.Group</div>
+            }
+            <button type="button" class="td-mxnav__item @(item.Label == Active ? "is-on" : null)" data-td-mx-pick="@item.Label">
+                <TDMiscIcon Name="@IconFor(item.Label)" />
+                <span>@item.Label</span>
+                @if (item.Badge is > 0)
+                {
+                    <b>@item.Badge</b>
+                }
+            </button>
+        }
+    </div>
+    <div class="td-mxnav__foot"><i></i>@Sync</div>
+</nav>
+
+@code {
+    /// <summary>Nombre del negocio en el menú.</summary>
+    [Parameter] public string Brand { get; set; } = "Emprendela";
+
+    /// <summary>Inicial del sello.</summary>
+    [Parameter] public string Mark { get; set; } = "E";
+
+    /// <summary>Persona de la sesión.</summary>
+    [Parameter] public string User { get; set; } = "José";
+
+    /// <summary>Sucursal.</summary>
+    [Parameter] public string Site { get; set; } = "Maxi Technogia";
+
+    /// <summary>Opción marcada.</summary>
+    [Parameter] public string Active { get; set; } = "Inicio";
+
+    /// <summary>Pie del menú.</summary>
+    [Parameter] public string Sync { get; set; } = "Sincronizado · v2.4";
+
+    /// <summary>Opciones. Si se omite, queda el menú de demostración.</summary>
+    [Parameter] public IReadOnlyList<TDShopLink>? Items { get; set; }
+
+    private IReadOnlyList<TDShopLink> Used => Items ?? Demo;
+
+    private string Initial => string.IsNullOrWhiteSpace(User) ? "•" : User.Trim()[0].ToString().ToUpperInvariant();
+
+    private static string IconFor(string label) => label switch
+    {
+        "Inicio" => "home",
+        "Ventas" => "receipt",
+        "Compras" => "bag",
+        "Caja" => "cash",
+        "Inventario" => "box",
+        "Clientes" or "Cuentas por cobrar" => "users",
+        "Gastos" or "Reportes" => "trend",
+        _ => "edit"
+    };
+
+    private static readonly TDShopLink[] Demo =
+    [
+        new("Inicio"),
+        new("Ventas", "Operación"),
+        new("Compras"),
+        new("Caja"),
+        new("Inventario", "Catálogo", 1),
+        new("Clientes"),
+        new("Cuentas por cobrar"),
+        new("Gastos", "Finanzas"),
+        new("Reportes"),
+        new("Configuración", "Sistema")
+    ];
+}

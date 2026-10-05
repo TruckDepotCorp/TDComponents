@@ -62,13 +62,13 @@ public static partial class TDArchitecture
         /// <remarks>No recibe archivos. Cada pieza es un <c>TDGalleryItem</c>.</remarks>
         public const string Galeria = "TDGallery";
 
-        /// <summary>Una imagen, ampliar, descargar, texto alternativo.</summary>
-        /// <remarks>No existe <c>Src</c>. Pinta <c>Alt</c> sobre <c>Background</c>.</remarks>
-        public const string Imagen = "TDImage";
+        /// <summary>Una imagen de la aplicación, ampliar, descargar, texto alternativo.</summary>
+        /// <remarks><c>Src</c> es la dirección real. Sin ella queda la vista de catálogo, solo con <c>Alt</c>.</remarks>
+        public const string Imagen = """<TDImage Src="@foto.Url" Alt="@foto.Nombre" />""";
 
-        /// <summary>Agenda, calendario, scheduler.</summary>
-        /// <remarks>No recibe citas ni vistas. No tiene parámetros.</remarks>
-        public const string Agenda = "TDScheduler";
+        /// <summary>Agenda, calendario, scheduler, citas del taller.</summary>
+        /// <remarks>Sin <c>Appointments</c> queda la semana del catálogo. Una lista vacía es una agenda real sin trabajos. <c>Name</c> devuelve las citas en el post.</remarks>
+        public const string Agenda = """<TDScheduler Date="@hoy" View="week" Resources="bahias" Appointments="citas" Name="agenda" />""";
     }
 
     /// <summary>Estados, avisos, avance y espera.</summary>

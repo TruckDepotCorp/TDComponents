@@ -1,0 +1,24 @@
+@namespace WebAppSSR.Components
+
+<TDShopFrame>
+    <TDShopBar Action="Agregar" />
+    <main class="td-mxmain">
+        <TDShopHead Kicker="Catálogo" Title="Clientes">
+            <Actions>
+                <button type="button" class="td-mxbtn td-mxbtn--ghost" data-td-mx-say="Historial de cobros"><TDMiscIcon Name="clock" Size="16" />Historial de cobros</button>
+                <button type="button" class="td-mxbtn" data-td-mx-say="Agregar cliente"><TDMiscIcon Name="plus" Size="16" />Agregar cliente</button>
+            </Actions>
+        </TDShopHead>
+        <TDShopKpis />
+        <div class="td-mxcard">
+            <TDShopFilter>
+                <TDClientRow />
+                <TDClientRow Name="Taller El Progreso" Phone="7765 1200" Debt="Q 0.00" DebtDetail="Sin saldo" HasDebt="false" Percent="0" Usage="0% de Q 2,000.00" Selected="false" ChargeLabel="" Tags="credito" />
+                <TDClientRow Name="Carlos Méndez" Phone="5512 3344" Debt="Q 0.00" DebtDetail="Sin saldo" HasDebt="false" Percent="0" Usage="Sin límite · sin deuda" Selected="false" ChargeLabel="" Tags="credito" />
+                <TDClientRow Name="Ana López" Phone="4421 9087" Credit="false" Debt="—" DebtDetail="Sin saldo" HasDebt="false" Percent="0" Usage="Sin crédito" Selected="false" ChargeLabel="" Tags="" />
+                <TDClientRow Name="Doña Marta (Chapas)" Phone="3010 2299" Credit="false" Debt="—" DebtDetail="Sin saldo" HasDebt="false" Percent="0" Usage="Sin crédito" Selected="false" ChargeLabel="" Tags="" />
+            </TDShopFilter>
+        </div>
+    </main>
+    <TDShopMenu Active="Clientes" />
+</TDShopFrame>

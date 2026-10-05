@@ -1,0 +1,45 @@
+@namespace TDComponents.Components
+
+<section class="td-msheet" data-td-sheet hidden="@(!Open)" role="dialog" aria-labelledby="@_titleId" aria-describedby="@_detailId">
+    <h2 id="@_titleId">@Title</h2>
+    <p id="@_detailId">@Detail</p>
+    <div class="td-msheet__actions">
+        <button type="button" data-td-sheet-close>@CancelLabel</button>
+        <button type="submit" name="@ResolvedName" value="confirmar">@ConfirmLabel</button>
+    </div>
+    @if (!string.IsNullOrWhiteSpace(HelpHref) && !string.IsNullOrWhiteSpace(HelpLabel))
+    {
+        <a href="@HelpHref">@HelpLabel</a>
+    }
+</section>
+
+@code {
+    private readonly string _titleId = $"td-msheet-title-{Guid.NewGuid():N}";
+    private readonly string _detailId = $"td-msheet-detail-{Guid.NewGuid():N}";
+
+    /// <summary>Qué se va a hacer. Es el título del diálogo.</summary>
+    [Parameter] public string Title { get; set; } = "Confirmar";
+
+    /// <summary>Qué pasa si se confirma y qué queda igual si se cancela.</summary>
+    [Parameter] public string Detail { get; set; } = "";
+
+    /// <summary>Botón que envía el formulario. Dice la consecuencia.</summary>
+    [Parameter] public string ConfirmLabel { get; set; } = "Confirmar";
+
+    /// <summary>Botón que cierra la hoja sin enviar.</summary>
+    [Parameter] public string CancelLabel { get; set; } = "Cancelar";
+
+    /// <summary>Destino de ayuda humana, por ejemplo el supervisor.</summary>
+    [Parameter] public string? HelpHref { get; set; }
+
+    /// <summary>Texto del enlace de ayuda. Dice a quién se pide.</summary>
+    [Parameter] public string? HelpLabel { get; set; }
+
+    /// <summary>La hoja empieza visible. Cancelar la oculta en el teléfono.</summary>
+    [Parameter] public bool Open { get; set; }
+
+    /// <summary>Nombre del campo que viaja al confirmar. El valor enviado es confirmar.</summary>
+    [Parameter] public string? Name { get; set; }
+
+    private string ResolvedName => string.IsNullOrWhiteSpace(Name) ? "decision" : Name;
+}

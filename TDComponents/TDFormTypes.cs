@@ -288,6 +288,99 @@ public sealed record TDDdRow(string Value, string Text, IReadOnlyList<string> Ce
 /// <param name="Url">Dirección que puede ir en el código QR.</param>
 public sealed record TDLabelRecord(string Code, string Name, string Brand, string Price, string Stock, string Url);
 
+/// <summary>Bahía, persona o equipo de <c>TDScheduler</c>.</summary>
+/// <param name="Id">Identificador estable. Las citas lo usan en <c>ResourceId</c>.</param>
+/// <param name="Name">Nombre visible, por ejemplo la bahía.</param>
+/// <param name="Person">Persona a cargo. Opcional.</param>
+/// <param name="Color">Color CSS de la cita. Si se omite, el calendario asigna uno.</param>
+public sealed record TDScheduleResource(string Id, string Name, string? Person = null, string? Color = null);
+
+/// <summary>Trabajo que muestra <c>TDScheduler</c>.</summary>
+/// <param name="Id">Identificador estable. El componente lo conserva al guardar.</param>
+/// <param name="Title">Texto visible.</param>
+/// <param name="Date">Día, con formato <c>yyyy-MM-dd</c>.</param>
+/// <param name="Start">Hora de inicio, <c>HH:mm</c>. El calendario visible va de 07:00 a 20:00.</param>
+/// <param name="End">Hora de término, <c>HH:mm</c>. Tiene que ser posterior al inicio.</param>
+/// <param name="ResourceId"><c>Id</c> de un <see cref="TDScheduleResource"/>.</param>
+/// <param name="Note">Nota opcional.</param>
+public sealed record TDAppointment(string Id, string Title, string Date, string Start, string End, string ResourceId, string? Note = null);
+
+/// <summary>Serie de <c>TDChart</c>. Los valores siguen el orden de las categorías.</summary>
+/// <param name="Name">Nombre de la serie, visible en la leyenda.</param>
+/// <param name="Values">Un número por categoría. Si hay menos números que categorías, el resto queda en cero.</param>
+public sealed record TDChartSeries(string Name, IReadOnlyList<decimal> Values);
+
+/// <summary>Producto que muestra <c>TDEcom</c>.</summary>
+/// <param name="Id">Identificador numérico estable. El carrito y la comparación lo usan.</param>
+/// <param name="Code">Código visible.</param>
+/// <param name="Name">Nombre del producto.</param>
+/// <param name="Brand">Marca.</param>
+/// <param name="Price">Precio en pesos, sin formato.</param>
+/// <param name="Stock">Unidades. Cero se muestra como agotado.</param>
+/// <param name="Category">Categoría, por ejemplo Frenos. Opcional.</param>
+/// <param name="Fit">Aplicación o vehículo, por ejemplo Volvo FH 460. Opcional.</param>
+public sealed record TDProduct(int Id, string Code, string Name, string Brand, decimal Price, int Stock = 0, string? Category = null, string? Fit = null);
+
+/// <summary>Tono de un estado en un componente móvil. El texto del estado va aparte: el tono no es el único aviso.</summary>
+public enum TDMobileTone
+{
+    /// <summary>Información neutra.</summary>
+    Neutral,
+
+    /// <summary>El paso puede continuar.</summary>
+    Success,
+
+    /// <summary>Hay algo que revisar antes de seguir.</summary>
+    Warning,
+
+    /// <summary>El paso está bloqueado.</summary>
+    Danger
+}
+
+/// <summary>Destino de <c>TDBottomNav</c>.</summary>
+/// <param name="Id">Identificador estable. <c>Active</c> lo compara con este valor.</param>
+/// <param name="Label">Texto visible. Es el nombre de la sección, no un ícono suelto.</param>
+/// <param name="Href">Dirección de la sección.</param>
+/// <param name="Count">Pendientes. Cero no muestra contador.</param>
+public sealed record TDMobileDest(string Id, string Label, string Href, int Count = 0);
+
+/// <summary>Tarjeta de <c>TDCardCarousel</c>.</summary>
+/// <param name="Title">Título de la tarjeta.</param>
+/// <param name="Text">Texto de apoyo.</param>
+/// <param name="Status">Estado escrito. El color no lo reemplaza.</param>
+/// <param name="Tone">Énfasis del estado.</param>
+/// <param name="ActionLabel">Texto de la acción. Dice la consecuencia.</param>
+/// <param name="ActionHref">Destino de la acción. Sin él, la tarjeta no navega.</param>
+public sealed record TDCarouselCard(string Title, string Text, string Status = "", TDMobileTone Tone = TDMobileTone.Neutral, string? ActionLabel = null, string? ActionHref = null);
+
+/// <summary>Tarea de bodega que muestra <c>TDJobList</c>.</summary>
+/// <param name="Id">Identificador estable.</param>
+/// <param name="Title">Qué hay que hacer, en una frase.</param>
+/// <param name="Place">Dónde, con pasillo y ubicación.</param>
+/// <param name="Kind">Tipo de trabajo: recibir, recoger, guardar o contar.</param>
+/// <param name="Status">Estado en palabras: Lista, En curso, Bloqueada o Pendiente.</param>
+/// <param name="When">Cuándo, en lenguaje claro.</param>
+/// <param name="Tone">Énfasis visual. El estado también va escrito en <paramref name="Status"/>.</param>
+/// <param name="Href">Destino al abrir la tarea. Si se omite, la fila no es un enlace.</param>
+public sealed record TDWarehouseJob(string Id, string Title, string Place, string Kind, string Status, string When, TDMobileTone Tone = TDMobileTone.Neutral, string? Href = null);
+
+/// <summary>Puerta de andén que muestra <c>TDDockBoard</c>.</summary>
+/// <param name="Id">Identificador estable.</param>
+/// <param name="Door">Nombre de la puerta, por ejemplo Muelle 2.</param>
+/// <param name="Carrier">Transportista o vehículo.</param>
+/// <param name="Status">Estado en palabras: Libre, Descargando, Cargando o Bloqueada.</param>
+/// <param name="When">Cuándo, en lenguaje claro.</param>
+/// <param name="Tone">Énfasis. El estado también va escrito en <paramref name="Status"/>.</param>
+/// <param name="Href">Destino al abrir la puerta. Si se omite, la fila no es un enlace.</param>
+public sealed record TDDockDoor(string Id, string Door, string Carrier, string Status, string When, TDMobileTone Tone = TDMobileTone.Neutral, string? Href = null);
+
+/// <summary>Criterio de una revisión de producto en <c>TDInspectList</c>.</summary>
+/// <param name="Id">Identificador estable. Forma el campo del post.</param>
+/// <param name="Label">Qué se revisa, en palabras.</param>
+/// <param name="Result">Cumple, No cumple o Pendiente. El color no reemplaza este texto.</param>
+/// <param name="Note">Detalle de lo observado. Puede omitirse.</param>
+public sealed record TDInspectCheck(string Id, string Label, string Result, string? Note = null);
+
 /// <summary>Impresora que muestra <c>TDPrinterConnect</c>.</summary>
 /// <param name="Id">Identificador estable.</param>
 /// <param name="Name">Nombre visible.</param>

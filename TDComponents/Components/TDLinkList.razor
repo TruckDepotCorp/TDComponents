@@ -1,0 +1,19 @@
+@namespace TDComponents.Components
+
+<ul class="td-mxlinks">
+    @foreach (var item in Used)
+    {
+        <li><button type="button" data-td-mx-say="@item"><TDMiscIcon Name="@IconFor(item)" Size="18" />@item</button></li>
+    }
+</ul>
+
+@code {
+    /// <summary>Enlaces de la ficha. Si se omite, quedan historial, precio y sucursal.</summary>
+    [Parameter] public IReadOnlyList<string>? Items { get; set; }
+
+    private IReadOnlyList<string> Used => Items ?? Demo;
+
+    private static string IconFor(string label) => label.Contains("precio", StringComparison.OrdinalIgnoreCase) ? "trend" : label.Contains("sucursal", StringComparison.OrdinalIgnoreCase) ? "pin" : "clock";
+
+    private static readonly string[] Demo = ["Ver historial de movimientos", "Ver historial de precio", "Ver stock por sucursal"];
+}

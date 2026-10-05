@@ -1,0 +1,40 @@
+@namespace TDComponents.Components
+
+<article class="td-mpick" data-td-pick-line data-total="@Quantity" data-unit="@Unit">
+    <p class="td-mpick__sku">@Sku</p>
+    <h2>@Name</h2>
+    <p class="td-mpick__from">Retirar desde @From</p>
+    <p class="td-mpick__need">Hay que retirar <b>@Quantity</b> @Unit</p>
+    <p class="td-mpick__now"><span data-td-pick-read>@Picked</span> de @Quantity @Unit recogidas</p>
+    <input type="hidden" name="@ResolvedField" value="@Picked" data-td-pick-value />
+    <div class="td-mpick__step">
+        <button type="button" data-td-pick="-1" aria-label="Devolver una unidad" disabled="@(Picked <= 0)">Devolver una</button>
+        <button type="button" data-td-pick="1" aria-label="Recoger una unidad" disabled="@(Picked >= Quantity)">Recoger una</button>
+    </div>
+    <p data-td-pick-status>@(Picked >= Quantity ? "Línea completa. Puedes confirmar el retiro." : $"Faltan {Quantity - Picked} {Unit}.")</p>
+</article>
+
+@code {
+    /// <summary>Código del artículo.</summary>
+    [Parameter] public string Sku { get; set; } = "";
+
+    /// <summary>Nombre del artículo.</summary>
+    [Parameter] public string Name { get; set; } = "";
+
+    /// <summary>Ubicación de donde se retira.</summary>
+    [Parameter] public string From { get; set; } = "";
+
+    /// <summary>Unidades pedidas en la línea.</summary>
+    [Parameter] public int Quantity { get; set; }
+
+    /// <summary>Unidades ya recogidas.</summary>
+    [Parameter] public int Picked { get; set; }
+
+    /// <summary>Unidad, por ejemplo unidades.</summary>
+    [Parameter] public string Unit { get; set; } = "unidades";
+
+    /// <summary>Nombre del campo que publica las unidades recogidas. Si se omite, el post usa recogidas.</summary>
+    [Parameter] public string? Field { get; set; }
+
+    private string ResolvedField => string.IsNullOrWhiteSpace(Field) ? "recogidas" : Field;
+}

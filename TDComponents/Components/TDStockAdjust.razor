@@ -1,0 +1,23 @@
+@namespace TDComponents.Components
+
+<section class="td-mxadjust" data-td-mx-stock data-stock="@Stock">
+    <h3>Ajustar stock</h3>
+    <p>El stock no se edita directamente. Cada cambio queda registrado como un movimiento con su motivo.</p>
+    <div class="td-mxseg" role="group" aria-label="Tipo de movimiento">
+        <button type="button" class="is-on" data-td-mx-dir="in">Entrada</button>
+        <button type="button" data-td-mx-dir="out">Salida</button>
+    </div>
+    <div class="td-mxgrid2">
+        <label class="td-mxfield"><span>Cantidad</span><input data-td-mx-qty inputmode="numeric" placeholder="0" /></label>
+        <label class="td-mxfield"><span>Motivo</span><input data-td-mx-reason placeholder="Conteo físico, producto dañado…" /></label>
+    </div>
+    <p class="td-mxwarn" data-td-mx-stockerr hidden></p>
+    <button type="button" class="td-mxbtn td-mxbtn--ok" data-td-mx-apply>Registrar ajuste</button>
+    <p class="td-mxremain">Stock después del ajuste <strong data-td-mx-after>@Stock</strong></p>
+    <ul class="td-mxmoves" data-td-mx-log></ul>
+</section>
+
+@code {
+    /// <summary>Existencia actual antes del ajuste.</summary>
+    [Parameter] public int Stock { get; set; }
+}

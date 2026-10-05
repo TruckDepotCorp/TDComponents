@@ -1,0 +1,48 @@
+@namespace TDComponents.Components
+
+<section class="td-mjobs" aria-label="Tareas de la bodega">
+    @if (Jobs is null || Jobs.Count == 0)
+    {
+        <p class="td-mjobs__empty">No hay tareas asignadas en esta bodega.</p>
+    }
+    else
+    {
+        <ol>
+            @foreach (var job in Jobs)
+            {
+                <li>
+                    @if (string.IsNullOrWhiteSpace(job.Href))
+                    {
+                        <div class="td-mjobs__open">
+                            <p class="td-mjobs__kind">@job.Kind</p>
+                            <h2>@job.Title</h2>
+                            <p class="td-mjobs__place">@job.Place</p>
+                            <p class="td-mjobs__meta">
+                                <span class="@TDMobileToneCss.Class(job.Tone)">@job.Status</span>
+                                <span>@job.When</span>
+                            </p>
+                        </div>
+                    }
+                    else
+                    {
+                        <a class="td-mjobs__open" href="@job.Href">
+                            <p class="td-mjobs__kind">@job.Kind</p>
+                            <h2>@job.Title</h2>
+                            <p class="td-mjobs__place">@job.Place</p>
+                            <p class="td-mjobs__meta">
+                                <span class="@TDMobileToneCss.Class(job.Tone)">@job.Status</span>
+                                <span>@job.When</span>
+                            </p>
+                            <p class="td-mjobs__go">Abrir @job.Kind.ToLowerInvariant()</p>
+                        </a>
+                    }
+                </li>
+            }
+        </ol>
+    }
+</section>
+
+@code {
+    /// <summary>Tareas del turno. Una lista vacía o nula deja el aviso de que no hay trabajo.</summary>
+    [Parameter] public IReadOnlyList<TDWarehouseJob>? Jobs { get; set; }
+}

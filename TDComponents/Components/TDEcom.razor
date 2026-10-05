@@ -1,8 +1,36 @@
 @namespace TDComponents.Components
+@using System.Text.Json
 
-<td-ecom class="td-ecom" data-kind="@Kind" data-td-ecom></td-ecom>
+<td-ecom class="td-ecom" data-kind="@Kind" data-td-ecom data-products="@ProductsJson"></td-ecom>
 
 @code {
     /// <summary>Variante de Ecommerce. ecard es el defecto y también el valor de cualquier texto desconocido.</summary>
     [Parameter] public string Kind { get; set; } = "ecard";
+
+    /// <summary>Productos del sistema. Si se omite, la variante muestra el catálogo de demostración. Una lista vacía deja la variante sin productos.</summary>
+    [Parameter] public IReadOnlyList<TDProduct>? Products { get; set; }
+
+    private string? ProductsJson
+    {
+        get
+        {
+            if (Products is null)
+            {
+                return null;
+            }
+
+            var payload = Products.Select(product => new
+            {
+                id = product.Id,
+                code = product.Code,
+                name = product.Name,
+                brand = product.Brand,
+                price = product.Price,
+                stock = product.Stock,
+                category = product.Category,
+                fit = product.Fit
+            });
+            return JsonSerializer.Serialize(payload).Replace("<", "\\u003c", StringComparison.Ordinal);
+        }
+    }
 }

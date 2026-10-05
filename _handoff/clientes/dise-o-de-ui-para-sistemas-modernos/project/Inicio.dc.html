@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<meta name="design_doc_mode" content="canvas">
+<link rel="stylesheet" href="_ds/truck-depot-design-system-de84d30e-4ffa-49a5-8cd0-7d755af25dd5/colors_and_type.css">
+<link rel="stylesheet" href="_ds/truck-depot-design-system-de84d30e-4ffa-49a5-8cd0-7d755af25dd5/styles.css">
+<script src="_ds/truck-depot-design-system-de84d30e-4ffa-49a5-8cd0-7d755af25dd5/_ds_bundle.js"></script>
+<style>body{margin:0;background:#e9eaec;font-family:var(--font-ui);color:var(--fg)}a{color:var(--td-red)}a:hover{color:var(--red-700)}*{box-sizing:border-box}.dv-turn{padding:40px 44px 32px;border-bottom:1px solid rgba(0,0,0,.08)}.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 20px}.dv-tid{font:600 10px var(--font-mono);padding:3px 7px;background:#0A0B0C;color:#fff;border-radius:4px;text-decoration:none}.dv-tname{font:600 13px/1.2 var(--font-ui);color:#0A0B0C}.dv-opts{display:flex;flex-wrap:wrap;gap:36px;align-items:flex-start}.dv-opt{flex:none;display:flex;flex-direction:column;gap:9px}.dv-oid{font:600 10.5px var(--font-mono);padding:3px 7px;background:rgba(0,0,0,.08);color:#0A0B0C;border-radius:5px;text-decoration:none}.dv-olabel{display:flex;align-items:baseline;gap:8px;font:400 12px/1.3 var(--font-ui);color:#4B5158}.dv-next{margin:22px 0 0;font:13px/1.5 var(--font-ui);color:#4B5158}</style>
+</helmet>
+<section class="dv-turn" id="t1">
+<div class="dv-thd"><a class="dv-tid" href="#t1">1</a><span class="dv-tname">Inicio rediseñado — escritorio, tablet y móvil</span></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;max-width:1440px;margin:0 0 32px">
+<div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:18px 20px;display:flex;flex-direction:column;gap:6px"><div style="font:700 11px var(--font-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--td-red)">01 · Sin duplicados</div><div style="font-size:14px;line-height:1.45;color:var(--fg-2);text-wrap:pretty">Los avisos y las 3 tarjetas repetían la misma información (caja, agotados). Ahora cada dato aparece una vez, con su acción al lado.</div></div>
+<div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:18px 20px;display:flex;flex-direction:column;gap:6px"><div style="font:700 11px var(--font-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--td-red)">02 · La caja primero</div><div style="font-size:14px;line-height:1.45;color:var(--fg-2);text-wrap:pretty">Caja cerrada bloquea las ventas, así que vive junto al resumen del día con "Abrir caja" como acción principal.</div></div>
+<div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:18px 20px;display:flex;flex-direction:column;gap:6px"><div style="font:700 11px var(--font-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--td-red)">03 · Accesos grandes</div><div style="font-size:14px;line-height:1.45;color:var(--fg-2);text-wrap:pretty">Acciones rápidas como mosaico táctil (2×2 en móvil) con iconos de línea en lugar de emoji.</div></div>
+<div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:18px 20px;display:flex;flex-direction:column;gap:6px"><div style="font:700 11px var(--font-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--td-red)">04 · Pantalla útil</div><div style="font-size:14px;line-height:1.45;color:var(--fg-2);text-wrap:pretty">La mitad inferior vacía se aprovecha con "Requiere atención" y últimas ventas del día.</div></div>
+</div>
+<div class="dv-opts">
+<sc-for list="{{ frames }}" as="f" hint-placeholder-count="3">
+<div class="dv-opt" id="{{ f.id }}">
+<div class="dv-olabel"><a class="dv-oid" href="#{{ f.id }}">{{ f.id }}</a>{{ f.label }}</div>
+<div style="width:{{ f.fw }}px;height:{{ f.fh }}px;background:var(--n-50);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--shadow-md);container-type:inline-size;position:relative">
+
+<header style="flex:none;height:60px;display:flex;align-items:center;gap:12px;padding:0 {{ f.padX }};background:var(--td-ink);color:#fff">
+<button aria-label="Menú" onClick="{{ openMenu }}" style="width:40px;height:40px;border:0;background:transparent;color:#fff;display:flex;align-items:center;justify-content:center;border-radius:5px;cursor:pointer;margin-left:-8px" style-hover="background:rgba(255,255,255,.08)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16"></path><path d="M4 12h16"></path><path d="M4 18h16"></path></svg></button>
+<div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0">
+<span style="width:30px;height:30px;border-radius:5px;background:var(--td-red);display:flex;align-items:center;justify-content:center;font:900 italic 18px var(--font-display)">E</span>
+<span style="font:800 italic 22px var(--font-display);text-transform:uppercase;letter-spacing:-.01em">Emprendela</span>
+</div>
+<span style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--n-300)"><span style="width:8px;height:8px;border-radius:999px;background:#4ade80"></span><span style="display:{{ f.syncText }}">Sincronizado</span></span>
+<button style="height:40px;padding:0 16px;display:flex;align-items:center;gap:6px;background:var(--td-red);border:0;border-radius:5px;color:#fff;font:700 13px var(--font-ui);letter-spacing:.08em;text-transform:uppercase;cursor:pointer" style-hover="background:var(--red-600)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>Nuevo</button>
+</header>
+
+<main style="flex:1;overflow:auto;padding:{{ f.pad }};display:flex;flex-direction:column;gap:20px">
+<div style="display:flex;flex-direction:column;gap:4px">
+<div style="font:700 11px var(--font-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--fg-3)">Lunes, 5 de octubre · Maxi Technogia</div>
+<div style="font-family:var(--font-display);font-weight:800;font-style:italic;text-transform:uppercase;font-size:clamp(30px,4.2cqi,48px);line-height:.95;letter-spacing:-.01em">Buenas tardes, José</div>
+</div>
+
+<div style="display:flex;flex-wrap:wrap;gap:16px">
+<div style="flex:2 1 420px;min-width:0;background:var(--td-ink);color:#fff;border-radius:8px;padding:24px;position:relative;overflow:hidden;display:flex;flex-direction:column;gap:20px">
+<div style="position:absolute;right:28px;top:28px;display:flex;pointer-events:none">
+<span style="width:34px;height:52px;background:var(--td-red);opacity:.25;clip-path:polygon(0 0,45% 0,100% 50%,45% 100%,0 100%,55% 50%)"></span>
+<span style="width:34px;height:52px;margin-left:-12px;background:var(--td-red);opacity:.55;clip-path:polygon(0 0,45% 0,100% 50%,45% 100%,0 100%,55% 50%)"></span>
+<span style="width:34px;height:52px;margin-left:-12px;background:var(--td-red);clip-path:polygon(0 0,45% 0,100% 50%,45% 100%,0 100%,55% 50%)"></span>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px">
+<span style="font:700 11px var(--font-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--n-300)">Ganancia estimada de hoy</span>
+<span style="font-family:var(--font-display);font-weight:900;font-style:italic;font-size:clamp(48px,7cqi,76px);line-height:.9">Q 0.00</span>
+</div>
+<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:rgba(255,255,255,.12);border-radius:5px;overflow:hidden">
+<div style="background:var(--n-900);padding:12px 14px;display:flex;flex-direction:column;gap:2px"><span style="font-size:12px;color:var(--n-300)">Ventas</span><span style="font:800 22px var(--font-display)">Q 0.00</span></div>
+<div style="background:var(--n-900);padding:12px 14px;display:flex;flex-direction:column;gap:2px"><span style="font-size:12px;color:var(--n-300)">Gastos</span><span style="font:800 22px var(--font-display)">Q 0.00</span></div>
+<div style="background:var(--n-900);padding:12px 14px;display:flex;flex-direction:column;gap:2px"><span style="font-size:12px;color:var(--n-300)">Tickets</span><span style="font:800 22px var(--font-display)">0</span></div>
+</div>
+</div>
+
+<div style="flex:1 1 280px;min-width:0;background:#fff;border:1px solid {{ cajaBd }};border-radius:8px;padding:20px;display:flex;flex-direction:column;gap:14px;position:relative;overflow:hidden">
+<div style="position:absolute;left:0;top:0;right:0;height:3px;background:{{ cajaAccent }}"></div>
+<div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+<span style="font:700 11px var(--font-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--fg-3)">Caja</span>
+<span style="display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 10px;border-radius:999px;background:{{ cajaPillBg }};color:{{ cajaPillFg }};font-size:12px;font-weight:700"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>{{ cajaPill }}</span>
+</div>
+<div style="display:flex;flex-direction:column;gap:4px">
+<span style="font-family:var(--font-display);font-weight:800;font-size:32px;line-height:1">{{ cajaTitle }}</span>
+<span style="font-size:14px;line-height:1.4;color:var(--fg-2);text-wrap:pretty">{{ cajaSub }}</span>
+</div>
+<button onClick="{{ toggleCaja }}" style="margin-top:auto;height:48px;border-radius:5px;border:{{ cajaBtnBd }};background:{{ cajaBtnBg }};color:{{ cajaBtnFg }};font:700 14px var(--font-ui);letter-spacing:.08em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">{{ cajaBtn }}</button>
+</div>
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax({{ f.tileMin }},1fr));gap:12px">
+<sc-for list="{{ actions }}" as="a" hint-placeholder-count="4">
+<button onClick="{{ a.onClick }}" style="min-height:76px;display:flex;align-items:center;gap:12px;padding:14px 16px;background:#fff;border:1px solid var(--border);border-radius:8px;text-align:left;cursor:pointer;font-family:var(--font-ui);color:var(--fg);transition:box-shadow 120ms,transform 120ms" style-hover="box-shadow:var(--shadow-md);transform:translateY(-1px);border-color:var(--n-300)">
+<span style="width:44px;height:44px;flex:none;border-radius:5px;background:{{ a.iconBg }};color:{{ a.iconFg }};display:flex;align-items:center;justify-content:center">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{ a.d1 }}"></path><path d="{{ a.d2 }}"></path><path d="{{ a.d3 }}"></path></svg>
+</span>
+<span style="display:flex;flex-direction:column;gap:2px;min-width:0"><span style="font:700 15px var(--font-ui)">{{ a.title }}</span><span style="font-size:12px;color:{{ a.subColor }}">{{ a.sub }}</span></span>
+</button>
+</sc-for>
+</div>
+
+<div style="display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start">
+<div style="flex:1 1 360px;min-width:0;background:#fff;border:1px solid var(--border);border-radius:8px;overflow:hidden">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--divider)"><span style="font:700 11px var(--font-ui);letter-spacing:.14em;text-transform:uppercase">Requiere atención</span><span style="min-width:22px;height:22px;padding:0 7px;border-radius:999px;background:var(--td-red);color:#fff;font:700 12px var(--font-ui);display:flex;align-items:center;justify-content:center">{{ alertCount }}</span></div>
+<sc-for list="{{ alerts }}" as="al" hint-placeholder-count="3">
+<div style="display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--divider);flex-wrap:wrap">
+<span style="width:36px;height:36px;flex:none;border-radius:5px;background:{{ al.bg }};color:{{ al.fg }};display:flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{ al.d1 }}"></path><path d="{{ al.d2 }}"></path></svg></span>
+<span style="flex:1 1 160px;min-width:0;display:flex;flex-direction:column;gap:1px"><span style="font:700 14px var(--font-ui)">{{ al.title }}</span><span style="font-size:13px;color:var(--fg-2)">{{ al.sub }}</span></span>
+<button onClick="{{ al.onClick }}" style="height:36px;padding:0 14px;background:#fff;border:1px solid var(--border-strong);border-radius:5px;font:700 12px var(--font-ui);letter-spacing:.08em;text-transform:uppercase;color:var(--fg);cursor:pointer;white-space:nowrap" style-hover="background:var(--n-50)">{{ al.cta }}</button>
+</div>
+</sc-for>
+<sc-if value="{{ noAlerts }}" hint-placeholder-val="{{ false }}"><div style="padding:18px;font-size:14px;color:var(--fg-2)">Todo en orden.</div></sc-if>
+</div>
+
+<div style="flex:1 1 300px;min-width:0;background:#fff;border:1px solid var(--border);border-radius:8px;overflow:hidden">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--divider)"><span style="font:700 11px var(--font-ui);letter-spacing:.14em;text-transform:uppercase">Ventas de hoy</span><a href="#" style="font:600 13px var(--font-ui);text-decoration:none">Ver todas</a></div>
+<div style="padding:28px 18px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center">
+<span style="width:48px;height:48px;border-radius:8px;background:var(--n-100);color:var(--fg-3);display:flex;align-items:center;justify-content:center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"></path><path d="M16 8h-6"></path><path d="M16 12h-6"></path></svg></span>
+<span style="font:700 15px var(--font-ui)">Aún no hay ventas hoy</span>
+<span style="font-size:13px;line-height:1.4;color:var(--fg-2);max-width:260px;text-wrap:pretty">{{ salesHint }}</span>
+</div>
+</div>
+</div>
+</main>
+
+<div onClick="{{ closeMenu }}" style="position:absolute;inset:0;background:rgba(10,11,12,.45);opacity:{{ ovOpacity }};pointer-events:{{ ovPe }};transition:opacity 180ms cubic-bezier(.2,.7,.2,1);z-index:5"></div>
+<nav aria-label="Menú principal" style="position:absolute;top:12px;left:12px;bottom:12px;width:280px;max-width:calc(100% - 24px);background:#fff;border-radius:8px;box-shadow:var(--shadow-lg);display:flex;flex-direction:column;overflow:hidden;z-index:6;transform:{{ navTf }};transition:transform 180ms cubic-bezier(.2,.7,.2,1)">
+<div style="flex:none;display:flex;align-items:center;gap:8px;padding:14px 12px 14px 16px;background:var(--td-ink);color:#fff">
+<span style="width:30px;height:30px;border-radius:5px;background:var(--td-red);display:flex;align-items:center;justify-content:center;font:900 italic 18px var(--font-display)">E</span>
+<span style="flex:1;font:800 italic 20px var(--font-display);text-transform:uppercase">Emprendela</span>
+<button aria-label="Cerrar menú" onClick="{{ closeMenu }}" style="width:36px;height:36px;border:0;background:transparent;color:#fff;border-radius:5px;display:flex;align-items:center;justify-content:center;cursor:pointer" style-hover="background:rgba(255,255,255,.1)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button>
+</div>
+<div style="flex:none;display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--divider)">
+<span style="width:36px;height:36px;border-radius:999px;background:var(--n-100);display:flex;align-items:center;justify-content:center;font:700 14px var(--font-ui)">J</span>
+<span style="display:flex;flex-direction:column;min-width:0"><span style="font:700 14px var(--font-ui)">José</span><span style="font-size:12px;color:var(--fg-3)">Maxi Technogia</span></span>
+</div>
+<div style="flex:1;overflow:auto;padding:8px;display:flex;flex-direction:column;gap:2px">
+<sc-for list="{{ menu }}" as="m" hint-placeholder-count="8">
+<sc-if value="{{ m.group }}" hint-placeholder-val="{{ false }}"><div style="padding:14px 10px 6px;font:700 10px var(--font-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--fg-3)">{{ m.group }}</div></sc-if>
+<button onClick="{{ m.select }}" style="height:44px;display:flex;align-items:center;gap:12px;padding:0 10px;border:0;border-radius:5px;background:{{ m.bg }};color:{{ m.fg }};font:{{ m.weight }} 14px var(--font-ui);text-align:left;cursor:pointer;position:relative" style-hover="background:var(--n-100)">
+<span style="position:absolute;left:0;top:10px;bottom:10px;width:3px;border-radius:2px;background:{{ m.bar }}"></span>
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none;color:{{ m.ic }}"><path d="{{ m.d1 }}"></path><path d="{{ m.d2 }}"></path></svg>
+<span style="flex:1">{{ m.label }}</span>
+<sc-if value="{{ m.badge }}" hint-placeholder-val="{{ false }}"><span style="min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:var(--td-red);color:#fff;font:700 11px var(--font-ui);display:flex;align-items:center;justify-content:center">{{ m.badge }}</span></sc-if>
+</button>
+</sc-for>
+</div>
+<div style="flex:none;padding:12px 16px;border-top:1px solid var(--divider);display:flex;align-items:center;gap:6px;font-size:12px;color:var(--fg-3)"><span style="width:8px;height:8px;border-radius:999px;background:var(--success)"></span>Sincronizado · v2.4</div>
+</nav>
+
+<sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;left:50%;bottom:24px;z-index:7;transform:translateX(-50%);background:var(--td-ink);color:#fff;padding:10px 16px;border-radius:5px;font:600 13px var(--font-ui);box-shadow:var(--shadow-lg);white-space:nowrap">{{ toast }}</div>
+</sc-if>
+</div>
+</div>
+</sc-for>
+</div>
+<p class="dv-next">Prueba: "Abrir caja" y luego "Nueva venta". Siguiente: "agrega el menú lateral abierto en escritorio" · "gráfico de ventas de la semana" · "versión con caja abierta y ventas reales"</p>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;cajaAbierta&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;},&quot;menuAbierto&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;}}">
+class Component extends DCLogic {
+  state = { open: null, toast: '' };
+  flash(t) { this.setState({ toast: t }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ toast: '' }), 2200); }
+  renderVals() {
+    const open = this.state.open ?? !!this.props.cajaAbierta;
+    const toggleCaja = () => { this.setState({ open: !open }); this.flash(open ? 'Caja cerrada' : 'Caja abierta · fondo inicial Q 0.00'); };
+    const ic = {
+      venta: ['M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z', 'M16 8h-6', 'M16 12h-6'],
+      compra: ['M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z', 'M3 6h18', 'M16 10a4 4 0 0 1-8 0'],
+      caja: ['M2 7h20v13H2z', 'M16 14h.01', 'M2 11h20'],
+      prod: ['M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z', 'M12 22V12', 'm3.3 7 7.98 5.71a2 2 0 0 0 1.4 0L20.7 7']
+    };
+    const mk = (title, sub, k, primary, onClick, subColor) => ({ title, sub, d1: ic[k][0], d2: ic[k][1], d3: ic[k][2], iconBg: primary ? 'var(--td-red)' : 'var(--n-100)', iconFg: primary ? '#fff' : 'var(--fg)', onClick, subColor: subColor || 'var(--fg-3)' });
+    const actions = [
+      mk('Nueva venta', open ? 'Cobrar a un cliente' : 'Requiere caja abierta', 'venta', true, () => open ? this.flash('Abriendo nueva venta…') : this.flash('Abre la caja para poder vender'), open ? null : '#a96500'),
+      mk('Nueva compra', 'Ingresar mercadería', 'compra', false, () => this.flash('Abriendo nueva compra…')),
+      mk('Caja', open ? 'Abierta' : 'Cerrada', 'caja', false, toggleCaja),
+      mk('Producto', 'Agregar al inventario', 'prod', false, () => this.flash('Nuevo producto…'))
+    ];
+    const alerts = [
+      !open && { title: 'Caja cerrada', sub: 'Ábrela para poder vender hoy.', cta: 'Abrir caja', bg: 'var(--warning-bg)', fg: '#a96500', d1: 'M5 11h14v10H5z', d2: 'M7 11V7a5 5 0 0 1 10 0v4', onClick: toggleCaja },
+      { title: '1 producto por agotarse', sub: 'Mouse alámbrico · 0 u.', cta: 'Ver inventario', bg: 'var(--red-50)', fg: 'var(--danger)', d1: 'm21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3', d2: 'M12 9v4', onClick: () => this.flash('Abriendo inventario…') },
+      { title: 'Q 415.50 por cobrar', sub: 'Ventas al crédito pendientes', cta: 'Ver cuentas', bg: 'var(--info-bg)', fg: 'var(--info)', d1: 'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2', d2: 'M9 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8', onClick: () => this.flash('Abriendo cuentas por cobrar…') }
+    ].filter(Boolean);
+    const menuOpen = this.state.menu ?? !!this.props.menuAbierto;
+    const active = this.state.active || 'Inicio';
+    const P = {
+      home: ['m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z', 'M9 22V12h6v10'],
+      venta: ic.venta, compra: ic.compra, caja: ic.caja, prod: ic.prod,
+      users: ['M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2', 'M9 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8'],
+      cobrar: ['M12 2v20', 'M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6'],
+      gasto: ['M22 17 13.5 8.5 8.5 13.5 2 7', 'M16 17h6v-6'],
+      chart: ['M3 3v18h18', 'M7 16V10M12 16V6M17 16v-4'],
+      cog: ['M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z', 'M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6']
+    };
+    const items = [
+      ['Inicio', 'home'], ['Ventas', 'venta', 'Operación'], ['Compras', 'compra'], ['Caja', 'caja'],
+      ['Inventario', 'prod', 'Catálogo', 1], ['Clientes', 'users'], ['Cuentas por cobrar', 'cobrar'],
+      ['Gastos', 'gasto', 'Finanzas'], ['Reportes', 'chart'], ['Configuración', 'cog', 'Sistema']
+    ];
+    const menu = items.map(([label, k, group, badge]) => {
+      const on = label === active;
+      return { label, group: group || null, badge: badge || null, d1: P[k][0], d2: P[k][1],
+        bg: on ? 'var(--red-50)' : 'transparent', fg: on ? 'var(--fg)' : 'var(--fg-2)', ic: on ? 'var(--td-red)' : 'var(--fg-3)',
+        weight: on ? '700' : '500', bar: on ? 'var(--td-red)' : 'transparent',
+        select: () => { this.setState({ active: label, menu: false }); this.flash(`Ir a ${label}`); } };
+    });
+    return {
+      menu, openMenu: () => this.setState({ menu: true }), closeMenu: () => this.setState({ menu: false }),
+      navTf: menuOpen ? 'translateX(0)' : 'translateX(calc(-100% - 24px))',
+      ovOpacity: menuOpen ? 1 : 0, ovPe: menuOpen ? 'auto' : 'none',
+      frames: [
+        { id: '1a', label: 'Escritorio · 1440 px', fw: 1440, fh: 900, pad: '28px 32px', padX: '32px', tileMin: '220px', syncText: 'inline' },
+        { id: '1b', label: 'Tablet · 768 px', fw: 768, fh: 1024, pad: '24px', padX: '24px', tileMin: '300px', syncText: 'inline' },
+        { id: '1c', label: 'Móvil · 390 px', fw: 390, fh: 844, pad: '18px 16px', padX: '16px', tileMin: '150px', syncText: 'none' }
+      ],
+      actions, alerts, alertCount: alerts.length, noAlerts: alerts.length === 0, toggleCaja, toast: this.state.toast,
+      cajaTitle: open ? 'Q 0.00' : 'Cerrada', cajaSub: open ? 'Efectivo en caja · abierta 14:05' : 'No puedes registrar ventas hasta abrirla.',
+      cajaPill: open ? 'Abierta' : 'Cerrada', cajaPillBg: open ? 'var(--success-bg)' : 'var(--warning-bg)', cajaPillFg: open ? 'var(--success)' : '#a96500',
+      cajaAccent: open ? 'var(--success)' : 'var(--warning)', cajaBd: open ? 'var(--border)' : 'var(--warning)',
+      cajaBtn: open ? 'Cerrar caja' : 'Abrir caja', cajaBtnBg: open ? '#fff' : 'var(--td-red)', cajaBtnFg: open ? 'var(--fg)' : '#fff', cajaBtnBd: open ? '1px solid var(--border-strong)' : '0',
+      salesHint: open ? 'Usa "Nueva venta" para registrar la primera.' : 'Abre la caja y registra tu primera venta del día.'
+    };
+  }
+}
+</script>
+</body>
+</html>

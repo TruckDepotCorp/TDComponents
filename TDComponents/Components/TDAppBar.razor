@@ -1,0 +1,39 @@
+@namespace TDComponents.Components
+
+<header class="td-mbar">
+    @if (!string.IsNullOrWhiteSpace(BackHref))
+    {
+        <a class="td-mbar__back" href="@BackHref">@BackLabel</a>
+    }
+    <div class="td-mbar__titles">
+        <h1>@Title</h1>
+        @if (!string.IsNullOrWhiteSpace(Subtitle))
+        {
+            <p>@Subtitle</p>
+        }
+    </div>
+    @if (!string.IsNullOrWhiteSpace(ActionHref) && !string.IsNullOrWhiteSpace(ActionLabel))
+    {
+        <a class="td-mbar__action" href="@ActionHref">@ActionLabel</a>
+    }
+</header>
+
+@code {
+    /// <summary>Nombre de la pantalla. Es el título, por ejemplo Recepción.</summary>
+    [Parameter] public string Title { get; set; } = "Pantalla";
+
+    /// <summary>Segunda línea: bodega, turno o documento. Si se omite, solo queda el título.</summary>
+    [Parameter] public string? Subtitle { get; set; }
+
+    /// <summary>Destino de volver. Si se omite, no hay enlace de regreso.</summary>
+    [Parameter] public string? BackHref { get; set; }
+
+    /// <summary>Texto del enlace de volver. Dice a dónde regresa.</summary>
+    [Parameter] public string BackLabel { get; set; } = "Volver";
+
+    /// <summary>Destino de la acción secundaria, por ejemplo la ayuda.</summary>
+    [Parameter] public string? ActionHref { get; set; }
+
+    /// <summary>Texto de la acción secundaria. Si falta el destino o el texto, no se muestra.</summary>
+    [Parameter] public string? ActionLabel { get; set; }
+}

@@ -1,0 +1,46 @@
+<div class="td-mobile-stage">
+@switch (Id)
+{
+    case "omuelle":
+        <TDDockBoard Doors="muelles" />
+        break;
+    case "oconteo":
+        <TDCountDiff Sku="BR-4521-AD" Location="Pasillo A · rack 12 · nivel 2" Expected="24" Counted="21" Unit="unidades" Name="contado" />
+        break;
+    case "oincidencia":
+        <TDIssueCard Title="Faltan 3 pastillas" What="El conteo quedó abierto. La mercadería no se movió." Next="Vuelve a contar el casillero o deja la incidencia para el supervisor." Tone="TDMobileTone.Warning" HelpHref="/c/orelevo" HelpLabel="Pedir ayuda al supervisor de turno" />
+        break;
+    case "oruta":
+        <TDRouteStop Sequence="2" Customer="Taller Los Andes" Address="Av. Vicuña Mackenna 4200, La Florida" Window="Entre 14:00 y 16:00" Packages="8" Status="En ruta" Tone="TDMobileTone.Success" />
+        break;
+    case "opallet":
+        <TDPalletBuild Code="PLT-1842" Title="Pastillas de freno delanteras" Layers="3" LayerTarget="4" WeightKg="820" MaxWeightKg="900" Mixed="true" />
+        break;
+    case "orelevo":
+        <TDShiftNote From="María Soto" At="Hoy a las 14:00, bodega Quilicura" Note="El muelle 2 sigue descargando el camión de Transportes del Sur. El lote L-904 está en calidad y no se mueve." OpenTasks="2" />
+        break;
+    case "oreponer":
+        <TDReplenLine Sku="BR-4521-AD" Name="Pastilla de freno delantera" From="Reserva · pasillo C · rack 3" To="Picking · pasillo A · rack 12" Needed="12" Moved="4" Unit="unidades" Field="movidas" />
+        break;
+    case "oubicacion":
+        <TDSlotCheck Sku="BR-4521-AD" Suggested="A-12-2-04" Scanned="B-04-1-02" />
+        break;
+    case "ocalidad":
+        <TDQcHold Lot="L-904" Reason="El empaque llegó abierto. Calidad tiene que revisarlo." Quantity="48" Unit="unidades" Owner="Camila Ríos, calidad" Tone="TDMobileTone.Danger" />
+        break;
+    case "odespacho":
+        <TDDispatchCard Order="OC-00481" Door="Muelle 4" Departs="Hoy a las 17:10" Seal="" Status="Falta el sello" Tone="TDMobileTone.Warning" ActionHref="/c/omuelle" ActionLabel="Cerrar despacho OC-00481" />
+        break;
+}
+</div>
+
+@code {
+    [Parameter] public string Id { get; set; } = "";
+
+    private readonly TDDockDoor[] muelles =
+    [
+        new("m2", "Muelle 2", "Transportes del Sur", "Descargando", "Sale a las 16:40", TDMobileTone.Warning, "/c/odespacho"),
+        new("m4", "Muelle 4", "Libre", "Libre", "El próximo camión llega a las 18:00", TDMobileTone.Success),
+        new("m6", "Muelle 6", "Andes Cargo", "Bloqueada", "Falta el sello del despacho anterior", TDMobileTone.Danger, "/c/ocalidad")
+    ];
+}

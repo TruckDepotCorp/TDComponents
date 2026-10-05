@@ -1,35 +1,45 @@
 @namespace TDComponents.Components
 
-<td-switch>
-    <label class="td-switch @(SizeToken) @(LabelPosition == TDLabelPosition.Start ? "td-switch--start" : null) @(Disabled ? "is-disabled" : null)">
-        @if (LabelPosition == TDLabelPosition.Start)
+<TDFormFlag Value="On" ValueChanged="ValueChanged" ValueExpression="ValueExpression" ExplicitName="@Name" Fallback="" Context="posted">
+    <td-switch>
+        <label class="td-switch @(SizeToken) @(LabelPosition == TDLabelPosition.Start ? "td-switch--start" : null) @(Disabled ? "is-disabled" : null)">
+            @if (LabelPosition == TDLabelPosition.Start)
+            {
+                <span class="td-switch__text">@Label</span>
+            }
+            @if (!string.IsNullOrEmpty(posted))
+            {
+                <input type="hidden" name="@posted" value="false" />
+            }
+            <input class="td-sr"
+                   type="checkbox"
+                   name="@posted"
+                   value="true"
+                   checked="@On"
+                   disabled="@Disabled"
+                   role="switch"
+                   aria-checked="@(On ? "true" : "false")" />
+            <span class="td-switch__track" aria-hidden="true"><span class="td-switch__thumb"></span></span>
+            @if (LabelPosition != TDLabelPosition.Start)
+            {
+                <span class="td-switch__text">@Label</span>
+            }
+        </label>
+        @if (ValueExpression is not null)
         {
-            <span class="td-switch__text">@Label</span>
+            <div class="td-field__server"><ValidationMessage For="ValueExpression" /></div>
         }
-        <input class="td-sr"
-               type="checkbox"
-               name="@Name"
-               value="true"
-               checked="@Checked"
-               disabled="@Disabled"
-               role="switch"
-               aria-checked="@(Checked ? "true" : "false")" />
-        <span class="td-switch__track" aria-hidden="true"><span class="td-switch__thumb"></span></span>
-        @if (LabelPosition != TDLabelPosition.Start)
-        {
-            <span class="td-switch__text">@Label</span>
-        }
-    </label>
-</td-switch>
+    </td-switch>
+</TDFormFlag>
 
 @code {
-    /// <summary>Nombre del campo en el post. Activo envía el literal <c>true</c>.</summary>
+    /// <summary>Nombre del campo en el post. Activo envía <c>true</c> e inactivo envía <c>false</c>. Si se omite y el campo usa <c>@bind-Value</c>, el post usa el nombre del modelo.</summary>
     [Parameter] public string? Name { get; set; }
 
     /// <summary>Texto que dice qué cambia. El interruptor solo no alcanza.</summary>
     [Parameter] public string Label { get; set; } = "";
 
-    /// <summary>Empieza activo.</summary>
+    /// <summary>Empieza activo. Si el campo usa <c>@bind-Value</c>, manda <see cref="Value"/>.</summary>
     [Parameter] public bool Checked { get; set; }
 
     /// <summary>La persona no puede cambiarlo.</summary>
@@ -40,6 +50,8 @@
 
     /// <summary>Lado del texto. <see cref="TDLabelPosition.End"/> lo deja a la derecha. <see cref="TDLabelPosition.Start"/> lo deja a la izquierda.</summary>
     [Parameter] public TDLabelPosition LabelPosition { get; set; } = TDLabelPosition.End;
+
+    private bool On => ValueExpression is not null || ValueChanged.HasDelegate ? Value : Checked;
 
     private string SizeToken => Size switch
     {

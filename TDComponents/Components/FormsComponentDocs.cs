@@ -109,6 +109,24 @@ public partial class TDColorPicker { }
 /// </remarks>
 public partial class TDFileInput { }
 
+/// <summary>Botón de cámara para tomar o elegir una foto. El navegador la comprime a JPEG antes del post.</summary>
+/// <remarks>
+/// <para>El control visible es un botón de ícono. El diálogo del sistema ofrece la cámara y la galería. No uses <c>capture</c>: en varios teléfonos eso cierra la galería.</para>
+/// <para>La compresión es nativa en el navegador, con calidad 0.85. Si el lado largo pasa de 1920 px, se reduce a 1920 sin agrandar fotos más chicas. El archivo que viaja en el post ya es ese JPEG. Para un PDF u otro archivo que no deba recomprimirse, usa <see cref="TDFileInput"/>.</para>
+/// <para><c>Size</c> es <see cref="TDSize.Small"/>, <see cref="TDSize.Medium"/> o <see cref="TDSize.Large"/>. El defecto es mediano. Cambia el botón y la miniatura.</para>
+/// <para>Al tocar la miniatura se abre el mismo visor que <see cref="TDImage"/>: la foto en grande, con acercar, alejar, girar y cerrar.</para>
+/// <para>El formulario tiene que enviarse como <c>multipart/form-data</c>. La página tiene que cargar Material Symbols con el nombre <c>photo_camera</c>.</para>
+/// </remarks>
+public partial class TDPhotoButton { }
+
+/// <summary>Cámara que se queda abierta para tomar varias fotos seguidas. Cada una entra en una colección lista para el post.</summary>
+/// <remarks>
+/// <para>No cierra la cámara al disparar. <c>Tomar foto</c> agrega un JPEG con calidad 0.85. El lado largo no pasa de 1920 px. <c>Quitar</c> saca esa foto de la colección antes de guardar. <c>Cerrar cámara</c> apaga el video y deja las fotos en el formulario.</para>
+/// <para>El post multipart trae todas con el mismo nombre. En el modelo es <c>IFormFileCollection</c> o <c>List&lt;IFormFile&gt;</c>. Para una sola foto usa <see cref="TDPhotoButton"/>.</para>
+/// <para><c>Size</c> cambia el botón que abre la cámara. La página tiene que cargar Material Symbols con <c>photo_camera</c>. El sitio tiene que ser HTTPS o localhost para que el navegador entregue la cámara.</para>
+/// </remarks>
+public partial class TDPhotoCapture { }
+
 /// <summary>Código de un solo uso en casillas separadas. Avanza sola, retrocede con Retroceso y acepta pegar.</summary>
 /// <remarks>El código completo viaja en un campo oculto. <c>Expected</c> queda en el HTML: sirve para una demostración, no para un secreto de producción. La comprobación real va en el servidor.</remarks>
 public partial class TDSecurityCode { }
@@ -140,6 +158,14 @@ public partial class TDSelectBar { }
 /// <summary>Agrupa campos bajo una leyenda y puede empezar plegado.</summary>
 /// <remarks>No existe un componente FormField. La etiqueta flotante del catálogo se arma con este grupo y los campos de adentro.</remarks>
 public partial class TDFieldset { }
+
+/// <summary>Formulario de alta o edición. Envuelve <c>EditForm</c> y agrega título, resumen de errores, aviso al salir y bloqueo de un segundo envío.</summary>
+/// <remarks>
+/// <para>Acepta los parámetros de <c>EditForm</c>: <c>Model</c> o <c>EditContext</c>, <c>OnSubmit</c>, <c>OnValidSubmit</c>, <c>OnInvalidSubmit</c>, <c>FormName</c> y <c>Enhance</c>. No pongas <c>Model</c> y <c>EditContext</c> a la vez. En una página estática hace falta <c>FormName</c>.</para>
+/// <para><c>SubmitLabel</c> pinta el botón que envía. Si lo omites, el botón va en el contenido o en <c>Actions</c>, con <see cref="TDButtonType.Submit"/>. <c>Enctype</c> en <c>multipart/form-data</c> cuando hay archivos o fotos.</para>
+/// <para>Al enviar, el navegador lista los campos que fallaron, dice que lo escrito sigue en el formulario y lleva el foco al primero. Con <c>ConfirmLeave</c>, salir con cambios abre un diálogo. Con <c>GuardSubmit</c>, un segundo clic no vuelve a enviar.</para>
+/// </remarks>
+public partial class TDEditForm { }
 
 /// <summary>Aviso en línea junto al contenido. No es un toast.</summary>
 /// <remarks><see cref="TDSeverity.Danger"/> y <see cref="TDSeverity.Warning"/> usan rol de alerta. El resto usa rol de estado.</remarks>

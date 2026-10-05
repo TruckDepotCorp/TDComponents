@@ -1,0 +1,64 @@
+@namespace TDComponents.Components
+
+<article class="td-op" data-td-receipt data-ordered="@Ordered" data-unit="@Unit">
+    <p class="td-op__kicker">Línea de entrada · @Sku</p>
+    <h2>@Name</h2>
+    <p class="td-op__pair"><span>Pedido</span> <b>@Ordered.ToString(System.Globalization.CultureInfo.CurrentCulture)</b> @Unit</p>
+    <button type="button" class="td-op__hero td-op__type" data-td-receipt-open aria-haspopup="dialog">
+        <span data-td-receipt-read>@Received</span>
+        <small>@Unit recibidas</small>
+        <em>Escribir la cantidad</em>
+    </button>
+    <input type="hidden" name="@ResolvedField" value="@Received" data-td-receipt-value />
+    <dialog class="td-op__dlg" data-td-receipt-dlg aria-labelledby="@_dlgTitle">
+        <h2 id="@_dlgTitle">Escribir las @Unit recibidas</h2>
+        <label>
+            Cantidad
+            <input type="text" inputmode="numeric" autocomplete="off" data-td-receipt-typed value="@Received" />
+        </label>
+        <p class="td-op__status is-bad" data-td-receipt-error hidden>Escribe un número entero, desde cero.</p>
+        <div class="td-op__step">
+            <button type="button" data-td-receipt-close>Cerrar sin cambiar</button>
+            <button type="button" data-td-receipt-apply>Usar esta cantidad</button>
+        </div>
+    </dialog>
+    <div class="td-op__step">
+        <button type="button" data-td-receipt="-1" disabled="@(Received <= 0)">Quitar una</button>
+        <button type="button" data-td-receipt="1">Recibir una</button>
+    </div>
+    <p class="td-op__status @DiffClass" data-td-receipt-status>@DiffText</p>
+</article>
+
+@code {
+    /// <summary>Código del artículo de la orden.</summary>
+    [Parameter] public string Sku { get; set; } = "";
+
+    /// <summary>Nombre del artículo.</summary>
+    [Parameter] public string Name { get; set; } = "";
+
+    /// <summary>Unidades que pide la orden.</summary>
+    [Parameter] public int Ordered { get; set; }
+
+    /// <summary>Unidades ya recibidas. El número se puede tocar para escribir otra cantidad.</summary>
+    [Parameter] public int Received { get; set; }
+
+    /// <summary>Unidad, por ejemplo unidades.</summary>
+    [Parameter] public string Unit { get; set; } = "unidades";
+
+    /// <summary>Campo del post con las unidades recibidas. Si se omite, el post usa recibidas.</summary>
+    [Parameter] public string? Field { get; set; }
+
+    private string ResolvedField => string.IsNullOrWhiteSpace(Field) ? "recibidas" : Field;
+
+    private readonly string _dlgTitle = "td-receipt-" + Guid.NewGuid().ToString("N");
+
+    private int Diff => Received - Ordered;
+
+    private string DiffClass => Diff == 0 ? "is-ok" : "is-warn";
+
+    private string DiffText => Diff == 0
+        ? "La línea coincide con la orden."
+        : Diff < 0
+            ? $"Faltan {(-Diff).ToString(System.Globalization.CultureInfo.CurrentCulture)} {Unit} por recibir."
+            : $"Sobran {Diff.ToString(System.Globalization.CultureInfo.CurrentCulture)} {Unit}. Anótalo antes de cerrar la línea.";
+}

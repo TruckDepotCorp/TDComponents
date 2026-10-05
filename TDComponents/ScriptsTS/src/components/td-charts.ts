@@ -18,6 +18,7 @@ const B = 34;
 const PW = W0 - L - R;
 const PH = H0 - T - B;
 
+interface ChartModel { title: string; unit: string; categories: string[]; series: [string, number[]][] }
 interface ChartState {
     lType: 'line' | 'area' | 'step';
     smooth: boolean;
@@ -38,6 +39,8 @@ interface ChartState {
     advHov: string | null;
     spc: number[];
     points: { id: number; c: number; val: number; dias: number; u: number; oc: string }[];
+    model: ChartModel | null;
+    source: string;
 }
 
 function nice(maxValue: number): { max: number; step: number } {
@@ -51,6 +54,42 @@ function nice(maxValue: number): { max: number; step: number } {
 
 function fmtM(n: number): string {
     return `$ ${(Math.round(n * 10) / 10).toLocaleString('es-CL')} M`;
+}
+
+function esc(value: string): string {
+    return value.replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char] ?? char));
+}
+
+function chartSeries(state: ChartState): [string, number[]][] {
+    if (!state.model) return SER;
+    const count = Math.max(state.model.categories.length, 0, ...state.model.series.map((series) => series[1].length));
+    return state.model.series.map(([name, values]) => [name, Array.from({ length: Math.max(count, values.length) }, (_, index) => values[index] ?? 0)]);
+}
+
+function chartCats(state: ChartState): string[] {
+    if (!state.model) return MONTHS;
+    if (state.model.categories.length) return state.model.categories;
+    const count = state.model.series[0]?.[1].length ?? 0;
+    return Array.from({ length: count }, (_, index) => String(index + 1));
+}
+
+function chartText(state: ChartState, n: number): string {
+    if (!state.model) return fmtM(n);
+    const text = (Math.round(n * 10) / 10).toLocaleString('es-CL');
+    return state.model.unit ? `${text} ${state.model.unit}` : text;
+}
+
+function parseModel(raw: string): ChartModel | null {
+    if (!raw) return null;
+    try {
+        const parsed = JSON.parse(raw) as { title?: string; unit?: string; categories?: string[]; series?: { name?: string; values?: number[] }[] };
+        const series = Array.isArray(parsed.series)
+            ? parsed.series.filter((item) => item.name).map((item) => [String(item.name), (item.values ?? []).map(Number)] as [string, number[]])
+            : [];
+        return { title: parsed.title || '', unit: parsed.unit || '', categories: Array.isArray(parsed.categories) ? parsed.categories.map(String) : [], series };
+    } catch {
+        return null;
+    }
 }
 
 function smoothPath(pts: number[][]): string {
@@ -110,10 +149,16 @@ function svgWrap(body: string, height = H0, label = 'Gráfico'): string {
 }
 
 function lineChart(state: ChartState): string {
+    const SER = chartSeries(state);
+    const MONTHS = chartCats(state);
+    const fmtM = (n: number) => chartText(state, n);
+    const heading = state.model?.title || 'Ventas por categoría · 2026';
+    const unit = state.model ? (state.model.unit || '') : 'millones CLP';
+    if (!SER.length || !MONTHS.length) return `<p class="td-chart__read">${esc(heading || 'Sin datos')}</p>`;
     const vis = SER.filter((series) => !state.hidden.includes(series[0]));
     const scale = nice(Math.max(1, ...vis.flatMap((series) => series[1])) * 1.08);
     const n = MONTHS.length;
-    const x = (i: number) => L + i * (PW / (n - 1));
+    const x = (i: number) => L + i * (PW / Math.max(n - 1, 1));
     const y = (value: number) => T + PH - value / scale.max * PH;
     let body = axisY(scale.max, scale.step, (tick) => String(tick));
     body += MONTHS.map((month, index) => `<text x="${x(index)}" y="${T + PH + 22}" text-anchor="middle" font-size="11.5" fill="var(--td-color-text-muted)">${month}</text>`).join('');
@@ -143,23 +188,29 @@ function lineChart(state: ChartState): string {
     });
     const totals = MONTHS.map((_, index) => SER.reduce((sum, series) => sum + series[1][index], 0));
     const best = totals.indexOf(Math.max(...totals));
+    const last = Math.max(totals.length - 1, 0);
+    const growth = totals[0] ? Math.round((totals[last] / totals[0] - 1) * 100) : 0;
     const kpis = [
-        ['Total 2026', fmtM(totals.reduce((a, b) => a + b, 0))],
-        ['Mejor mes', `${MONTHS[best]} · ${fmtM(totals[best])}`],
-        ['Crecimiento Ene→Sep', `+${Math.round((totals[8] / totals[0] - 1) * 100)}%`]
+        [state.model ? 'Total' : 'Total 2026', fmtM(totals.reduce((a, b) => a + b, 0))],
+        ['Mejor periodo', `${MONTHS[best] ?? ''} · ${fmtM(totals[best] || 0)}`],
+        [state.model ? 'Cambio' : 'Crecimiento Ene→Sep', `${growth > 0 ? '+' : ''}${growth}%`]
     ];
     const read = state.hov == null
         ? 'Pasa el mouse sobre el gráfico para ver cada mes'
         : `${MONTHS[state.hov]} 2026 · ${vis.map((series) => `${series[0]} ${fmtM(series[1][state.hov as number])}`).join(' · ')} · Total ${fmtM(vis.reduce((sum, series) => sum + series[1][state.hov as number], 0))}`;
     return `<div class="td-chart__kpis">${kpis.map(([k, v]) => `<div><span>${k}</span><strong>${v}</strong></div>`).join('')}</div>
         <div class="td-chart__tools">${buttons('lType', [['line', 'Línea'], ['area', 'Área'], ['step', 'Escalón']], state.lType)}${sw('smooth', state.smooth, 'Suavizado')}${sw('markers', state.markers, 'Marcadores')}<span></span><button type="button" class="td-btn td-btn--secondary td-btn--sm" data-ch-export="ventas">Exportar CSV</button></div>
-        <div class="td-chart__head"><strong>Ventas por categoría · 2026</strong><em>millones CLP</em></div>
+        <div class="td-chart__head"><strong>${esc(heading)}</strong><em>${esc(unit)}</em></div>
         ${legend(SER.map((series) => series[0]), state.hidden)}
         ${svgWrap(body, H0, 'Ventas por categoría')}
         <p class="td-chart__read" role="status">${read}</p>`;
 }
 
 function columnChart(state: ChartState): string {
+    const SER = chartSeries(state);
+    const MONTHS = chartCats(state);
+    const fmtM = (n: number) => chartText(state, n);
+    if (!SER.length || !MONTHS.length) return `<p class="td-chart__read">${esc(state.model?.title || 'Sin datos')}</p>`;
     const vis = SER.filter((series) => !state.hidden.includes(series[0]));
     const horiz = state.cOri === 'h';
     const totals = MONTHS.map((_, index) => vis.reduce((sum, series) => sum + series[1][index], 0));
@@ -236,13 +287,19 @@ function columnChart(state: ChartState): string {
         : `${MONTHS[state.hov]} · ${vis.map((series) => `${series[0]} ${state.cMode === 'pct' ? `${Math.round(series[1][state.hov as number] / totals[state.hov as number] * 100)}%` : fmtM(series[1][state.hov as number])}`).join(' · ')} · Total ${fmtM(totals[state.hov])}${state.target && state.cMode === 'stack' ? ` · Meta ${fmtM(META[state.hov])} ${totals[state.hov] >= META[state.hov] ? '✓' : '✗'}` : ''}`;
     const meta = state.target && state.cMode === 'stack' && !horiz ? '<span class="td-chart__meta"><i></i>Meta</span>' : '';
     return `<div class="td-chart__tools">${buttons('cOri', [['v', 'Columnas'], ['h', 'Barras']], state.cOri)}${buttons('cMode', [['group', 'Agrupadas'], ['stack', 'Apiladas'], ['pct', '100 %']], state.cMode)}${sw('target', state.target, 'Línea de meta')}<span></span><button type="button" class="td-btn td-btn--secondary td-btn--sm" data-ch-export="ventas">Exportar CSV</button></div>
+        ${state.model?.title ? `<strong class="td-chart__title">${esc(state.model.title)}</strong>` : ''}
         ${legend(SER.map((series) => series[0]), state.hidden)}${meta}
-        ${svgWrap(body, H0, 'Columnas de ventas')}
+        ${svgWrap(body, H0, esc(state.model?.title || 'Columnas de ventas'))}
         <p class="td-chart__read" role="status">${read}</p>`;
 }
 
 function pieChart(state: ChartState): string {
-    const data: [string, number][] = [['Quilicura', 128], ['Concepción', 64], ['Antofagasta', 55], ['Puerto Montt', 34], ['En tránsito', 24]];
+    const fmtM = (n: number) => chartText(state, n);
+    const pieTitle = state.model?.title || 'Valor de stock por bodega';
+    const data: [string, number][] = state.model
+        ? chartCats(state).map((name, index) => [name, state.model?.series[0]?.[1][index] ?? 0])
+        : [['Quilicura', 128], ['Concepción', 64], ['Antofagasta', 55], ['Puerto Montt', 34], ['En tránsito', 24]];
+    if (!data.length || data.every((row) => !row[1])) return `<p class="td-chart__read">${esc(pieTitle)}</p>`;
     const total = data.reduce((sum, row) => sum + row[1], 0);
     const cx = 160;
     const cy = 150;
@@ -277,8 +334,8 @@ function pieChart(state: ChartState): string {
         body += `<text x="${cx}" y="${cy + 22}" text-anchor="middle" font-size="24" font-weight="800" fill="var(--td-color-text)" font-family="var(--td-font-display)">${fmtM(current ? current[1] : total)}</text>`;
     }
     const rows = data.map(([name, value], index) => `<div class="td-chart__pie-row ${state.pHov === index ? 'is-on' : ''}" data-ch-pie="${index}"><i style="background:${PAL[index]}"></i><span><strong>${name}</strong><b style="width:${Math.round(value / data[0][1] * 100)}%;background:${PAL[index]}"></b></span><em>${fmtM(value)}</em><small>${Math.round(value / total * 100)}%</small></div>`).join('');
-    return `<div class="td-chart__tools">${buttons('pDonut', [['pie', 'Pie'], ['donut', 'Donut']], state.pDonut ? 'donut' : 'pie')}<strong class="td-chart__title">Valor de stock por bodega</strong><span></span><button type="button" class="td-btn td-btn--secondary td-btn--sm" data-ch-export="pie">Exportar CSV</button></div>
-        <div class="td-chart__pie"><svg viewBox="0 0 320 300" data-ch-plot role="img" aria-label="Valor de stock por bodega">${body}</svg><div data-ch-pie-list>${rows}</div></div>`;
+    return `<div class="td-chart__tools">${buttons('pDonut', [['pie', 'Pie'], ['donut', 'Donut']], state.pDonut ? 'donut' : 'pie')}<strong class="td-chart__title">${esc(pieTitle)}</strong><span></span><button type="button" class="td-btn td-btn--secondary td-btn--sm" data-ch-export="pie">Exportar CSV</button></div>
+        <div class="td-chart__pie"><svg viewBox="0 0 320 300" data-ch-plot role="img" aria-label="${esc(pieTitle)}">${body}</svg><div data-ch-pie-list>${rows}</div></div>`;
 }
 
 function scatterChart(state: ChartState): string {
@@ -435,9 +492,15 @@ function heatChart(state: ChartState): string {
 
 function paint(host: HTMLElement, state: ChartState): void {
     const kind = host.dataset.kind || 'chline';
-    const adv = renderAdv(kind, state.advHov, state.spc);
-    if (adv) {
-        host.innerHTML = adv;
+    const basic = kind === 'chline' || kind === 'chcol' || kind === 'chpie' || !kind;
+    if (!state.model) {
+        const adv = renderAdv(kind, state.advHov, state.spc);
+        if (adv) {
+            host.innerHTML = adv;
+            return;
+        }
+    } else if (!basic && kind !== 'chline') {
+        host.innerHTML = columnChart(state);
         return;
     }
     const html = kind === 'chcol' ? columnChart(state)
@@ -477,6 +540,8 @@ function freshState(): ChartState {
         kHov: null,
         hHov: null,
         advHov: null,
+        model: null,
+        source: '',
         spc: spcSeries(),
         points: Array.from({ length: 48 }, (_, index) => {
             const c = index % 3;
@@ -487,13 +552,24 @@ function freshState(): ChartState {
     };
 }
 
+const chartStates = new WeakMap<HTMLElement, ChartState>();
+
 export function bindCharts(root: ParentNode = document): void {
     root.querySelectorAll<HTMLElement>('td-chart').forEach((host) => {
-        if (host.dataset.bound === 'true') {
+        const previous = chartStates.get(host);
+        const source = host.dataset.model || '';
+        if (previous) {
+            if (previous.source !== source) {
+                previous.source = source;
+                previous.model = parseModel(source);
+                paint(host, previous);
+            }
             return;
         }
-        host.dataset.bound = 'true';
         const state = freshState();
+        state.source = source;
+        state.model = parseModel(source);
+        chartStates.set(host, state);
         const render = () => paint(host, state);
         host.addEventListener('click', (event) => {
             const target = event.target instanceof Element ? event.target : null;
@@ -524,10 +600,14 @@ export function bindCharts(root: ParentNode = document): void {
                 const name = button.dataset.chChannel;
                 state.sHid = state.sHid.includes(name) ? state.sHid.filter((item) => item !== name) : [...state.sHid, name];
             } else if (button.dataset.chExport === 'ventas') {
-                csv('ventas-por-categoria', [['Mes', ...SER.map((series) => series[0])], ...MONTHS.map((month, index) => [month, ...SER.map((series) => series[1][index])])]);
+                const rows = chartSeries(state);
+                const labels = chartCats(state);
+                csv('ventas-por-categoria', [['Mes', ...rows.map((series) => series[0])], ...labels.map((month, index) => [month, ...rows.map((series) => series[1][index] ?? 0)])]);
                 return;
             } else if (button.dataset.chExport === 'pie') {
-                const data: [string, number][] = [['Quilicura', 128], ['Concepción', 64], ['Antofagasta', 55], ['Puerto Montt', 34], ['En tránsito', 24]];
+                const data: [string, number][] = state.model
+                    ? chartCats(state).map((name, index) => [name, state.model?.series[0]?.[1][index] ?? 0])
+                    : [['Quilicura', 128], ['Concepción', 64], ['Antofagasta', 55], ['Puerto Montt', 34], ['En tránsito', 24]];
                 const total = data.reduce((sum, row) => sum + row[1], 0);
                 csv('stock-por-bodega', [['Bodega', 'Valor (M)', '%'], ...data.map((row) => [row[0], row[1], Math.round(row[1] / total * 100)])]);
                 return;
@@ -549,7 +629,7 @@ export function bindCharts(root: ParentNode = document): void {
         host.addEventListener('mousemove', (event) => {
             const plot = event.target instanceof Element ? event.target.closest('[data-ch-plot]') : null;
             if (plot instanceof SVGSVGElement && (host.dataset.kind === 'chline' || !host.dataset.kind)) {
-                const next = indexFrom(plot, event, MONTHS.length);
+                const next = indexFrom(plot, event, chartCats(state).length);
                 if (next !== state.hov) {
                     state.hov = next;
                     render();

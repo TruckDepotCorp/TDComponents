@@ -1,0 +1,40 @@
+@namespace TDComponents.Components
+
+<aside class="td-mxcart" data-td-mx-cart data-cash="@CashText">
+    <header class="td-mxcard__head"><span class="td-mxkicker">Carrito · <span data-td-mx-count>0</span></span></header>
+    <label class="td-mxfield"><span>Cliente</span>
+        <select data-td-mx-client>
+            <option>Venta de mostrador</option>
+            <option>Carlos Méndez</option>
+            <option>Ana López</option>
+            <option>Taller El Progreso</option>
+        </select>
+    </label>
+    <ul class="td-mxcart__lines" data-td-mx-lines></ul>
+    <p class="td-mxemptyline" data-td-mx-cartempty>El carrito está vacío. Elige un producto.</p>
+    <div class="td-mxcart__pay">
+        <label class="td-mxfield"><span>Descuento</span><input data-td-mx-discount inputmode="decimal" value="0" /></label>
+        <div class="td-mxseg" role="group" aria-label="Tipo de descuento">
+            <button type="button" class="is-on" data-td-mx-disctype="q">Q</button>
+            <button type="button" data-td-mx-disctype="pct">%</button>
+        </div>
+        <div class="td-mxseg" role="group" aria-label="Método de pago">
+            <button type="button" class="is-on" data-td-mx-pay="Efectivo">Efectivo</button>
+            <button type="button" data-td-mx-pay="Transferencia">Transferencia</button>
+            <button type="button" data-td-mx-pay="Tarjeta">Tarjeta</button>
+            <button type="button" data-td-mx-pay="Crédito">Crédito</button>
+        </div>
+        <label class="td-mxfield" data-td-mx-cashbox><span>Efectivo recibido</span><input data-td-mx-received inputmode="decimal" value="0" /></label>
+        <p class="td-mxremain">Cambio <strong data-td-mx-change>Q 0.00</strong></p>
+        <div class="td-mxtotal"><span>Total</span><strong data-td-mx-total>Q 0.00</strong></div>
+        <p class="td-mxwarn" data-td-mx-reason></p>
+        <button type="button" class="td-mxbtn" data-td-mx-checkout disabled>Cobrar</button>
+    </div>
+</aside>
+
+@code {
+    /// <summary>True si la caja está abierta. Cerrada bloquea el cobro y dice por qué.</summary>
+    [Parameter] public bool CashOpen { get; set; } = true;
+
+    private string CashText => CashOpen ? "true" : "false";
+}

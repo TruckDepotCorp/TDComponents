@@ -1,0 +1,80 @@
+@namespace TDComponents.Components
+
+<td-card-carousel data-interval="@Interval" data-auto="@(Auto ? "true" : "false")">
+    <div class="td-ccarousel" data-td-ccard data-auto="@(Auto ? "true" : "false")" role="region" aria-roledescription="carrusel" aria-label="@AriaLabel">
+        @if (Cards is null || Cards.Count == 0)
+        {
+            <p class="td-ccarousel__empty">Este carrusel no tiene tarjetas.</p>
+        }
+        else
+        {
+            <header class="td-ccard__head">
+                @if (Cards.Count > 1)
+                {
+                    <TDButtonIcon Icon="arrow_back" Label="Tarjeta anterior" data-td-ccard-prev />
+                }
+                <p data-td-ccard-live aria-live="polite">Tarjeta 1 de @Cards.Count</p>
+                @if (Cards.Count > 1 && Auto)
+                {
+                    <TDButtonIcon Icon="pause" Label="Pausar" data-td-ccard-play />
+                }
+                @if (Cards.Count > 1)
+                {
+                    <TDButtonIcon Icon="arrow_forward" Label="Tarjeta siguiente" data-td-ccard-next />
+                }
+            </header>
+            <div class="td-ccarousel__viewport">
+                <div class="td-ccarousel__track" data-td-ccard-track>
+                    @for (var i = 0; i < Cards.Count; i++)
+                    {
+                        var card = Cards[i];
+                        <article class="td-ccard"
+                                 role="group"
+                                 aria-roledescription="tarjeta"
+                                 aria-label="@($"Tarjeta {i + 1} de {Cards.Count}")">
+                            <h2>@card.Title</h2>
+                            <p class="td-ccard__text">@card.Text</p>
+                            <footer class="td-ccard__foot">
+                                @if (!string.IsNullOrWhiteSpace(card.Status))
+                                {
+                                    <p class="td-ccard__status @TDMobileToneCss.Class(card.Tone)">@card.Status</p>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(card.ActionHref) && !string.IsNullOrWhiteSpace(card.ActionLabel))
+                                {
+                                    <TDButtonIcon Icon="open_in_new" Label="@card.ActionLabel" Href="@card.ActionHref" />
+                                }
+                            </footer>
+                        </article>
+                    }
+                </div>
+            </div>
+            @if (Cards.Count > 1)
+            {
+                <div class="td-ccarousel__dots">
+                    @for (var i = 0; i < Cards.Count; i++)
+                    {
+                        <button type="button"
+                                class="@(i == 0 ? "is-current" : null)"
+                                data-td-ccard-dot="@i"
+                                aria-label="@($"Ir a la tarjeta {i + 1}")"
+                                aria-current="@(i == 0 ? "true" : null)"></button>
+                    }
+                </div>
+            }
+        }
+    </div>
+</td-card-carousel>
+
+@code {
+    /// <summary>Nombre accesible del carrusel.</summary>
+    [Parameter] public string AriaLabel { get; set; } = "Tarjetas";
+
+    /// <summary>Milisegundos entre tarjetas. El defecto es 5000. Solo corre si <see cref="Auto"/> es verdadero.</summary>
+    [Parameter] public int Interval { get; set; } = 5000;
+
+    /// <summary>Gira solo. El defecto es verdadero. En falso, la persona avanza con los botones.</summary>
+    [Parameter] public bool Auto { get; set; } = true;
+
+    /// <summary>Tarjetas. Vacío o nulo dice que no hay ninguna.</summary>
+    [Parameter] public IReadOnlyList<TDCarouselCard>? Cards { get; set; }
+}

@@ -1,37 +1,43 @@
 @namespace TDComponents.Components
 
-<td-numeric class="td-field">
-    @if (!string.IsNullOrWhiteSpace(Label))
-    {
-        <TDLabel For="@_id" Required="Required">@Label</TDLabel>
-    }
-    <div class="td-numeric">
-        <button type="button" class="td-numeric__step" data-td-numeric-step="-1" aria-label="Disminuir" disabled="@Disabled">−</button>
-        <input id="@_id"
-               class="td-input td-numeric__input"
-               type="number"
-               name="@Name"
-               value="@Value"
-               min="@Min"
-               max="@Max"
-               step="@Step"
-               required="@Required"
-               disabled="@Disabled"
-               inputmode="decimal"
-               data-td-numeric />
-        <button type="button" class="td-numeric__step" data-td-numeric-step="1" aria-label="Aumentar" disabled="@Disabled">+</button>
-    </div>
-    @if (!string.IsNullOrWhiteSpace(Hint))
-    {
-        <p class="td-field__hint">@Hint</p>
-    }
-</td-numeric>
+<TDFormNumber Value="Value" ValueChanged="ValueChanged" ValueExpression="ValueExpression" ExplicitName="@Name" Fallback="cantidad" Context="posted">
+    <td-numeric class="td-field">
+        @if (!string.IsNullOrWhiteSpace(Label))
+        {
+            <TDLabel For="@_id" Required="Required">@Label</TDLabel>
+        }
+        <div class="td-numeric">
+            <button type="button" class="td-numeric__step" data-td-numeric-step="-1" aria-label="Disminuir" disabled="@Disabled">−</button>
+            <input id="@_id"
+                   class="td-input td-numeric__input"
+                   type="number"
+                   name="@posted"
+                   value="@Value"
+                   min="@Min"
+                   max="@Max"
+                   step="@Step"
+                   required="@Required"
+                   disabled="@Disabled"
+                   inputmode="decimal"
+                   data-td-numeric />
+            <button type="button" class="td-numeric__step" data-td-numeric-step="1" aria-label="Aumentar" disabled="@Disabled">+</button>
+        </div>
+        @if (!string.IsNullOrWhiteSpace(Hint))
+        {
+            <p class="td-field__hint">@Hint</p>
+        }
+        @if (ValueExpression is not null)
+        {
+            <div class="td-field__server"><ValidationMessage For="ValueExpression" /></div>
+        }
+    </td-numeric>
+</TDFormNumber>
 
 @code {
     private readonly string _id = $"td-num-{Guid.NewGuid():N}";
 
-    /// <summary>Nombre del decimal que se envía.</summary>
-    [Parameter] public string Name { get; set; } = "cantidad";
+    /// <summary>Nombre del decimal. Si se omite y el campo usa <c>@bind-Value</c>, el post usa el nombre del modelo.</summary>
+    [Parameter] public string? Name { get; set; }
 
     /// <summary>Etiqueta de la cantidad.</summary>
     [Parameter] public string? Label { get; set; }
@@ -39,7 +45,7 @@
     /// <summary>Ayuda bajo el campo, por ejemplo la unidad. El componente no formatea moneda.</summary>
     [Parameter] public string? Hint { get; set; }
 
-    /// <summary>Valor inicial.</summary>
+    /// <summary>Cantidad. Acepta <c>@bind-Value</c>.</summary>
     [Parameter] public decimal Value { get; set; }
 
     /// <summary>Mínimo. El defecto es 0.</summary>

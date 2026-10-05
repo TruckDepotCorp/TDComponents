@@ -1,0 +1,67 @@
+@namespace TDComponents.Components
+@using System.Text.Json
+
+<td-maps class="td-maps" data-td-maps data-map-id="@MapId" style="--td-map-h:@Height">
+    <script type="application/json" data-td-maps-model>@((MarkupString)ModelJson)</script>
+</td-maps>
+
+@code {
+    /// <summary>Nombre de la persona que tiene la sesión. La posición la entrega el equipo, no el servidor.</summary>
+    [Parameter] public string Name { get; set; } = "Tú";
+
+    /// <summary>Rol o turno que se muestra junto al nombre.</summary>
+    [Parameter] public string Role { get; set; } = "Sesión actual";
+
+    /// <summary>Título de la vista.</summary>
+    [Parameter] public string Title { get; set; } = "Tu ubicación";
+
+    /// <summary>Alto del mapa, en CSS. El defecto es 480px.</summary>
+    [Parameter] public string Height { get; set; } = "480px";
+
+    /// <summary>Identificador estable de este mapa.</summary>
+    [Parameter] public string MapId { get; set; } = "usuario";
+
+    /// <summary>Mantiene el mapa centrado en la persona mientras se desplaza. El defecto es true.</summary>
+    [Parameter] public bool Follow { get; set; } = true;
+
+    /// <summary>Dibuja el trazo recorrido en esta sesión. El defecto es true.</summary>
+    [Parameter] public bool ShowTrail { get; set; } = true;
+
+    /// <summary>Plantilla de teselas {z}/{x}/{y}. El defecto es OpenStreetMap.</summary>
+    [Parameter] public string TileUrl { get; set; } = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
+
+    /// <summary>Texto de atribución del mapa.</summary>
+    [Parameter] public string Attribution { get; set; } = "OpenStreetMap";
+
+    private static readonly JsonSerializerOptions Json = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+
+    private string ModelJson
+    {
+        get
+        {
+            var payload = new
+            {
+                title = Title,
+                follow = Follow,
+                showRoute = ShowTrail,
+                showStops = false,
+                userName = Name,
+                userRole = Role,
+                tileUrl = SafeTile(TileUrl),
+                attribution = Attribution,
+                units = Array.Empty<object>()
+            };
+            return JsonSerializer.Serialize(payload, Json).Replace("<", "\\u003c", StringComparison.Ordinal);
+        }
+    }
+
+    private static string SafeTile(string url)
+    {
+        if (Uri.TryCreate(url, UriKind.Absolute, out var uri) && (uri.Scheme == Uri.UriSchemeHttps || uri.Scheme == Uri.UriSchemeHttp))
+        {
+            return url;
+        }
+
+        return "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
+    }
+}

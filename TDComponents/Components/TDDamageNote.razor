@@ -1,0 +1,34 @@
+@namespace TDComponents.Components
+
+<article class="td-op">
+    <p class="td-op__kicker">Daño · @Sku</p>
+    <h2>@What</h2>
+    <p class="td-op__hero"><span>@Affected.ToString(System.Globalization.CultureInfo.CurrentCulture)</span> <small>@Unit dañadas</small></p>
+    <p class="td-op__status @TDMobileToneCss.Class(Tone)">@NextText</p>
+</article>
+
+@code {
+    /// <summary>Artículo dañado.</summary>
+    [Parameter] public string Sku { get; set; } = "";
+
+    /// <summary>Qué se vio, en una frase.</summary>
+    [Parameter] public string What { get; set; } = "";
+
+    /// <summary>Unidades afectadas. Cero dice que no hay daño.</summary>
+    [Parameter] public int Affected { get; set; }
+
+    /// <summary>Unidad de las afectadas.</summary>
+    [Parameter] public string Unit { get; set; } = "unidades";
+
+    /// <summary>Qué hacer con el daño. Si hay afectadas y se omite, pide separarlas.</summary>
+    [Parameter] public string? Next { get; set; }
+
+    /// <summary>Énfasis. El texto sigue siendo el aviso.</summary>
+    [Parameter] public TDMobileTone Tone { get; set; } = TDMobileTone.Warning;
+
+    private string NextText => Affected <= 0
+        ? "No hay unidades dañadas en esta revisión."
+        : string.IsNullOrWhiteSpace(Next)
+            ? "Separa las unidades dañadas. No las mezcles con las buenas."
+            : Next;
+}

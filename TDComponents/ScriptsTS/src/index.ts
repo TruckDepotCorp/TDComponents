@@ -7,7 +7,13 @@ import { bindCharts } from './components/td-charts';
 import { bindEcom } from './components/td-ecom';
 import { bindStudio } from './components/td-studio';
 import { bindExtra } from './components/td-extra';
-import { bindUi, closeFloating, commitInplace, handleInplaceDblClick, handleUiClick, handleUiInput, handleUiKey } from './components/td-ui';
+import { bindUi, closeFloating, commitInplace, handleInplaceDblClick, handlePhotoChange, handleUiClick, handleUiInput, handleUiKey } from './components/td-ui';
+import { handleMobileClick } from './components/td-mobile';
+import { handleOpsClick } from './components/td-ops';
+import { handleInboundClick, handleInboundKey } from './components/td-inbound';
+import { armEditFormPending, bindEditForms, clearEditForm, collectEditFormProblems, focusEditFormProblem, guardEditFormLeave, hideEditFormStatus, isEditFormBusy, markEditFormDirty, showEditFormProblems } from './components/td-editform';
+import { bindMaps } from './components/td-maps';
+import { bindLocate } from './components/td-locate';
 
 if (!customElements.get('td-button')) {
     customElements.define('td-button', TDButtonElement);
@@ -35,6 +41,7 @@ document.addEventListener('input', (event) => {
     handleUiInput(event.target);
     handleMediaInput(event.target);
     handleLayoutInput(event.target);
+    markEditFormDirty(event.target);
 });
 
 document.addEventListener('focusout', (event) => {
@@ -54,6 +61,12 @@ document.addEventListener('submit', (event) => {
     }
 
     const form = event.target;
+    if (isEditFormBusy(form)) {
+        event.preventDefault();
+        event.stopPropagation();
+        return;
+    }
+
     const submitter = event instanceof SubmitEvent ? event.submitter : null;
     const buttonHost = submitter?.closest('td-button');
     if (buttonHost instanceof TDButtonElement && buttonHost.hasAttribute('data-pending')) {
@@ -71,6 +84,25 @@ document.addEventListener('submit', (event) => {
         if (!field.validate() && !firstInvalid) {
             firstInvalid = field;
         }
+    }
+
+    const editHost = form.closest('td-editform');
+    if (editHost instanceof HTMLElement) {
+        const problems = collectEditFormProblems(form, true);
+        if (problems.length > 0) {
+            event.preventDefault();
+            event.stopPropagation();
+            showEditFormProblems(editHost, problems);
+            focusEditFormProblem(problems[0]);
+            return;
+        }
+
+        hideEditFormStatus(editHost);
+        armEditFormPending(editHost);
+        if (buttonHost instanceof TDButtonElement) {
+            buttonHost.beginPending();
+        }
+        return;
     }
 
     const status = form.querySelector('[data-td-form-status]');
@@ -106,6 +138,9 @@ document.addEventListener('click', (event) => {
     }
 
     closeFloating(target);
+    if (handleMobileClick(target) || handleOpsClick(target) || handleInboundClick(target)) {
+        return;
+    }
     if (handleUiClick(target) || handleMediaClick(target) || handleLayoutClick(target)) {
         return;
     }
@@ -164,11 +199,7 @@ document.addEventListener('click', (event) => {
     if (themeToggle instanceof HTMLElement) {
         const next = currentTheme() === 'dark' ? 'light' : 'dark';
         document.documentElement.setAttribute('data-theme', next);
-        try {
-            localStorage.setItem('td-theme', next);
-        } catch {
-            // The theme still changes for this page view.
-        }
+        storeThemeCookie('td-theme', next);
         syncThemeToggleLabels();
         syncThemeCards();
     }
@@ -185,6 +216,9 @@ document.addEventListener('change', (event) => {
         target.form?.requestSubmit();
         return;
     }
+
+    handlePhotoChange(target);
+    markEditFormDirty(target);
 
     const grid = hostFrom(target, 'td-data-grid');
     if (grid instanceof TDDataGridElement) {
@@ -206,6 +240,62 @@ function toggleSecret(toggle: HTMLButtonElement): void {
         : toggle.dataset.show ?? 'Show password';
     toggle.setAttribute('aria-pressed', reveal ? 'true' : 'false');
     input.focus();
+}
+
+const themeCookieSeconds = 60 * 60 * 24 * 365;
+
+function themeCookie(name: string): string | null {
+    const key = `${name}=`;
+    for (const part of document.cookie.split('; ')) {
+        if (part.startsWith(key)) {
+            try {
+                return decodeURIComponent(part.slice(key.length));
+            } catch {
+                return part.slice(key.length);
+            }
+        }
+    }
+
+    return null;
+}
+
+function storeThemeCookie(name: string, value: string): void {
+    const secure = location.protocol === 'https:' ? '; Secure' : '';
+    document.cookie = `${name}=${encodeURIComponent(value)}; Max-Age=${themeCookieSeconds}; Path=/; SameSite=Lax${secure}`;
+}
+
+function storedTheme(name: string): string | null {
+    const current = themeCookie(name);
+    if (current) {
+        return current;
+    }
+
+    try {
+        const legacy = localStorage.getItem(name);
+        if (legacy) {
+            storeThemeCookie(name, legacy);
+            localStorage.removeItem(name);
+            return legacy;
+        }
+    } catch {
+        // A blocked store leaves the theme of this visit.
+    }
+
+    return null;
+}
+
+function restoreStoredTheme(): void {
+    const scheme = storedTheme('td-theme');
+    if (scheme === 'dark' || scheme === 'light') {
+        document.documentElement.setAttribute('data-theme', scheme);
+    }
+
+    const family = storedTheme('td-theme-family');
+    if (family === 'material' || family === 'expressive' || family === 'fluent') {
+        document.documentElement.setAttribute('data-td-theme', family);
+    } else if (family === 'modern') {
+        document.documentElement.removeAttribute('data-td-theme');
+    }
 }
 
 function currentTheme(): 'dark' | 'light' {
@@ -246,11 +336,7 @@ function applyThemeFamily(value: string): void {
         document.documentElement.setAttribute('data-td-theme', family);
     }
 
-    try {
-        localStorage.setItem('td-theme-family', family);
-    } catch {
-        // The family still changes for this page view.
-    }
+    storeThemeCookie('td-theme-family', family);
 
     document.querySelectorAll<HTMLSelectElement>('[data-td-theme-select]').forEach((select) => {
         select.value = family;
@@ -312,6 +398,7 @@ document.addEventListener('focusout', (event) => {
 });
 
 document.addEventListener('keydown', (event) => {
+    handleInboundKey(event);
     handleUiKey(event);
     handleMediaKey(event);
     handleLayoutKey(event);
@@ -330,6 +417,7 @@ document.addEventListener('pointerup', handleMediaPointer);
 document.addEventListener('contextmenu', handleContextMenu);
 
 function bootPage(): void {
+    restoreStoredTheme();
     bindUi();
     bindMedia();
     bindLayout();
@@ -339,10 +427,26 @@ function bootPage(): void {
     bindStudio();
     syncThemeToggleLabels();
     syncThemeFamily();
+    bindEditForms();
+    bindMaps();
+    bindLocate();
 }
 
 bootPage();
 bindLayoutPointer();
+
+document.addEventListener('click', (event) => {
+    if (guardEditFormLeave(event)) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+}, true);
+
+document.addEventListener('reset', (event) => {
+    if (event.target instanceof HTMLFormElement) {
+        clearEditForm(event.target);
+    }
+});
 
 const blazor = (window as Window & { Blazor?: { addEventListener?: (name: string, handler: () => void) => void } }).Blazor;
 blazor?.addEventListener?.('enhancedload', bootPage);

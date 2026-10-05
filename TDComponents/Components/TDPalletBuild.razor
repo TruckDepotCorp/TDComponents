@@ -1,0 +1,46 @@
+@namespace TDComponents.Components
+
+<article class="td-op">
+    <p class="td-op__kicker">Pallet @Code</p>
+    <h2>@Title</h2>
+    <p class="td-op__hero"><span>@Layers.ToString(System.Globalization.CultureInfo.CurrentCulture)</span> <small>de @LayerTarget.ToString(System.Globalization.CultureInfo.CurrentCulture) capas</small></p>
+    <p class="td-op__pair"><span>Peso</span> <b>@WeightKg.ToString("0.#", System.Globalization.CultureInfo.CurrentCulture) kg</b> de @MaxWeightKg.ToString("0.#", System.Globalization.CultureInfo.CurrentCulture) kg</p>
+    <p class="td-op__status @WeightClass">@WeightText</p>
+    @if (Mixed)
+    {
+        <p class="td-op__status is-warn">Este pallet mezcla artículos. Sepáralos si el cliente no acepta mezcla.</p>
+    }
+</article>
+
+@code {
+    /// <summary>Código del pallet o de la licencia.</summary>
+    [Parameter] public string Code { get; set; } = "";
+
+    /// <summary>Qué se está armando.</summary>
+    [Parameter] public string Title { get; set; } = "Armado";
+
+    /// <summary>Capas ya colocadas.</summary>
+    [Parameter] public int Layers { get; set; }
+
+    /// <summary>Capas que pide el armado.</summary>
+    [Parameter] public int LayerTarget { get; set; }
+
+    /// <summary>Peso actual, en kilogramos.</summary>
+    [Parameter] public decimal WeightKg { get; set; }
+
+    /// <summary>Peso máximo permitido, en kilogramos.</summary>
+    [Parameter] public decimal MaxWeightKg { get; set; }
+
+    /// <summary>El pallet junta más de un artículo.</summary>
+    [Parameter] public bool Mixed { get; set; }
+
+    private bool OverWeight => MaxWeightKg > 0 && WeightKg > MaxWeightKg;
+
+    private string WeightClass => OverWeight ? "is-bad" : Layers >= LayerTarget && LayerTarget > 0 ? "is-ok" : "is-neutral";
+
+    private string WeightText => OverWeight
+        ? "El pallet supera el peso permitido. Quita bultos antes de cerrarlo."
+        : Layers >= LayerTarget && LayerTarget > 0
+            ? "El armado está completo y dentro del peso."
+            : "Sigue colocando capas. El peso todavía cabe.";
+}

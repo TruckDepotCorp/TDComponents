@@ -1,0 +1,55 @@
+@namespace TDComponents.Components
+
+@if (IsLink)
+{
+    <a class="td-btnicon"
+       href="@(Disabled ? null : Href)"
+       aria-label="@Label"
+       aria-disabled="@(Disabled ? "true" : null)"
+       tabindex="@(Disabled ? "-1" : null)"
+       @attributes="AdditionalAttributes">
+        <span class="td-btnicon__glyph" aria-hidden="true">@Icon</span>
+    </a>
+}
+else
+{
+    <button class="td-btnicon"
+            type="@TypeToken"
+            aria-label="@Label"
+            disabled="@Disabled"
+            @attributes="AdditionalAttributes">
+        <span class="td-btnicon__glyph" aria-hidden="true">@Icon</span>
+    </button>
+}
+
+@code {
+    /// <summary>Nombre del ícono de Material Symbols, por ejemplo <c>arrow_back</c>. Es el glifo, no el texto.</summary>
+    [Parameter] public string Icon { get; set; } = "";
+
+    /// <summary>Nombre accesible. El botón no muestra texto: esta frase es lo que se oye y lo que anuncia el control.</summary>
+    [Parameter] public string Label { get; set; } = "";
+
+    /// <summary>Qué hace dentro de un formulario. El defecto es <see cref="TDButtonType.Button"/>: no envía.</summary>
+    [Parameter] public TDButtonType ButtonType { get; set; } = TDButtonType.Button;
+
+    /// <summary>Si tiene un URL seguro, el control se pinta como enlace.</summary>
+    [Parameter] public string? Href { get; set; }
+
+    /// <summary>Impide activarlo.</summary>
+    [Parameter] public bool Disabled { get; set; }
+
+    /// <summary>Atributos HTML que este componente no declara, por ejemplo <c>data-td-ccard-prev</c>.</summary>
+    [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private bool IsLink =>
+        !string.IsNullOrWhiteSpace(Href)
+        && !Href.TrimStart().StartsWith("javascript:", StringComparison.OrdinalIgnoreCase)
+        && !Href.TrimStart().StartsWith("data:", StringComparison.OrdinalIgnoreCase);
+
+    private string TypeToken => ButtonType switch
+    {
+        TDButtonType.Submit => "submit",
+        TDButtonType.Reset => "reset",
+        _ => "button"
+    };
+}

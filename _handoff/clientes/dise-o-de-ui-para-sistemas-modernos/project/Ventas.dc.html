@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<meta name="design_doc_mode" content="canvas">
+<link rel="stylesheet" href="_ds/truck-depot-design-system-de84d30e-4ffa-49a5-8cd0-7d755af25dd5/colors_and_type.css">
+<link rel="stylesheet" href="_ds/truck-depot-design-system-de84d30e-4ffa-49a5-8cd0-7d755af25dd5/styles.css">
+<script src="_ds/truck-depot-design-system-de84d30e-4ffa-49a5-8cd0-7d755af25dd5/_ds_bundle.js"></script>
+<style>body{margin:0;background:#e9eaec;font-family:var(--font-ui);color:var(--fg)}a{color:var(--td-red)}a:hover{color:var(--red-700)}*{box-sizing:border-box}.dv-turn{padding:40px 44px 32px;border-bottom:1px solid rgba(0,0,0,.08)}.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 20px}.dv-tid{font:600 10px var(--font-mono);padding:3px 7px;background:#0A0B0C;color:#fff;border-radius:4px;text-decoration:none}.dv-tname{font:600 13px/1.2 var(--font-ui);color:#0A0B0C}.dv-opts{display:flex;flex-wrap:wrap;gap:36px;align-items:flex-start}.dv-opt{flex:none;display:flex;flex-direction:column;gap:9px}.dv-oid{font:600 10.5px var(--font-mono);padding:3px 7px;background:rgba(0,0,0,.08);color:#0A0B0C;border-radius:5px;text-decoration:none}.dv-olabel{display:flex;align-items:baseline;gap:8px;font:400 12px/1.3 var(--font-ui);color:#4B5158}.dv-next{margin:22px 0 0;font:13px/1.5 var(--font-ui);color:#4B5158}input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}</style>
+</helmet>
+
+<section class="dv-turn" id="t2">
+<div class="dv-thd"><a class="dv-tid" href="#t2">2</a><span class="dv-tname">Nueva venta (punto de venta) — al cobrar, la venta aparece en <a class="dv-oid" href="#1a">1a</a></span></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;max-width:1440px;margin:0 0 32px">
+<div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:18px 20px;display:flex;flex-direction:column;gap:6px"><div style="font:700 11px var(--font-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--td-red)">01 · Productos a la vista</div><div style="font-size:14px;line-height:1.45;color:var(--fg-2);text-wrap:pretty">La búsqueda ya no empieza en blanco: mosaico de productos con precio y stock, filtros por categoría y escáner. Agotados bloqueados.</div></div>
+<div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:18px 20px;display:flex;flex-direction:column;gap:6px"><div style="font:700 11px var(--font-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--td-red)">02 · Carrito completo</div><div style="font-size:14px;line-height:1.45;color:var(--fg-2);text-wrap:pretty">Cantidades editables, descuento en Q o %, método de pago, efectivo recibido y cambio calculado.</div></div>
+<div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:18px 20px;display:flex;flex-direction:column;gap:6px"><div style="font:700 11px var(--font-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--td-red)">03 · Bloqueos con motivo</div><div style="font-size:14px;line-height:1.45;color:var(--fg-2);text-wrap:pretty">"Cobrar" deshabilitado siempre dice por qué: caja cerrada, carrito vacío, crédito sin cliente o efectivo insuficiente.</div></div>
+<div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:18px 20px;display:flex;flex-direction:column;gap:6px"><div style="font:700 11px var(--font-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--td-red)">04 · Móvil</div><div style="font-size:14px;line-height:1.45;color:var(--fg-2);text-wrap:pretty">El carrito pasa a una barra fija con total; al tocarla abre una hoja inferior para cobrar.</div></div>
+</div>
+<div class="dv-opts">
+<sc-for list="{{ framesP }}" as="f" hint-placeholder-count="3">
+<div class="dv-opt" id="{{ f.id }}">
+<div class="dv-olabel"><a class="dv-oid" href="#{{ f.id }}">{{ f.id }}</a>{{ f.label }}</div>
+<div style="width:{{ f.fw }}px;height:{{ f.fh }}px;background:var(--n-50);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--shadow-md);container-type:inline-size;position:relative">
+
+<header style="flex:none;height:60px;display:flex;align-items:center;gap:10px;padding:0 {{ f.padX }};background:var(--td-ink);color:#fff">
+<button aria-label="Volver" onClick="{{ toHist }}" style="width:40px;height:40px;border:0;background:transparent;color:#fff;display:flex;align-items:center;justify-content:center;border-radius:5px;cursor:pointer;margin-left:-8px" style-hover="background:rgba(255,255,255,.08)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></button>
+<span style="flex:1;font:800 italic 24px var(--font-display);text-transform:uppercase;letter-spacing:-.01em">Nueva venta</span>
+<span style="display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 10px;border-radius:999px;background:{{ cajaPillBg }};color:{{ cajaPillFg }};font:700 12px var(--font-ui)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>{{ cajaPill }}</span>
+</header>
+
+<sc-if value="{{ cajaClosed }}" hint-placeholder-val="{{ true }}">
+<div style="flex:none;display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;padding:10px {{ f.padX }};background:var(--warning-bg);border-bottom:1px solid #f3d9a8">
+<span style="flex:1 1 220px;font-size:14px;color:#7a4a00;line-height:1.35"><b>Caja cerrada.</b> Puedes armar el carrito, pero no cobrar hasta abrirla.</span>
+<button onClick="{{ openCaja }}" style="height:36px;padding:0 14px;background:var(--td-ink);color:#fff;border:0;border-radius:5px;font:700 12px var(--font-ui);letter-spacing:.08em;text-transform:uppercase;cursor:pointer">Abrir caja</button>
+</div>
+</sc-if>
+
+<div style="flex:1;min-height:0;display:flex;position:relative">
+<div style="flex:1;min-width:0;overflow:auto;padding:{{ f.pad }};padding-bottom:{{ f.mainPadB }};display:grid;grid-template-columns:minmax(0,1fr);align-content:start;grid-auto-rows:max-content;gap:14px">
+<div style="display:flex;height:48px;background:#fff;border:2px solid var(--td-ink);border-radius:5px;overflow:hidden">
+<span style="width:44px;flex:none;display:flex;align-items:center;justify-content:center;color:var(--fg-3)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path></svg></span>
+<input value="{{ q }}" onChange="{{ onQ }}" placeholder="Buscar por nombre, SKU o código de barras" style="flex:1;min-width:0;border:0;font:400 15px var(--font-ui);color:var(--fg);outline:none">
+<button aria-label="Escanear" style="width:48px;flex:none;border:0;border-left:1px solid var(--border);background:var(--n-50);color:var(--fg);display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"></path><path d="M17 3h2a2 2 0 0 1 2 2v2"></path><path d="M21 17v2a2 2 0 0 1-2 2h-2"></path><path d="M7 21H5a2 2 0 0 1-2-2v-2"></path><path d="M7 8v8M11 8v8M15 8v8"></path></svg></button>
+</div>
+<div style="display:flex;gap:6px;overflow-x:auto;flex:none;scrollbar-width:none">
+<sc-for list="{{ cats }}" as="c" hint-placeholder-count="4">
+<button onClick="{{ c.select }}" style="height:34px;flex:none;white-space:nowrap;padding:0 14px;border-radius:999px;border:1px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }};font:600 13px var(--font-ui);cursor:pointer">{{ c.label }}</button>
+</sc-for>
+</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax({{ f.tileMin }},1fr));gap:10px">
+<sc-for list="{{ prods }}" as="p" hint-placeholder-count="8">
+<button onClick="{{ p.add }}" disabled="{{ p.out }}" style="position:relative;min-height:128px;display:flex;flex-direction:column;align-items:stretch;gap:6px;padding:12px;background:#fff;border:1px solid {{ p.bd }};border-radius:8px;text-align:left;cursor:{{ p.cursor }};opacity:{{ p.op }};font-family:var(--font-ui);color:var(--fg);transition:box-shadow 120ms,transform 120ms" style-hover="box-shadow:var(--shadow-md);transform:translateY(-1px)">
+<span style="font:500 11px var(--font-mono);text-transform:uppercase;color:var(--fg-3)">{{ p.sku }}</span>
+<span style="font:700 14px/1.25 var(--font-ui);flex:1;text-wrap:pretty">{{ p.name }}</span>
+<span style="display:flex;align-items:flex-end;justify-content:space-between;gap:6px"><span style="font:800 22px/1 var(--font-display)">{{ p.priceLabel }}</span><span style="font:700 11px var(--font-ui);color:{{ p.stockFg }}">{{ p.stockLabel }}</span></span>
+<sc-if value="{{ p.inCart }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:-7px;right:-7px;min-width:24px;height:24px;padding:0 6px;border-radius:999px;background:var(--td-red);color:#fff;border:2px solid #fff;font:700 12px var(--font-ui);display:flex;align-items:center;justify-content:center">{{ p.inCart }}</span></sc-if>
+</button>
+</sc-for>
+</div>
+<sc-if value="{{ noProds }}" hint-placeholder-val="{{ false }}"><div style="padding:28px;text-align:center;font-size:14px;color:var(--fg-2);background:#fff;border:1px dashed var(--border-strong);border-radius:8px">Sin resultados para "{{ q }}".</div></sc-if>
+</div>
+
+<sc-if value="{{ f.sheetOv }}" hint-placeholder-val="{{ false }}"><div onClick="{{ closeCart }}" style="position:absolute;inset:0;background:rgba(10,11,12,.45);z-index:5"></div></sc-if>
+
+<aside style="position:{{ f.asPos }};left:0;right:0;bottom:0;width:{{ f.asW }};height:{{ f.asH }};flex:none;background:#fff;border-left:1px solid var(--border);border-radius:{{ f.asR }};box-shadow:{{ f.asSh }};transform:{{ f.asTf }};transition:transform 180ms cubic-bezier(.2,.7,.2,1);z-index:6;display:flex;flex-direction:column;overflow:hidden">
+<div style="flex:none;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:16px 18px;border-bottom:1px solid var(--divider)">
+<span style="font:800 italic 22px var(--font-display);text-transform:uppercase">Carrito · {{ cartCount }}</span>
+<div style="display:flex;gap:4px">
+<sc-if value="{{ hasCart }}" hint-placeholder-val="{{ false }}"><button onClick="{{ clearCart }}" style="height:32px;padding:0 10px;border:0;background:transparent;color:var(--fg-2);font:600 13px var(--font-ui);cursor:pointer;border-radius:5px" style-hover="background:var(--n-100)">Vaciar</button></sc-if>
+<sc-if value="{{ f.mobile }}" hint-placeholder-val="{{ false }}"><button aria-label="Cerrar carrito" onClick="{{ closeCart }}" style="width:32px;height:32px;border:0;background:transparent;border-radius:5px;display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button></sc-if>
+</div>
+</div>
+<div style="flex:1;overflow:auto;display:flex;flex-direction:column">
+<label style="display:flex;flex-direction:column;gap:6px;padding:14px 18px 6px"><span style="font:600 11px var(--font-ui);letter-spacing:.12em;text-transform:uppercase;color:var(--fg-3)">Cliente</span><select value="{{ client }}" onChange="{{ onClient }}" style="height:42px;padding:0 10px;border:1px solid var(--border-strong);border-radius:5px;font:500 14px var(--font-ui);background:#fff;color:var(--fg)"><option>Venta de mostrador</option><option>Carlos Méndez</option><option>Ana López</option><option>Taller El Progreso</option></select></label>
+<sc-if value="{{ emptyCart }}" hint-placeholder-val="{{ true }}">
+<div style="margin:14px 18px;padding:24px 16px;border:1.5px dashed var(--border-strong);border-radius:8px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--n-400)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"></circle><circle cx="19" cy="21" r="1"></circle><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"></path></svg><span style="font:700 14px var(--font-ui)">Carrito vacío</span><span style="font-size:13px;color:var(--fg-2)">Toca un producto para agregarlo.</span></div>
+</sc-if>
+<div style="display:flex;flex-direction:column;padding:6px 0">
+<sc-for list="{{ cart }}" as="it" hint-placeholder-count="0">
+<div style="display:flex;align-items:center;gap:10px;padding:10px 18px;border-bottom:1px solid var(--divider)">
+<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font:700 14px var(--font-ui);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ it.name }}</span><span style="font-size:12px;color:var(--fg-3)">{{ it.unitLabel }} c/u</span></div>
+<div style="display:flex;align-items:center;height:34px;border:1px solid var(--border-strong);border-radius:5px;overflow:hidden;flex:none">
+<button onClick="{{ it.dec }}" aria-label="Restar" style="width:30px;height:100%;border:0;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14"></path></svg></button>
+<span style="min-width:28px;text-align:center;font:800 16px var(--font-display)">{{ it.qty }}</span>
+<button onClick="{{ it.inc }}" aria-label="Sumar" style="width:30px;height:100%;border:0;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg></button>
+</div>
+<span style="width:78px;text-align:right;font:800 17px var(--font-display);flex:none">{{ it.lineLabel }}</span>
+</div>
+</sc-for>
+</div>
+
+<div style="padding:12px 18px;display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;flex-direction:column;gap:6px"><span style="font:600 11px var(--font-ui);letter-spacing:.12em;text-transform:uppercase;color:var(--fg-3)">Descuento</span>
+<div style="display:flex;gap:8px"><input type="number" min="0" value="{{ disc }}" onChange="{{ onDisc }}" placeholder="0" style="flex:1;min-width:0;height:42px;padding:0 12px;border:1px solid var(--border-strong);border-radius:5px;font:600 15px var(--font-ui);color:var(--fg);outline-color:var(--td-red)">
+<div style="display:grid;grid-template-columns:1fr 1fr;width:96px;border:1px solid var(--border-strong);border-radius:5px;overflow:hidden"><button onClick="{{ discQ }}" style="border:0;background:{{ dqBg }};color:{{ dqFg }};font:700 14px var(--font-ui);cursor:pointer">Q</button><button onClick="{{ discP }}" style="border:0;border-left:1px solid var(--border);background:{{ dpBg }};color:{{ dpFg }};font:700 14px var(--font-ui);cursor:pointer">%</button></div></div></div>
+<div style="display:flex;flex-direction:column;gap:6px"><span style="font:600 11px var(--font-ui);letter-spacing:.12em;text-transform:uppercase;color:var(--fg-3)">Método de pago</span>
+<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px">
+<sc-for list="{{ methods }}" as="m" hint-placeholder-count="4">
+<button onClick="{{ m.select }}" style="height:40px;border-radius:5px;border:1px solid {{ m.bd }};background:{{ m.bg }};color:{{ m.fg }};font:600 13px var(--font-ui);cursor:pointer">{{ m.label }}</button>
+</sc-for>
+</div></div>
+<sc-if value="{{ isCash }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;gap:8px;align-items:flex-end">
+<label style="flex:1;display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:600;color:var(--fg-2)">Recibido</span><span style="display:flex;height:42px;border:1px solid var(--border-strong);border-radius:5px;overflow:hidden;background:#fff"><span style="width:32px;display:flex;align-items:center;justify-content:center;background:var(--n-50);border-right:1px solid var(--border);font:700 13px var(--font-ui);color:var(--fg-2)">Q</span><input type="number" value="{{ recv }}" onChange="{{ onRecv }}" placeholder="Exacto" style="flex:1;min-width:0;border:0;padding:0 10px;font:600 15px var(--font-ui);outline:none"></span></label>
+<div style="flex:1;height:42px;display:flex;flex-direction:column;justify-content:center;padding:0 12px;border-radius:5px;background:var(--n-50)"><span style="font-size:11px;color:var(--fg-3)">Cambio</span><span style="font:800 18px/1 var(--font-display);color:{{ changeColor }}">{{ changeLabel }}</span></div>
+</div>
+</sc-if>
+</div>
+</div>
+
+<div style="flex:none;padding:14px 18px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:6px;background:#fff">
+<div style="display:flex;justify-content:space-between;font-size:14px;color:var(--fg-2)"><span>Subtotal</span><span>{{ subLabel }}</span></div>
+<sc-if value="{{ hasDisc }}" hint-placeholder-val="{{ false }}"><div style="display:flex;justify-content:space-between;font-size:14px;color:var(--td-red)"><span>Descuento</span><span>− {{ discLabel }}</span></div></sc-if>
+<div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font:700 12px var(--font-ui);letter-spacing:.14em;text-transform:uppercase">Total</span><span style="font:900 italic 34px/1 var(--font-display)">{{ totalLabel }}</span></div>
+<button onClick="{{ charge }}" disabled="{{ blocked }}" style="margin-top:6px;height:52px;border:0;border-radius:5px;background:{{ chBg }};color:{{ chFg }};font:700 15px var(--font-ui);letter-spacing:.08em;text-transform:uppercase;cursor:{{ chCursor }};transition:background 120ms">Cobrar {{ totalLabel }}</button>
+<sc-if value="{{ blockReason }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:#a96500"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v4"></path><path d="M12 16h.01"></path></svg>{{ blockReason }}</span></sc-if>
+</div>
+</aside>
+
+<sc-if value="{{ f.mobile }}" hint-placeholder-val="{{ false }}">
+<button onClick="{{ openCart }}" style="position:absolute;left:12px;right:12px;bottom:12px;height:56px;z-index:4;border:0;border-radius:8px;background:var(--td-ink);color:#fff;display:flex;align-items:center;gap:12px;padding:0 16px;box-shadow:var(--shadow-lg);cursor:pointer;font-family:var(--font-ui)">
+<span style="min-width:28px;height:28px;padding:0 8px;border-radius:999px;background:var(--td-red);font:700 13px var(--font-ui);display:flex;align-items:center;justify-content:center">{{ cartQty }}</span>
+<span style="flex:1;text-align:left;font:700 13px var(--font-ui);letter-spacing:.08em;text-transform:uppercase">Ver carrito</span>
+<span style="font:900 italic 22px var(--font-display)">{{ totalLabel }}</span>
+</button>
+</sc-if>
+</div>
+
+<sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;left:50%;top:76px;transform:translateX(-50%);z-index:9;background:var(--td-ink);color:#fff;padding:10px 16px;border-radius:5px;font:600 13px var(--font-ui);box-shadow:var(--shadow-lg);white-space:nowrap">{{ toast }}</div></sc-if>
+</div>
+</div>
+</sc-for>
+</div>
+<p class="dv-next">Prueba: agrega productos, pon 10% de descuento, elige Crédito con "Venta de mostrador" o Efectivo con recibido menor. Abre caja y cobra: la venta aparece arriba en <a class="dv-oid" href="#1a">1a</a>.</p>
+</section>
+
+<section class="dv-turn" id="t1">
+<div class="dv-thd"><a class="dv-tid" href="#t1">1</a><span class="dv-tname">Historial de ventas</span></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;max-width:1440px;margin:0 0 32px">
+<div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:18px 20px;display:flex;flex-direction:column;gap:6px"><div style="font:700 11px var(--font-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--td-red)">01 · Un solo CTA</div><div style="font-size:14px;line-height:1.45;color:var(--fg-2);text-wrap:pretty">"Registrar venta" aparecía dos veces; queda uno en el encabezado (y botón flotante en móvil).</div></div>
+<div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:18px 20px;display:flex;flex-direction:column;gap:6px"><div style="font:700 11px var(--font-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--td-red)">02 · Indicadores útiles</div><div style="font-size:14px;line-height:1.45;color:var(--fg-2);text-wrap:pretty">Total, ventas, ticket promedio y crédito pendiente, calculados según período y filtro.</div></div>
+<div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:18px 20px;display:flex;flex-direction:column;gap:6px"><div style="font:700 11px var(--font-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--td-red)">03 · Encontrar rápido</div><div style="font-size:14px;line-height:1.45;color:var(--fg-2);text-wrap:pretty">Búsqueda por cliente o número y filtro por método de pago. Estado con color + etiqueta.</div></div>
+<div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:18px 20px;display:flex;flex-direction:column;gap:6px"><div style="font:700 11px var(--font-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--td-red)">04 · Tabla → tarjetas</div><div style="font-size:14px;line-height:1.45;color:var(--fg-2);text-wrap:pretty">Tabla en escritorio; en tablet y móvil cada venta es una tarjeta legible sin scroll horizontal.</div></div>
+</div>
+<div class="dv-opts">
+<sc-for list="{{ framesH }}" as="f" hint-placeholder-count="3">
+<div class="dv-opt" id="{{ f.id }}">
+<div class="dv-olabel"><a class="dv-oid" href="#{{ f.id }}">{{ f.id }}</a>{{ f.label }}</div>
+<div style="width:{{ f.fw }}px;height:{{ f.fh }}px;background:var(--n-50);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--shadow-md);container-type:inline-size;position:relative">
+<header style="flex:none;height:60px;display:flex;align-items:center;gap:12px;padding:0 {{ f.padX }};background:var(--td-ink);color:#fff">
+<button aria-label="Menú" style="width:40px;height:40px;border:0;background:transparent;color:#fff;display:flex;align-items:center;justify-content:center;border-radius:5px;cursor:pointer;margin-left:-8px"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16"></path><path d="M4 12h16"></path><path d="M4 18h16"></path></svg></button>
+<div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0"><span style="width:30px;height:30px;border-radius:5px;background:var(--td-red);display:flex;align-items:center;justify-content:center;font:900 italic 18px var(--font-display)">E</span><span style="font:800 italic 22px var(--font-display);text-transform:uppercase">Emprendela</span></div>
+<span style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--n-300)"><span style="width:8px;height:8px;border-radius:999px;background:#4ade80"></span><span style="display:{{ f.syncText }}">Sincronizado</span></span>
+</header>
+<main style="flex:1;overflow:auto;padding:{{ f.pad }};padding-bottom:{{ f.mainPadB }};display:grid;grid-template-columns:minmax(0,1fr);align-content:start;grid-auto-rows:max-content;gap:18px">
+<div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px">
+<div style="display:flex;flex-direction:column;gap:4px"><span style="font:700 11px var(--font-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--fg-3)">Operación</span><span style="font-family:var(--font-display);font-weight:800;font-style:italic;text-transform:uppercase;font-size:clamp(32px,4.2cqi,48px);line-height:.95">Ventas</span></div>
+<sc-if value="{{ f.ctaTop }}" hint-placeholder-val="{{ true }}"><button onClick="{{ toPos }}" style="height:44px;padding:0 18px;display:flex;align-items:center;gap:8px;background:var(--td-red);border:0;border-radius:5px;color:#fff;font:700 13px var(--font-ui);letter-spacing:.08em;text-transform:uppercase;cursor:pointer" style-hover="background:var(--red-600)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>Nueva venta</button></sc-if>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+<div style="display:flex;padding:3px;gap:3px;background:var(--n-200);border-radius:5px">
+<sc-for list="{{ periods }}" as="p" hint-placeholder-count="3"><button onClick="{{ p.select }}" style="height:34px;padding:0 14px;border:0;border-radius:4px;background:{{ p.bg }};color:{{ p.fg }};box-shadow:{{ p.sh }};font:700 13px var(--font-ui);cursor:pointer;white-space:nowrap">{{ p.label }}</button></sc-for>
+</div>
+<span style="font-size:13px;color:var(--fg-3)">{{ periodRange }}</span>
+</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax({{ f.kpiMin }},1fr));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:8px;overflow:hidden">
+<sc-for list="{{ kpis }}" as="k" hint-placeholder-count="4"><div style="background:#fff;padding:14px 16px;display:flex;flex-direction:column;gap:4px"><span style="font:600 11px var(--font-ui);letter-spacing:.12em;text-transform:uppercase;color:var(--fg-3)">{{ k.label }}</span><span style="font:800 28px/1 var(--font-display);color:{{ k.color }}">{{ k.value }}</span><span style="font-size:12px;color:var(--fg-2)">{{ k.sub }}</span></div></sc-for>
+</div>
+
+<div style="background:#fff;border:1px solid var(--border);border-radius:8px;overflow:hidden;display:flex;flex-direction:column">
+<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:12px 14px;border-bottom:1px solid var(--divider)">
+<div style="flex:1 1 220px;display:flex;height:40px;border:1px solid var(--border-strong);border-radius:5px;overflow:hidden"><span style="width:38px;flex:none;display:flex;align-items:center;justify-content:center;color:var(--fg-3)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path></svg></span><input value="{{ hq }}" onChange="{{ onHq }}" placeholder="Buscar cliente o nº de venta" style="flex:1;min-width:0;border:0;font:400 14px var(--font-ui);outline:none"></div>
+<div style="display:flex;gap:6px;overflow-x:auto;max-width:100%;scrollbar-width:none">
+<sc-for list="{{ mfilters }}" as="m" hint-placeholder-count="5"><button onClick="{{ m.select }}" style="height:32px;flex:none;white-space:nowrap;padding:0 12px;border-radius:999px;border:1px solid {{ m.bd }};background:{{ m.bg }};color:{{ m.fg }};font:600 12px var(--font-ui);cursor:pointer">{{ m.label }}</button></sc-for>
+</div>
+</div>
+
+<sc-if value="{{ f.wide }}" hint-placeholder-val="{{ true }}">
+<div style="display:grid;grid-template-columns:120px 90px minmax(0,1fr) 90px 140px 120px 120px;gap:12px;padding:10px 18px;background:var(--n-50);border-bottom:1px solid var(--divider);font:700 11px var(--font-ui);letter-spacing:.12em;text-transform:uppercase;color:var(--fg-3)"><span>Nº</span><span>Hora</span><span>Cliente</span><span>Artículos</span><span>Método</span><span>Estado</span><span style="text-align:right">Total</span></div>
+<sc-for list="{{ rows }}" as="r" hint-placeholder-count="6">
+<div style="display:grid;grid-template-columns:120px 90px minmax(0,1fr) 90px 140px 120px 120px;gap:12px;align-items:center;padding:0 18px;height:52px;border-bottom:1px solid var(--divider);background:{{ r.rowBg }};cursor:pointer" style-hover="background:var(--n-50)">
+<span style="font:600 13px var(--font-mono)">{{ r.num }}</span>
+<span style="font-size:14px;color:var(--fg-2)">{{ r.t }}</span>
+<span style="font:600 14px var(--font-ui);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-decoration:{{ r.strike }}">{{ r.c }}</span>
+<span style="font-size:14px;color:var(--fg-2)">{{ r.items }}</span>
+<span style="font-size:14px;color:var(--fg-2)">{{ r.m }}</span>
+<span><span style="display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 10px;border-radius:999px;background:{{ r.stBg }};color:{{ r.stFg }};font:700 12px var(--font-ui)"><span style="width:6px;height:6px;border-radius:999px;background:currentColor"></span>{{ r.st }}</span></span>
+<span style="text-align:right;font:800 18px var(--font-display);text-decoration:{{ r.strike }};color:{{ r.totColor }}">{{ r.totalLabel }}</span>
+</div>
+</sc-for>
+</sc-if>
+<sc-if value="{{ f.narrow }}" hint-placeholder-val="{{ false }}">
+<sc-for list="{{ rows }}" as="r" hint-placeholder-count="6">
+<div style="display:flex;flex-direction:column;gap:6px;padding:12px 16px;border-bottom:1px solid var(--divider);background:{{ r.rowBg }}">
+<div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span style="font:500 12px var(--font-mono);color:var(--fg-3)">{{ r.num }} · {{ r.t }}</span><span style="display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 9px;border-radius:999px;background:{{ r.stBg }};color:{{ r.stFg }};font:700 11px var(--font-ui)"><span style="width:6px;height:6px;border-radius:999px;background:currentColor"></span>{{ r.st }}</span></div>
+<div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px"><span style="font:700 15px var(--font-ui);min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-decoration:{{ r.strike }}">{{ r.c }}</span><span style="font:800 20px var(--font-display);flex:none;text-decoration:{{ r.strike }};color:{{ r.totColor }}">{{ r.totalLabel }}</span></div>
+<span style="font-size:13px;color:var(--fg-2)">{{ r.m }} · {{ r.items }} art.</span>
+</div>
+</sc-for>
+</sc-if>
+
+<sc-if value="{{ noRows }}" hint-placeholder-val="{{ false }}">
+<div style="padding:40px 18px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center">
+<span style="width:52px;height:52px;border-radius:8px;background:var(--n-100);color:var(--fg-3);display:flex;align-items:center;justify-content:center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"></path><path d="M16 8h-6"></path><path d="M16 12h-6"></path></svg></span>
+<span style="font:700 16px var(--font-ui)">{{ emptyTitle }}</span>
+<span style="font-size:14px;color:var(--fg-2);max-width:300px">{{ emptySub }}</span>
+</div>
+</sc-if>
+</div>
+</main>
+<sc-if value="{{ f.fab }}" hint-placeholder-val="{{ false }}">
+<button onClick="{{ toPos }}" style="position:absolute;right:16px;bottom:16px;height:56px;padding:0 20px;border:0;border-radius:8px;background:var(--td-red);color:#fff;display:flex;align-items:center;gap:8px;font:700 14px var(--font-ui);letter-spacing:.08em;text-transform:uppercase;box-shadow:var(--shadow-red);cursor:pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>Nueva venta</button>
+</sc-if>
+</div>
+</div>
+</sc-for>
+</div>
+<p class="dv-next">Prueba: cambia período y filtros. Siguiente: "detalle de venta al tocar una fila" · "anular venta con motivo" · "exportar a Excel"</p>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;conVentas&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;cajaAbierta&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;}}">
+class Component extends DCLogic {
+  state = {
+    period: 'hoy', mf: 'Todos', hq: '', newSales: [],
+    q: '', cat: 'Todos', cart: {}, client: 'Venta de mostrador', disc: '', discMode: 'q', pay: 'Efectivo', recv: '', caja: null, cartOpen: false, toast: ''
+  };
+  static SALES = [
+    { n: 12, t: '14:32', c: 'Venta de mostrador', items: 2, m: 'Efectivo', st: 'Pagada', total: 120, day: 'hoy' },
+    { n: 11, t: '13:10', c: 'Carlos Méndez', items: 5, m: 'Crédito', st: 'Pendiente', total: 415.5, day: 'hoy' },
+    { n: 10, t: '11:48', c: 'Venta de mostrador', items: 1, m: 'Tarjeta', st: 'Pagada', total: 95, day: 'hoy' },
+    { n: 9, t: '10:05', c: 'Ana López', items: 3, m: 'Transferencia', st: 'Pagada', total: 230, day: 'hoy' },
+    { n: 8, t: 'Sáb 17:20', c: 'Venta de mostrador', items: 1, m: 'Efectivo', st: 'Anulada', total: 45, day: 'semana' },
+    { n: 7, t: 'Sáb 12:02', c: 'Taller El Progreso', items: 6, m: 'Efectivo', st: 'Pagada', total: 540, day: 'semana' },
+    { n: 6, t: 'Vie 16:40', c: 'Venta de mostrador', items: 2, m: 'Tarjeta', st: 'Pagada', total: 185, day: 'semana' },
+    { n: 5, t: '28 sep', c: 'Ana López', items: 4, m: 'Efectivo', st: 'Pagada', total: 310, day: 'mes' },
+    { n: 4, t: '24 sep', c: 'Venta de mostrador', items: 1, m: 'Efectivo', st: 'Pagada', total: 60, day: 'mes' }
+  ];
+  static PRODS = [
+    { id: 1, name: 'Mouse alámbrico', sku: 'Sin SKU', price: 60, stock: 0, cat: 'Periféricos' },
+    { id: 2, name: 'Teclado USB en español', sku: 'TEC-USB-01', price: 95, stock: 14, cat: 'Periféricos' },
+    { id: 3, name: 'Cable HDMI 2 m', sku: 'CAB-HDMI-2', price: 45, stock: 30, cat: 'Cables' },
+    { id: 4, name: 'Audífonos con micrófono', sku: 'AUD-MIC-03', price: 120, stock: 4, cat: 'Audio' },
+    { id: 5, name: 'Memoria USB 32 GB', sku: 'USB-32GB', price: 65, stock: 22, cat: 'Almacenamiento' },
+    { id: 6, name: 'Cargador USB-C 20 W', sku: 'CRG-USBC-20', price: 85, stock: 9, cat: 'Cables' },
+    { id: 7, name: 'Mousepad básico', sku: 'MPD-BAS', price: 25, stock: 40, cat: 'Periféricos' },
+    { id: 8, name: 'Hub USB 4 puertos', sku: 'HUB-USB-4', price: 110, stock: 6, cat: 'Cables' }
+  ];
+  flash(t) { this.setState({ toast: t }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ toast: '' }), 2600); }
+  renderVals() {
+    const s = this.state;
+    const Q = n => 'Q ' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const chip = (on) => ({ bg: on ? 'var(--td-ink)' : '#fff', fg: on ? '#fff' : 'var(--fg)', bd: on ? 'var(--td-ink)' : 'var(--border-strong)' });
+    // Historial
+    const withSales = this.props.conVentas ?? true;
+    const all = withSales ? [...s.newSales, ...Component.SALES] : [...s.newSales];
+    const inPeriod = all.filter(x => s.period === 'mes' || (s.period === 'semana' ? x.day !== 'mes' : x.day === 'hoy'));
+    const hq = s.hq.trim().toLowerCase();
+    const filtered = inPeriod.filter(x => (s.mf === 'Todos' || x.m === s.mf) && (!hq || x.c.toLowerCase().includes(hq) || String(x.n).includes(hq.replace(/\D/g, '') || '§')));
+    const valid = filtered.filter(x => x.st !== 'Anulada');
+    const tot = valid.reduce((a, x) => a + x.total, 0);
+    const credit = valid.filter(x => x.st === 'Pendiente').reduce((a, x) => a + x.total, 0);
+    const stc = { Pagada: ['var(--success-bg)', 'var(--success)'], Pendiente: ['var(--warning-bg)', '#a96500'], Anulada: ['var(--n-100)', 'var(--fg-3)'] };
+    const rows = filtered.map(x => ({ ...x, num: 'V-' + String(x.n).padStart(4, '0'), totalLabel: Q(x.total), stBg: stc[x.st][0], stFg: stc[x.st][1], strike: x.st === 'Anulada' ? 'line-through' : 'none', totColor: x.st === 'Anulada' ? 'var(--fg-3)' : 'var(--fg)', rowBg: x.fresh ? 'var(--success-bg)' : '#fff' }));
+    const periods = [['hoy', 'Hoy'], ['semana', 'Esta semana'], ['mes', 'Este mes']].map(([k, label]) => { const on = s.period === k; return { label, bg: on ? '#fff' : 'transparent', fg: on ? 'var(--fg)' : 'var(--fg-2)', sh: on ? 'var(--shadow-xs)' : 'none', select: () => this.setState({ period: k }) }; });
+    const mfilters = ['Todos', 'Efectivo', 'Tarjeta', 'Transferencia', 'Crédito'].map(label => ({ label, ...chip(s.mf === label), select: () => this.setState({ mf: label }) }));
+    const kpis = [
+      { label: 'Total del período', value: Q(tot), sub: 'Sin ventas anuladas', color: 'var(--fg)' },
+      { label: 'Ventas', value: String(valid.length), sub: `${filtered.length - valid.length} anulada(s)`, color: 'var(--fg)' },
+      { label: 'Ticket promedio', value: Q(valid.length ? tot / valid.length : 0), sub: 'Por venta', color: 'var(--fg)' },
+      { label: 'Al crédito', value: Q(credit), sub: 'Pendiente de cobro', color: credit ? '#a96500' : 'var(--fg)' }
+    ];
+    // POS
+    const caja = s.caja ?? !!this.props.cajaAbierta;
+    const cats = ['Todos', 'Periféricos', 'Cables', 'Audio', 'Almacenamiento'].map(label => ({ label, ...chip(s.cat === label), select: () => this.setState({ cat: label }) }));
+    const q = s.q.trim().toLowerCase();
+    const setQty = (id, n) => this.setState(st => { const c = { ...st.cart }; if (n <= 0) delete c[id]; else c[id] = n; return { cart: c }; });
+    const prods = Component.PRODS.filter(p => (s.cat === 'Todos' || p.cat === s.cat) && (!q || p.name.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q))).map(p => {
+      const inCart = s.cart[p.id] || 0, out = p.stock <= 0, full = inCart >= p.stock;
+      return { ...p, inCart: inCart || null, out, priceLabel: Q(p.price), op: out ? .5 : 1, cursor: out ? 'not-allowed' : 'pointer',
+        bd: inCart ? 'var(--td-ink)' : 'var(--border)',
+        stockLabel: out ? 'Agotado' : `${p.stock} u.`, stockFg: out ? 'var(--danger)' : p.stock < 10 ? '#a96500' : 'var(--success)',
+        add: () => { if (out) return; if (full) return this.flash(`Solo hay ${p.stock} u. de ${p.name}`); setQty(p.id, inCart + 1); } };
+    });
+    const cart = Object.entries(s.cart).map(([id, qty]) => { const p = Component.PRODS.find(x => x.id == id); return { name: p.name, qty, unitLabel: Q(p.price), line: p.price * qty, lineLabel: Q(p.price * qty), inc: () => qty < p.stock ? setQty(p.id, qty + 1) : this.flash(`Solo hay ${p.stock} u.`), dec: () => setQty(p.id, qty - 1) }; });
+    const cartQty = cart.reduce((a, x) => a + x.qty, 0);
+    const sub = cart.reduce((a, x) => a + x.line, 0);
+    const dv = parseFloat(s.disc) || 0;
+    const discAmt = Math.min(sub, s.discMode === 'p' ? sub * Math.min(dv, 100) / 100 : dv);
+    const total = sub - discAmt;
+    const isCash = s.pay === 'Efectivo';
+    const recv = parseFloat(s.recv);
+    const change = isCash && !isNaN(recv) ? recv - total : 0;
+    const blockReason = !caja ? 'Abre la caja para poder cobrar.' : !cart.length ? 'Agrega al menos un producto.' : s.pay === 'Crédito' && s.client === 'Venta de mostrador' ? 'Selecciona un cliente para vender al crédito.' : change < 0 ? `Faltan ${Q(-change)} en efectivo.` : null;
+    const blocked = !!blockReason;
+    const methods = ['Efectivo', 'Tarjeta', 'Transferencia', 'Crédito'].map(label => ({ label, ...chip(s.pay === label), select: () => this.setState({ pay: label }) }));
+    const nextN = 13 + s.newSales.length;
+    const charge = () => {
+      if (blocked) return;
+      const now = new Date(); const t = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+      const sale = { n: nextN, t, c: s.client, items: cartQty, m: s.pay, st: s.pay === 'Crédito' ? 'Pendiente' : 'Pagada', total, day: 'hoy', fresh: true };
+      this.setState(st => ({ newSales: [sale, ...st.newSales.map(x => ({ ...x, fresh: false }))], cart: {}, disc: '', recv: '', cartOpen: false, period: 'hoy', mf: 'Todos' }));
+      this.flash(`Venta V-${String(nextN).padStart(4, '0')} registrada · ${Q(total)}`);
+    };
+    const W = [['a', 'Escritorio · 1440 px', 1440, 900, '28px 32px', '32px'], ['b', 'Tablet · 768 px', 768, 1024, '24px', '24px'], ['c', 'Móvil · 390 px', 390, 844, '16px', '16px']];
+    const framesH = W.map(([k, label, fw, fh, pad, padX], i) => ({ id: '1' + k, label, fw, fh, pad, padX, wide: i === 0, narrow: i > 0, ctaTop: i < 2, fab: i === 2, syncText: i === 2 ? 'none' : 'inline', kpiMin: i === 2 ? '150px' : '180px', mainPadB: i === 2 ? '96px' : pad.split(' ')[0] }));
+    const framesP = W.map(([k, label, fw, fh, pad, padX], i) => {
+      const mobile = i === 2;
+      return { id: '2' + k, label: label + (mobile ? ' — carrito en hoja inferior' : i === 1 ? ' — carrito lateral compacto' : ' — productos + carrito'), fw, fh, pad, padX, mobile, mainPadB: mobile ? '84px' : pad.split(' ')[0],
+        tileMin: mobile ? '150px' : '170px', sheetOv: mobile && s.cartOpen,
+        asPos: mobile ? 'absolute' : 'relative', asW: mobile ? 'auto' : (i === 1 ? '320px' : '400px'), asH: mobile ? '90%' : 'auto',
+        asR: mobile ? '16px 16px 0 0' : '0', asSh: mobile ? 'var(--shadow-lg)' : 'none', asTf: mobile ? (s.cartOpen ? 'translateY(0)' : 'translateY(105%)') : 'none' };
+    });
+    return {
+      framesH, framesP, periods, periodRange: { hoy: 'Lunes 5 de octubre', semana: '29 sep – 5 oct', mes: 'Octubre 2026 (incluye fin de sept.)' }[s.period],
+      kpis, mfilters, rows, noRows: rows.length === 0, hq: s.hq, onHq: e => this.setState({ hq: e.target.value }),
+      emptyTitle: all.length ? 'Sin ventas con estos filtros' : 'Todavía no hay ventas', emptySub: all.length ? 'Prueba otro período o método de pago.' : 'Registra tu primera venta desde "Nueva venta".',
+      toPos: () => this.flash('Ir a Nueva venta'), toHist: () => this.flash('Volver a Ventas'),
+      cajaClosed: !caja, cajaPill: caja ? 'Caja abierta' : 'Caja cerrada', cajaPillBg: caja ? 'rgba(30,158,84,.18)' : 'rgba(232,146,12,.2)', cajaPillFg: caja ? '#4ade80' : '#fbbf24',
+      openCaja: () => { this.setState({ caja: true }); this.flash('Caja abierta'); },
+      q: s.q, onQ: e => this.setState({ q: e.target.value }), cats, prods, noProds: prods.length === 0,
+      cart, cartCount: `${cartQty} art.`, cartQty, hasCart: cart.length > 0, emptyCart: cart.length === 0, clearCart: () => this.setState({ cart: {} }),
+      client: s.client, onClient: e => this.setState({ client: e.target.value }),
+      disc: s.disc, onDisc: e => this.setState({ disc: e.target.value }),
+      discQ: () => this.setState({ discMode: 'q' }), discP: () => this.setState({ discMode: 'p' }),
+      dqBg: s.discMode === 'q' ? 'var(--td-ink)' : '#fff', dqFg: s.discMode === 'q' ? '#fff' : 'var(--fg)', dpBg: s.discMode === 'p' ? 'var(--td-ink)' : '#fff', dpFg: s.discMode === 'p' ? '#fff' : 'var(--fg)',
+      methods, isCash, recv: s.recv, onRecv: e => this.setState({ recv: e.target.value }),
+      changeLabel: Q(Math.max(0, change)), changeColor: change < 0 ? 'var(--danger)' : 'var(--fg)',
+      subLabel: Q(sub), hasDisc: discAmt > 0, discLabel: Q(discAmt), totalLabel: Q(total),
+      blocked, blockReason, charge, chBg: blocked ? 'var(--n-200)' : 'var(--td-red)', chFg: blocked ? 'var(--n-500)' : '#fff', chCursor: blocked ? 'not-allowed' : 'pointer',
+      openCart: () => this.setState({ cartOpen: true }), closeCart: () => this.setState({ cartOpen: false }),
+      toast: s.toast
+    };
+  }
+}
+</script>
+</body>
+</html>

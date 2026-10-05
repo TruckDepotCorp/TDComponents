@@ -7,6 +7,10 @@ export function bindUi(root: ParentNode = document): void {
         startCarousel(host);
     });
 
+    root.querySelectorAll<HTMLElement>('[data-td-ccard]').forEach((host) => {
+        startCardCarousel(host);
+    });
+
     root.querySelectorAll<HTMLElement>('[data-td-toast]').forEach((toast) => {
         window.setTimeout(() => toast.remove(), 4000);
     });
@@ -55,6 +59,46 @@ export function handleInplaceDblClick(target: Element): void {
 }
 
 export function handleUiClick(target: Element): boolean {
+    const photo = target.closest('[data-td-photo-open]');
+    if (photo instanceof HTMLButtonElement && !photo.disabled) {
+        photo.closest('td-photo')?.querySelector<HTMLInputElement>('[data-td-photo-pick]')?.click();
+        return true;
+    }
+
+    const photosOpen = target.closest('[data-td-photos-open]');
+    if (photosOpen instanceof HTMLButtonElement && !photosOpen.disabled) {
+        const host = photosOpen.closest('td-photos');
+        if (host instanceof HTMLElement) {
+            void openPhotoSet(host);
+        }
+        return true;
+    }
+
+    const photosShot = target.closest('[data-td-photos-shot]');
+    if (photosShot instanceof HTMLButtonElement && !photosShot.disabled) {
+        const host = photosShot.closest('td-photos');
+        if (host instanceof HTMLElement) {
+            void takePhotoSetShot(host);
+        }
+        return true;
+    }
+
+    const photosDone = target.closest('[data-td-photos-done]');
+    if (photosDone instanceof HTMLButtonElement) {
+        photosDone.closest('td-photos')?.querySelector<HTMLDialogElement>('[data-td-photos-cam]')?.close();
+        return true;
+    }
+
+    const photosRemove = target.closest('[data-td-photos-remove]');
+    if (photosRemove instanceof HTMLButtonElement) {
+        const host = photosRemove.closest('td-photos');
+        const id = Number(photosRemove.dataset.tdPhotosRemove);
+        if (host instanceof HTMLElement && Number.isFinite(id)) {
+            removePhotoSetShot(host, id);
+        }
+        return true;
+    }
+
     const checkAll = target.closest('[data-td-check-all]');
     if (checkAll instanceof HTMLInputElement) {
         const name = checkAll.getAttribute('data-td-check-all');
@@ -518,6 +562,30 @@ export function handleUiClick(target: Element): boolean {
     const carPlay = target.closest('[data-td-carousel-play]');
     if (carPlay instanceof HTMLButtonElement) {
         toggleCarouselPlay(carPlay.closest('[data-td-carousel]'));
+        return true;
+    }
+
+    const cardPrev = target.closest('[data-td-ccard-prev]');
+    if (cardPrev instanceof HTMLButtonElement) {
+        stepCardCarousel(cardPrev.closest('[data-td-ccard]'), -1);
+        return true;
+    }
+
+    const cardNext = target.closest('[data-td-ccard-next]');
+    if (cardNext instanceof HTMLButtonElement) {
+        stepCardCarousel(cardNext.closest('[data-td-ccard]'), 1);
+        return true;
+    }
+
+    const cardDot = target.closest('[data-td-ccard-dot]');
+    if (cardDot instanceof HTMLButtonElement) {
+        goCardCarousel(cardDot.closest('[data-td-ccard]'), Number(cardDot.dataset.tdCcardDot ?? 0));
+        return true;
+    }
+
+    const cardPlay = target.closest('[data-td-ccard-play]');
+    if (cardPlay instanceof HTMLButtonElement) {
+        toggleCardCarousel(cardPlay.closest('[data-td-ccard]'));
         return true;
     }
 
@@ -1252,6 +1320,87 @@ function escapeHtml(value: string): string {
     }[char] ?? char));
 }
 
+const cardCarouselTimers = new WeakMap<HTMLElement, number>();
+
+function startCardCarousel(host: HTMLElement): void {
+    if (host.dataset.auto === 'false') return;
+    if (host.querySelectorAll('.td-ccard').length < 2) return;
+    host.addEventListener('mouseenter', () => pauseCardCarousel(host, true));
+    host.addEventListener('mouseleave', () => pauseCardCarousel(host, false));
+    host.addEventListener('focusin', () => pauseCardCarousel(host, true));
+    host.addEventListener('focusout', () => pauseCardCarousel(host, false));
+    playCardCarousel(host);
+}
+
+function playCardCarousel(host: HTMLElement): void {
+    stopCardCarousel(host);
+    const interval = Number(host.closest('td-card-carousel')?.getAttribute('data-interval') ?? 5000);
+    const id = window.setInterval(() => stepCardCarousel(host, 1), Number.isFinite(interval) ? interval : 5000);
+    cardCarouselTimers.set(host, id);
+    host.dataset.paused = 'false';
+    setPlayIcon(host, true);
+}
+
+function stopCardCarousel(host: HTMLElement): void {
+    const id = cardCarouselTimers.get(host);
+    if (id) {
+        window.clearInterval(id);
+        cardCarouselTimers.delete(host);
+    }
+}
+
+function pauseCardCarousel(host: HTMLElement, paused: boolean): void {
+    host.dataset.hold = paused ? 'true' : 'false';
+    if (paused) stopCardCarousel(host);
+    else if (host.dataset.paused !== 'true') playCardCarousel(host);
+}
+
+function toggleCardCarousel(host: HTMLElement | null): void {
+    if (!host) return;
+    const paused = host.dataset.paused === 'true';
+    host.dataset.paused = paused ? 'false' : 'true';
+    if (paused) {
+        playCardCarousel(host);
+    } else {
+        stopCardCarousel(host);
+        setPlayIcon(host, false);
+    }
+}
+
+function setPlayIcon(host: HTMLElement, playing: boolean): void {
+    const play = host.querySelector('[data-td-ccard-play]');
+    const glyph = play?.querySelector('.td-btnicon__glyph');
+    if (glyph) glyph.textContent = playing ? 'pause' : 'play_arrow';
+    if (play instanceof HTMLElement) {
+        const label = playing ? 'Pausar' : 'Reproducir';
+        play.setAttribute('aria-label', label);
+    }
+}
+
+function stepCardCarousel(host: HTMLElement | null, delta: number): void {
+    if (!host) return;
+    const cards = host.querySelectorAll('.td-ccard');
+    const current = Number(host.dataset.index ?? 0);
+    goCardCarousel(host, (current + delta + cards.length) % cards.length);
+}
+
+function goCardCarousel(host: HTMLElement | null, index: number): void {
+    if (!host) return;
+    const track = host.querySelector<HTMLElement>('[data-td-ccard-track]');
+    const cards = host.querySelectorAll('.td-ccard');
+    if (!track || !cards.length) return;
+    const next = ((index % cards.length) + cards.length) % cards.length;
+    host.dataset.index = String(next);
+    track.style.transform = `translateX(-${next * 100}%)`;
+    host.querySelectorAll('[data-td-ccard-dot]').forEach((dot, i) => {
+        dot.classList.toggle('is-current', i === next);
+        if (i === next) dot.setAttribute('aria-current', 'true');
+        else dot.removeAttribute('aria-current');
+    });
+    const live = host.querySelector('[data-td-ccard-live]');
+    if (live) live.textContent = `Tarjeta ${next + 1} de ${cards.length}`;
+}
+
 const carouselTimers = new WeakMap<HTMLElement, number>();
 
 function startCarousel(host: HTMLElement): void {
@@ -1330,4 +1479,330 @@ function goCarousel(host: HTMLElement | null, index: number): void {
         dot.classList.toggle('is-current', i === next);
         dot.setAttribute('aria-current', i === next ? 'true' : 'false');
     });
+}
+
+const PHOTO_QUALITY = 0.85;
+const PHOTO_MAX_EDGE = 1920;
+const photoTokens = new WeakMap<HTMLElement, number>();
+const photoPreviewUrls = new WeakMap<HTMLElement, string>();
+
+export function handlePhotoChange(target: EventTarget | null): void {
+    if (!(target instanceof HTMLInputElement) || !target.matches('[data-td-photo-pick]')) {
+        return;
+    }
+
+    const host = target.closest('td-photo');
+    const file = target.files?.[0] ?? null;
+    target.value = '';
+    if (!(host instanceof HTMLElement) || !file) {
+        return;
+    }
+
+    const token = (photoTokens.get(host) ?? 0) + 1;
+    photoTokens.set(host, token);
+    void finishPhoto(host, file, token);
+}
+
+async function finishPhoto(host: HTMLElement, file: File, token: number): Promise<void> {
+    const button = host.querySelector<HTMLButtonElement>('[data-td-photo-open]');
+    button?.setAttribute('aria-busy', 'true');
+    setPhotoStatus(host, 'Comprimiendo la foto…', false);
+
+    try {
+        const ready = await compressPhoto(file);
+        if (photoTokens.get(host) !== token) {
+            return;
+        }
+
+        const posted = host.querySelector<HTMLInputElement>('[data-td-photo-file]');
+        if (!posted) {
+            return;
+        }
+
+        const transfer = new DataTransfer();
+        transfer.items.add(ready);
+        posted.files = transfer.files;
+        showPhotoPreview(host, ready);
+        setPhotoStatus(host, `Foto lista, ${photoSize(ready.size)}. Toca la imagen para verla en grande.`, false);
+    } catch {
+        if (photoTokens.get(host) !== token) {
+            return;
+        }
+
+        setPhotoStatus(host, 'No se pudo comprimir esta imagen. Elige un archivo JPG, PNG o WEBP.', true);
+    } finally {
+        if (photoTokens.get(host) === token) {
+            button?.removeAttribute('aria-busy');
+        }
+    }
+}
+
+async function compressPhoto(file: File): Promise<File> {
+    if (file.type && !file.type.startsWith('image/')) {
+        throw new Error('tipo');
+    }
+
+    const source = await createImageBitmap(file);
+    try {
+        const base = file.name.replace(/\.[^.]+$/, '') || 'foto';
+        return await compressBitmap(source, base);
+    } finally {
+        source.close();
+    }
+}
+
+async function compressBitmap(source: ImageBitmap, baseName: string): Promise<File> {
+    const longest = Math.max(source.width, source.height);
+    const scale = longest > PHOTO_MAX_EDGE ? PHOTO_MAX_EDGE / longest : 1;
+    const width = Math.max(1, Math.round(source.width * scale));
+    const height = Math.max(1, Math.round(source.height * scale));
+    let bitmap = source;
+    if (scale < 1) {
+        try {
+            bitmap = await createImageBitmap(source, { resizeWidth: width, resizeHeight: height, resizeQuality: 'high' });
+        } catch {
+            bitmap = source;
+        }
+    }
+
+    try {
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d', { alpha: false });
+        if (!ctx) {
+            throw new Error('canvas');
+        }
+
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, width, height);
+        ctx.drawImage(bitmap, 0, 0, width, height);
+        const blob = await canvasToJpeg(canvas, PHOTO_QUALITY);
+        return new File([blob], `${baseName}.jpg`, { type: 'image/jpeg', lastModified: Date.now() });
+    } finally {
+        if (bitmap !== source) {
+            bitmap.close();
+        }
+    }
+}
+
+function canvasToJpeg(canvas: HTMLCanvasElement, quality: number): Promise<Blob> {
+    return new Promise((resolve, reject) => {
+        canvas.toBlob((blob) => {
+            if (blob) {
+                resolve(blob);
+            } else {
+                reject(new Error('blob'));
+            }
+        }, 'image/jpeg', quality);
+    });
+}
+
+function showPhotoPreview(host: HTMLElement, file: File): void {
+    const preview = host.querySelector<HTMLImageElement>('[data-td-photo-preview]');
+    const large = host.querySelector<HTMLImageElement>('[data-td-photo-large]');
+    const open = host.querySelector<HTMLButtonElement>('[data-td-photo-preview-open]');
+    if (!preview || !large || !open) {
+        return;
+    }
+
+    const previous = photoPreviewUrls.get(host);
+    if (previous) {
+        URL.revokeObjectURL(previous);
+    }
+
+    const url = URL.createObjectURL(file);
+    photoPreviewUrls.set(host, url);
+    preview.src = url;
+    large.src = url;
+    open.hidden = false;
+    const canvas = host.querySelector<HTMLElement>('[data-td-image-canvas]');
+    canvas?.style.setProperty('--z', '1');
+    canvas?.style.setProperty('--r', '0deg');
+}
+
+function setPhotoStatus(host: HTMLElement, text: string, failed: boolean): void {
+    const status = host.querySelector('[data-td-photo-status]');
+    if (!status) {
+        return;
+    }
+
+    status.textContent = text;
+    status.classList.toggle('is-bad', failed);
+}
+
+function photoSize(bytes: number): string {
+    if (bytes < 1024 * 1024) {
+        return `${Math.max(1, Math.round(bytes / 1024))} KB`;
+    }
+
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+type PhotoShot = { id: number; file: File | null; url: string };
+
+const photoSetShots = new WeakMap<HTMLElement, PhotoShot[]>();
+const photoSetStreams = new WeakMap<HTMLElement, MediaStream>();
+let photoSetSeq = 0;
+
+async function openPhotoSet(host: HTMLElement): Promise<void> {
+    const dialog = host.querySelector<HTMLDialogElement>('[data-td-photos-cam]');
+    const video = host.querySelector<HTMLVideoElement>('[data-td-photos-video]');
+    if (!dialog || !video) {
+        return;
+    }
+
+    if (!dialog.dataset.bound) {
+        dialog.dataset.bound = 'true';
+        dialog.addEventListener('close', () => stopPhotoSet(host));
+    }
+
+    if (!navigator.mediaDevices?.getUserMedia) {
+        setPhotoStatus(host, 'Este navegador no abre la cámara. Usa uno que permita fotos en el sitio.', true);
+        return;
+    }
+
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+            audio: false,
+            video: {
+                facingMode: { ideal: 'environment' },
+                width: { ideal: 1920 },
+                height: { ideal: 1080 },
+            },
+        });
+        photoSetStreams.set(host, stream);
+        video.srcObject = stream;
+        await video.play();
+        dialog.showModal();
+        setPhotoStatus(host, 'La cámara sigue abierta. Toca Tomar foto las veces que necesites.', false);
+    } catch {
+        stopPhotoSet(host);
+        setPhotoStatus(host, 'No se pudo abrir la cámara. Permite el acceso en este sitio y vuelve a tocar el botón.', true);
+    }
+}
+
+function stopPhotoSet(host: HTMLElement): void {
+    const stream = photoSetStreams.get(host);
+    stream?.getTracks().forEach((track) => track.stop());
+    photoSetStreams.delete(host);
+    const video = host.querySelector<HTMLVideoElement>('[data-td-photos-video]');
+    if (video) {
+        video.srcObject = null;
+    }
+    const shots = photoSetShots.get(host) ?? [];
+    const ready = shots.filter((shot) => shot.file).length;
+    if (ready > 0) {
+        setPhotoStatus(host, photoSetStatus(shots), false);
+    }
+}
+
+async function takePhotoSetShot(host: HTMLElement): Promise<void> {
+    const video = host.querySelector<HTMLVideoElement>('[data-td-photos-video]');
+    if (!video || video.readyState < 2) {
+        setPhotoStatus(host, 'Esperando la imagen de la cámara.', false);
+        return;
+    }
+
+    const source = await createImageBitmap(video);
+    const id = ++photoSetSeq;
+    const shots = photoSetShots.get(host) ?? [];
+    shots.push({ id, file: null, url: '' });
+    photoSetShots.set(host, shots);
+    renderPhotoSet(host);
+    setPhotoStatus(host, photoSetStatus(shots), false);
+
+    try {
+        const file = await compressBitmap(source, `foto-${id}`);
+        const current = photoSetShots.get(host) ?? [];
+        const shot = current.find((item) => item.id === id);
+        if (!shot) {
+            return;
+        }
+        shot.file = file;
+        shot.url = URL.createObjectURL(file);
+        syncPhotoSetFiles(host);
+        renderPhotoSet(host);
+        setPhotoStatus(host, photoSetStatus(current), false);
+    } catch {
+        const current = photoSetShots.get(host) ?? [];
+        const index = current.findIndex((item) => item.id === id);
+        if (index >= 0) {
+            current.splice(index, 1);
+        }
+        renderPhotoSet(host);
+        setPhotoStatus(host, 'Esa foto no se pudo guardar. Toma otra.', true);
+    } finally {
+        source.close();
+    }
+}
+
+function removePhotoSetShot(host: HTMLElement, id: number): void {
+    const shots = photoSetShots.get(host) ?? [];
+    const index = shots.findIndex((shot) => shot.id === id);
+    if (index < 0) {
+        return;
+    }
+    if (shots[index].url) {
+        URL.revokeObjectURL(shots[index].url);
+    }
+    shots.splice(index, 1);
+    syncPhotoSetFiles(host);
+    renderPhotoSet(host);
+    setPhotoStatus(host, shots.length ? photoSetStatus(shots) : 'No quedan fotos. La cámara puede seguir abierta.', false);
+}
+
+function syncPhotoSetFiles(host: HTMLElement): void {
+    const input = host.querySelector<HTMLInputElement>('[data-td-photos-file]');
+    if (!input) {
+        return;
+    }
+    const transfer = new DataTransfer();
+    for (const shot of photoSetShots.get(host) ?? []) {
+        if (shot.file) {
+            transfer.items.add(shot.file);
+        }
+    }
+    input.files = transfer.files;
+}
+
+function renderPhotoSet(host: HTMLElement): void {
+    const shots = photoSetShots.get(host) ?? [];
+    host.querySelectorAll<HTMLElement>('[data-td-photos-strip]').forEach((strip) => {
+        strip.replaceChildren(...shots.map((shot, index) => photoSetItem(shot, index)));
+    });
+}
+
+function photoSetItem(shot: PhotoShot, index: number): HTMLLIElement {
+    const item = document.createElement('li');
+    item.className = 'td-photos__shot';
+    const number = index + 1;
+    if (shot.url) {
+        const img = document.createElement('img');
+        img.src = shot.url;
+        img.alt = `Foto ${number}`;
+        item.append(img);
+    } else {
+        const pending = document.createElement('span');
+        pending.className = 'td-photos__pending';
+        pending.textContent = 'Guardando…';
+        item.append(pending);
+    }
+    const remove = document.createElement('button');
+    remove.type = 'button';
+    remove.dataset.tdPhotosRemove = String(shot.id);
+    remove.setAttribute('aria-label', `Quitar foto ${number}`);
+    remove.textContent = 'Quitar';
+    item.append(remove);
+    return item;
+}
+
+function photoSetStatus(shots: PhotoShot[]): string {
+    const ready = shots.filter((shot) => shot.file).length;
+    const pending = shots.length - ready;
+    const noun = ready === 1 ? 'foto lista' : 'fotos listas';
+    const waiting = pending > 0 ? ` ${pending === 1 ? 'Una se está guardando.' : `${pending} se están guardando.`}` : '';
+    return `${ready} ${noun} para enviar.${waiting} Quita las que no quieras. La cámara no se cierra al tomar.`;
 }

@@ -1,0 +1,11 @@
+@namespace TDComponents.Components
+
+<div class="td-mxshell" data-td-mx-shell>
+    @ChildContent
+    <p class="td-mxtoast" data-td-mx-toast hidden role="status"></p>
+</div>
+
+@code {
+    /// <summary>Barra, contenido y menú de una pantalla.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

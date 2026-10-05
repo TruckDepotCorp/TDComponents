@@ -1,0 +1,40 @@
+@namespace TDComponents.Components
+
+<article class="td-op" data-td-asn data-expected="@ExpectedPackages">
+    <p class="td-op__kicker">Aviso @Notice</p>
+    <h2>Bultos del camión</h2>
+    <p class="td-op__pair"><span>El aviso dice</span> <b>@ExpectedPackages.ToString(System.Globalization.CultureInfo.CurrentCulture)</b> bultos</p>
+    <p class="td-op__hero"><span data-td-asn-read>@CountedPackages</span> <small>bultos contados</small></p>
+    <input type="hidden" name="@ResolvedField" value="@CountedPackages" data-td-asn-value />
+    <div class="td-op__step">
+        <button type="button" data-td-asn="-1" disabled="@(CountedPackages <= 0)">Quitar un bulto</button>
+        <button type="button" data-td-asn="1">Contar un bulto</button>
+    </div>
+    <p class="td-op__status @DiffClass" data-td-asn-status>@DiffText</p>
+</article>
+
+@code {
+    /// <summary>Número del aviso de despacho.</summary>
+    [Parameter] public string Notice { get; set; } = "";
+
+    /// <summary>Bultos que declara el aviso.</summary>
+    [Parameter] public int ExpectedPackages { get; set; }
+
+    /// <summary>Bultos ya contados en el camión.</summary>
+    [Parameter] public int CountedPackages { get; set; }
+
+    /// <summary>Campo del post con los bultos contados. Si se omite, el post usa bultos.</summary>
+    [Parameter] public string? Field { get; set; }
+
+    private string ResolvedField => string.IsNullOrWhiteSpace(Field) ? "bultos" : Field;
+
+    private int Diff => CountedPackages - ExpectedPackages;
+
+    private string DiffClass => Diff == 0 ? "is-ok" : "is-warn";
+
+    private string DiffText => Diff == 0
+        ? "El camión trae los bultos del aviso. Puedes abrir la descarga."
+        : Diff < 0
+            ? $"Faltan {(-Diff).ToString(System.Globalization.CultureInfo.CurrentCulture)} bultos. No cierres la entrada hasta contar de nuevo."
+            : $"Hay {Diff.ToString(System.Globalization.CultureInfo.CurrentCulture)} bultos de más. Sepáralos antes de recibir.";
+}

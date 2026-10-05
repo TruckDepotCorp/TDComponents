@@ -16,6 +16,7 @@ El mismo mapa viaja en el paquete como el tipo `TDComponents.Architecture.TDArch
 | Módulo | Guía | XML en el componente |
 | --- | --- | --- |
 | Arquitectura, el mapa de frases | [arquitectura.md](arquitectura.md) | El tipo `TDArchitecture` y cada intención. |
+| Producción, pantallas con datos del sistema | [produccion.md](produccion.md) | `TDArchitecture.Pantallas`. |
 | Forms | [forms.md](forms.md) | Cada componente y cada parámetro. |
 | Data | [data.md](data.md) | Cada componente y cada parámetro. |
 | Navegación | [navegacion.md](navegacion.md) | Cada componente y cada parámetro. |
@@ -26,6 +27,10 @@ El mismo mapa viaja en el paquete como el tipo `TDComponents.Architecture.TDArch
 | Códigos | [codigos.md](codigos.md) | Cada componente y cada parámetro. |
 | Ecommerce | [ecommerce.md](ecommerce.md) | Cada componente y cada parámetro. |
 | Utilidades | [utilidades.md](utilidades.md) | Cada componente y cada parámetro. |
+| Mobile, teléfono de bodega | [mobile.md](mobile.md) | Cada componente y cada parámetro. |
+| Operaciones, piso de bodega | [operaciones.md](operaciones.md) | Cada componente y cada parámetro. |
+| Entrada y revisión | [entrada.md](entrada.md) | Cada componente y cada parámetro. |
+| Mapas | [mapas.md](mapas.md) | Cada componente y cada parámetro. |
 
 ## Reglas
 

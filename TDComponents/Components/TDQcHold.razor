@@ -1,0 +1,33 @@
+@namespace TDComponents.Components
+
+<article class="td-op">
+    <p class="td-op__kicker">Calidad</p>
+    <h2>Lote @Lot</h2>
+    <p class="td-op__hero"><span>@Quantity.ToString(System.Globalization.CultureInfo.CurrentCulture)</span> <small>@Unit en espera</small></p>
+    <p class="td-op__status @TDMobileToneCss.Class(Tone)">@Reason</p>
+    <p class="td-op__next">@ReleaseText</p>
+</article>
+
+@code {
+    /// <summary>Lote retenido.</summary>
+    [Parameter] public string Lot { get; set; } = "";
+
+    /// <summary>Por qué está en espera, en palabras.</summary>
+    [Parameter] public string Reason { get; set; } = "";
+
+    /// <summary>Unidades retenidas.</summary>
+    [Parameter] public int Quantity { get; set; }
+
+    /// <summary>Unidad de la retención.</summary>
+    [Parameter] public string Unit { get; set; } = "unidades";
+
+    /// <summary>Quién puede liberar el lote. Vacío dice que nadie del piso puede moverlo.</summary>
+    [Parameter] public string? Owner { get; set; }
+
+    /// <summary>Énfasis. El motivo sigue siendo <see cref="Reason"/>.</summary>
+    [Parameter] public TDMobileTone Tone { get; set; } = TDMobileTone.Danger;
+
+    private string ReleaseText => string.IsNullOrWhiteSpace(Owner)
+        ? "Nadie del piso puede mover este lote. Espera la liberación de calidad."
+        : $"{Owner} puede liberar este lote. Hasta entonces no lo muevas.";
+}

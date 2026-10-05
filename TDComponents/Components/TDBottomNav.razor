@@ -1,0 +1,23 @@
+@namespace TDComponents.Components
+
+<nav class="td-mnav" aria-label="Secciones">
+    @foreach (var item in Items ?? [])
+    {
+        var current = string.Equals(item.Id, Active, StringComparison.Ordinal);
+        <a class="@(current ? "is-on" : null)" href="@item.Href" aria-current="@(current ? "page" : null)" aria-label="@(item.Count > 0 ? $"{item.Label}, {item.Count} pendientes" : item.Label)">
+            <span>@item.Label</span>
+            @if (item.Count > 0)
+            {
+                <b>@item.Count</b>
+            }
+        </a>
+    }
+</nav>
+
+@code {
+    /// <summary>Secciones. Cada una es un <see cref="TDMobileDest"/>.</summary>
+    [Parameter] public IReadOnlyList<TDMobileDest>? Items { get; set; }
+
+    /// <summary><c>Id</c> de la sección actual. Esa queda marcada.</summary>
+    [Parameter] public string? Active { get; set; }
+}

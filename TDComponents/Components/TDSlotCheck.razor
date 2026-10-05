@@ -1,0 +1,32 @@
+@namespace TDComponents.Components
+
+<article class="td-op">
+    <p class="td-op__kicker">Ubicación sugerida</p>
+    <h2>@Sku</h2>
+    <p class="td-op__pair"><span>Sugerida</span> <b>@Suggested</b></p>
+    <p class="td-op__pair"><span>Escaneada</span> <b>@(string.IsNullOrWhiteSpace(Scanned) ? "Sin lectura" : Scanned)</b></p>
+    <p class="td-op__status @MatchClass">@MatchText</p>
+</article>
+
+@code {
+    /// <summary>Artículo que se está guardando.</summary>
+    [Parameter] public string Sku { get; set; } = "";
+
+    /// <summary>Ubicación que propone el sistema.</summary>
+    [Parameter] public string Suggested { get; set; } = "";
+
+    /// <summary>Ubicación que leyó la persona. Vacío significa que todavía no hay lectura.</summary>
+    [Parameter] public string Scanned { get; set; } = "";
+
+    private bool HasScan => !string.IsNullOrWhiteSpace(Scanned);
+
+    private bool Matches => HasScan && string.Equals(Suggested.Trim(), Scanned.Trim(), StringComparison.OrdinalIgnoreCase);
+
+    private string MatchClass => !HasScan ? "is-neutral" : Matches ? "is-ok" : "is-bad";
+
+    private string MatchText => !HasScan
+        ? "Todavía no hay una ubicación escaneada."
+        : Matches
+            ? "La ubicación coincide con la sugerida. Puedes dejar el artículo."
+            : "La ubicación no coincide. Llévalo a la sugerida o confirma el cambio con el supervisor.";
+}

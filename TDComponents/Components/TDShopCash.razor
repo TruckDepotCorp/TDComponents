@@ -1,0 +1,36 @@
+@namespace TDComponents.Components
+
+<section class="td-mxcash" data-td-mx-cash data-open="@OpenText" data-open-title="@OpenTitle" data-closed-title="@ClosedTitle" data-open-detail="@OpenDetail" data-closed-detail="@ClosedDetail">
+    <div class="td-mxcash__top">
+        <span class="td-mxkicker">Caja</span>
+        <span class="td-mxpill" data-td-mx-pill><TDMiscIcon Name="lock" Size="13" /><span data-td-mx-pilltext>@(Open ? "Abierta" : "Cerrada")</span></span>
+    </div>
+    <strong data-td-mx-cashtitle>@(Open ? OpenTitle : ClosedTitle)</strong>
+    <p data-td-mx-cashdetail>@(Open ? OpenDetail : ClosedDetail)</p>
+    <button type="button" class="td-mxbtn" data-td-mx-cashtoggle>@(Open ? CloseLabel : OpenLabel)</button>
+</section>
+
+@code {
+    /// <summary>True si la caja ya está abierta al pintar.</summary>
+    [Parameter] public bool Open { get; set; }
+
+    /// <summary>Cifra cuando está abierta.</summary>
+    [Parameter] public string OpenTitle { get; set; } = "Q 0.00";
+
+    /// <summary>Texto cuando está cerrada.</summary>
+    [Parameter] public string ClosedTitle { get; set; } = "Cerrada";
+
+    /// <summary>Detalle con la caja abierta.</summary>
+    [Parameter] public string OpenDetail { get; set; } = "Efectivo en caja · abierta 14:05";
+
+    /// <summary>Detalle con la caja cerrada.</summary>
+    [Parameter] public string ClosedDetail { get; set; } = "No puedes registrar ventas hasta abrirla.";
+
+    /// <summary>Botón para abrir.</summary>
+    [Parameter] public string OpenLabel { get; set; } = "Abrir caja";
+
+    /// <summary>Botón para cerrar.</summary>
+    [Parameter] public string CloseLabel { get; set; } = "Cerrar caja";
+
+    private string OpenText => Open ? "true" : "false";
+}

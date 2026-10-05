@@ -1,0 +1,46 @@
+<div class="td-mobile-stage">
+@switch (Id)
+{
+    case "recibo":
+        <TDReceiptHeader Document="OC-00481" Supplier="Frenos del Pacífico" Dock="Muelle 2 · Bodega Quilicura" ExpectedLines="6" ReceivedLines="4" Status="En recepción" Tone="TDMobileTone.Warning" />
+        break;
+    case "rlinea":
+        <TDReceiptLine Sku="BR-4521-AD" Name="Pastilla de freno delantera" Ordered="24" Received="21" Unit="unidades" Field="recibidas" />
+        break;
+    case "aviso":
+        <TDAsnMatch Notice="ASN-18" ExpectedPackages="12" CountedPackages="10" Field="bultos" />
+        break;
+    case "rsello":
+        <TDSealCheck Expected="SL-88421" Read="SL-88419" Intact="true" />
+        break;
+    case "rlote":
+        <TDLotCapture Sku="BR-4521-AD" Lot="L-904" Expires="Marzo 2028" Quantity="24" Unit="unidades" />
+        break;
+    case "revision":
+        <TDInspectList Product="Pastilla de freno delantera" Checks="criterios" FieldPrefix="revision" />
+        break;
+    case "dano":
+        <TDDamageNote Sku="BR-4521-AD" What="La caja llegó húmeda y dos pastillas están oxidadas." Affected="2" Unit="unidades" Next="Separa las 2 unidades. El resto puede seguir a revisión." Tone="TDMobileTone.Warning" />
+        break;
+    case "rtemp":
+        <TDTempCheck Product="Líquido de frenos" Reading="11" Min="2" Max="8" Unit="°C" />
+        break;
+    case "etiqueta":
+        <TDLabelCheck Expected="BR-4521-AD" Printed="BR-4521-AD" Readable="false" />
+        break;
+    case "decision":
+        <TDDisposition Product="Pastilla de freno delantera" Decision="Mandar a calidad" Consequence="Las 24 unidades quedan detenidas. No entran a la ubicación de picking." Tone="TDMobileTone.Danger" ActionHref="/c/revision" ActionLabel="Mandar 24 unidades a calidad" />
+        break;
+}
+</div>
+
+@code {
+    [Parameter] public string Id { get; set; } = "";
+
+    private readonly TDInspectCheck[] criterios =
+    [
+        new("empaque", "Empaque cerrado", "Cumple", "La caja sellada no está abierta."),
+        new("etiqueta", "Etiqueta legible", "No cumple", "El código se ve cortado."),
+        new("cantidad", "Cantidad de la línea", "Pendiente")
+    ];
+}

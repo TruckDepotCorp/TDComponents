@@ -1,0 +1,21 @@
+@namespace TDComponents.Components
+
+<section class="td-mxmargin" data-td-mx-margin>
+    <div class="td-mxgrid2">
+        <label class="td-mxfield"><span>Precio de venta</span><input data-td-mx-price inputmode="decimal" value="@Price.ToString(System.Globalization.CultureInfo.InvariantCulture)" /></label>
+        <label class="td-mxfield"><span>Costo</span><input data-td-mx-cost inputmode="decimal" value="@Cost.ToString(System.Globalization.CultureInfo.InvariantCulture)" /></label>
+    </div>
+    <div class="td-mxmargin__pair">
+        <div><span>Margen</span><strong data-td-mx-marginout>13%</strong></div>
+        <div><span>Ganancia / u.</span><strong data-td-mx-profit>Q 8.00</strong></div>
+    </div>
+    <p class="td-mxwarn" data-td-mx-costwarn hidden><TDMiscIcon Name="alert" Size="15" />El costo es igual o mayor al precio de venta.</p>
+</section>
+
+@code {
+    /// <summary>Precio inicial.</summary>
+    [Parameter] public decimal Price { get; set; } = 60m;
+
+    /// <summary>Costo inicial.</summary>
+    [Parameter] public decimal Cost { get; set; } = 52m;
+}

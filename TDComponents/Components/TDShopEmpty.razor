@@ -1,0 +1,36 @@
+@namespace TDComponents.Components
+
+<section class="td-mxcard">
+    <header class="td-mxcard__head">
+        <span class="td-mxkicker">@Title</span>
+        @if (!string.IsNullOrWhiteSpace(Link))
+        {
+            <a href="@Href">@Link</a>
+        }
+    </header>
+    <div class="td-mxempty">
+        <span><TDMiscIcon Name="@Icon" Size="24" /></span>
+        <strong>@EmptyTitle</strong>
+        <p>@Detail</p>
+    </div>
+</section>
+
+@code {
+    /// <summary>Título del panel.</summary>
+    [Parameter] public string Title { get; set; } = "Ventas de hoy";
+
+    /// <summary>Enlace de la cabecera.</summary>
+    [Parameter] public string? Link { get; set; } = "Ver todas";
+
+    /// <summary>Destino del enlace.</summary>
+    [Parameter] public string Href { get; set; } = "#ventas";
+
+    /// <summary>Mensaje principal del vacío.</summary>
+    [Parameter] public string EmptyTitle { get; set; } = "Aún no hay ventas hoy";
+
+    /// <summary>Qué puede hacer la persona.</summary>
+    [Parameter] public string Detail { get; set; } = "Abre la caja y registra tu primera venta del día.";
+
+    /// <summary>Ícono del vacío.</summary>
+    [Parameter] public string Icon { get; set; } = "receipt";
+}

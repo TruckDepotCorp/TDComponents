@@ -1,0 +1,40 @@
+@namespace TDComponents.Components
+
+<article class="td-mbin">
+    <p class="td-mbin__kicker">Ubicación</p>
+    <p class="td-mbin__code">@Aisle-@Rack-@Level-@Bin</p>
+    <dl>
+        <div><dt>Pasillo</dt><dd>@Aisle</dd></div>
+        <div><dt>Rack</dt><dd>@Rack</dd></div>
+        <div><dt>Nivel</dt><dd>@Level</dd></div>
+        <div><dt>Casillero</dt><dd>@Bin</dd></div>
+    </dl>
+    <p class="td-mbin__sku"><b>@Sku</b> @SkuName</p>
+    <p class="td-mbin__qty"><b>@Quantity.ToString(System.Globalization.CultureInfo.CurrentCulture)</b> @Unit en este casillero</p>
+</article>
+
+@code {
+    /// <summary>Pasillo, por ejemplo A.</summary>
+    [Parameter] public string Aisle { get; set; } = "";
+
+    /// <summary>Rack, por ejemplo 12.</summary>
+    [Parameter] public string Rack { get; set; } = "";
+
+    /// <summary>Nivel, por ejemplo 2.</summary>
+    [Parameter] public string Level { get; set; } = "";
+
+    /// <summary>Casillero, por ejemplo 04.</summary>
+    [Parameter] public string Bin { get; set; } = "";
+
+    /// <summary>Código del artículo en esa ubicación.</summary>
+    [Parameter] public string Sku { get; set; } = "";
+
+    /// <summary>Nombre del artículo.</summary>
+    [Parameter] public string SkuName { get; set; } = "";
+
+    /// <summary>Existencia en el casillero.</summary>
+    [Parameter] public int Quantity { get; set; }
+
+    /// <summary>Unidad de la existencia.</summary>
+    [Parameter] public string Unit { get; set; } = "unidades";
+}

@@ -2,13 +2,24 @@
 
 <figure class="td-image" data-td-image>
     <button type="button" class="td-image__frame" style="@($"background:{Background}")" data-td-image-open aria-label="@($"Ampliar {Alt}")">
-        <span>@Alt</span>
+        @if (SafeSrc is not null)
+        {
+            <img src="@SafeSrc" alt="@Alt" />
+        }
+        else
+        {
+            <span>@Alt</span>
+        }
     </button>
     @if (!string.IsNullOrWhiteSpace(Caption))
     {
         <figcaption>
             <span>@Caption</span>
-            @if (Download)
+            @if (Download && SafeSrc is not null)
+            {
+                <a class="td-btn td-btn--secondary td-btn--sm" href="@SafeSrc" download>Descargar</a>
+            }
+            else if (Download)
             {
                 <button type="button" class="td-btn td-btn--secondary td-btn--sm" data-td-image-dl>Descargar</button>
             }
@@ -19,7 +30,14 @@
         <dialog class="td-image__dlg" data-td-image-dlg>
             <form method="dialog" class="td-image__zoom">
                 <div class="td-image__canvas" data-td-image-canvas style="@($"background:{Background};--z:1;--r:0deg")">
-                    <span>@Alt</span>
+                    @if (SafeSrc is not null)
+                    {
+                        <img src="@SafeSrc" alt="@Alt" />
+                    }
+                    else
+                    {
+                        <span>@Alt</span>
+                    }
                 </div>
                 <div class="td-image__tools">
                     <button type="button" data-td-image-zoom="-0.2" aria-label="Alejar">−</button>
@@ -33,6 +51,9 @@
 </figure>
 
 @code {
+    /// <summary>Dirección de la imagen de la aplicación. Sin ella se muestra solo el texto alternativo sobre el color de respaldo, como en el catálogo.</summary>
+    /// <remarks>Se rechazan destinos que empiezan por javascript: o data:. Úsala en una ficha o un listado real. El texto alternativo sigue siendo obligatorio.</remarks>
+    [Parameter] public string? Src { get; set; }
     /// <summary>Texto alternativo. Describe la imagen, no repitas el pie.</summary>
     [Parameter] public string Alt { get; set; } = "Imagen";
     /// <summary>Pie visible bajo la imagen.</summary>
@@ -43,4 +64,11 @@
     [Parameter] public bool Preview { get; set; } = true;
     /// <summary>Muestra la descarga. El defecto es verdadero.</summary>
     [Parameter] public bool Download { get; set; } = true;
+
+    private string? SafeSrc =>
+        !string.IsNullOrWhiteSpace(Src)
+        && !Src.TrimStart().StartsWith("javascript:", StringComparison.OrdinalIgnoreCase)
+        && !Src.TrimStart().StartsWith("data:", StringComparison.OrdinalIgnoreCase)
+            ? Src.Trim()
+            : null;
 }

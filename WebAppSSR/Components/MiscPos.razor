@@ -1,0 +1,29 @@
+@namespace WebAppSSR.Components
+
+<TDShopFrame>
+    <TDShopBar Action="" />
+    <div class="td-mxpos">
+        <div class="td-mxmain">
+            <TDShopHead Kicker="Punto de venta" Title="Nueva venta" />
+            <TDShopFilter Placeholder="Buscar producto o código" EmptyText="Ningún producto con este filtro." Chips="categorias">
+                <div class="td-mxproducts">
+                    <TDProductTile />
+                    <TDProductTile Name="Teclado inalámbrico" Sku="TC-04" Price="185" Stock="6" Category="Accesorios" Photo="_content/TDComponents/img/misc/foto-2.png" />
+                    <TDProductTile Name="Cable HDMI" Sku="CB-12" Price="45" Stock="20" Category="Cables" Photo="_content/TDComponents/img/misc/foto-3.png" />
+                    <TDProductTile Name="Hub USB" Sku="HB-02" Price="95" Stock="4" Category="Accesorios" Photo="_content/TDComponents/img/misc/foto-1.png" />
+                </div>
+            </TDShopFilter>
+        </div>
+        <TDCart CashOpen="true" />
+    </div>
+    <TDShopMenu Active="Ventas" />
+</TDShopFrame>
+
+@code {
+    private readonly TDShopChip[] categorias =
+    [
+        new("Todos", 4),
+        new("Accesorios", 3, "Accesorios"),
+        new("Cables", 1, "Cables")
+    ];
+}

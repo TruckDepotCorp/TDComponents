@@ -1,0 +1,32 @@
+@namespace TDComponents.Components
+
+<article class="td-op">
+    <p class="td-op__kicker">Incidencia</p>
+    <h2>@Title</h2>
+    <p class="td-op__status @TDMobileToneCss.Class(Tone)">@What</p>
+    <p class="td-op__next">@Next</p>
+    @if (!string.IsNullOrWhiteSpace(HelpHref) && !string.IsNullOrWhiteSpace(HelpLabel))
+    {
+        <a class="td-op__help" href="@HelpHref">@HelpLabel</a>
+    }
+</article>
+
+@code {
+    /// <summary>Qué falló, en una frase. Por ejemplo Faltan 2 unidades.</summary>
+    [Parameter] public string Title { get; set; } = "Incidencia";
+
+    /// <summary>Qué pasó, con el dato que tranquiliza: la mercadería no se movió o el conteo sigue abierto.</summary>
+    [Parameter] public string What { get; set; } = "";
+
+    /// <summary>Qué hacer ahora.</summary>
+    [Parameter] public string Next { get; set; } = "";
+
+    /// <summary>Énfasis. El texto de <see cref="What"/> sigue siendo el aviso.</summary>
+    [Parameter] public TDMobileTone Tone { get; set; } = TDMobileTone.Warning;
+
+    /// <summary>Destino de ayuda humana.</summary>
+    [Parameter] public string? HelpHref { get; set; }
+
+    /// <summary>Texto del enlace. Dice a quién se pide ayuda.</summary>
+    [Parameter] public string? HelpLabel { get; set; }
+}

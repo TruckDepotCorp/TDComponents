@@ -1,0 +1,36 @@
+@namespace TDComponents.Components
+
+<article class="td-op">
+    <p class="td-op__kicker">Lote de @Sku</p>
+    <h2>@(string.IsNullOrWhiteSpace(Lot) ? "Sin lote" : Lot)</h2>
+    <p class="td-op__pair"><span>Vence</span> <b>@(string.IsNullOrWhiteSpace(Expires) ? "Sin fecha" : Expires)</b></p>
+    <p class="td-op__hero"><span>@Quantity.ToString(System.Globalization.CultureInfo.CurrentCulture)</span> <small>@Unit de este lote</small></p>
+    <p class="td-op__status @ReadyClass">@ReadyText</p>
+</article>
+
+@code {
+    /// <summary>Artículo al que pertenece el lote.</summary>
+    [Parameter] public string Sku { get; set; } = "";
+
+    /// <summary>Lote leído o escrito. Vacío bloquea el ingreso a stock.</summary>
+    [Parameter] public string Lot { get; set; } = "";
+
+    /// <summary>Vencimiento en lenguaje claro. Vacío bloquea el ingreso a stock.</summary>
+    [Parameter] public string Expires { get; set; } = "";
+
+    /// <summary>Unidades de este lote.</summary>
+    [Parameter] public int Quantity { get; set; }
+
+    /// <summary>Unidad de la cantidad.</summary>
+    [Parameter] public string Unit { get; set; } = "unidades";
+
+    private bool Ready => !string.IsNullOrWhiteSpace(Lot) && !string.IsNullOrWhiteSpace(Expires);
+
+    private string ReadyClass => Ready ? "is-ok" : "is-bad";
+
+    private string ReadyText => string.IsNullOrWhiteSpace(Lot)
+        ? "Falta el lote. No lo ingreses a stock."
+        : string.IsNullOrWhiteSpace(Expires)
+            ? "Falta el vencimiento. No lo ingreses a stock."
+            : "Lote y vencimiento listos para el ingreso.";
+}

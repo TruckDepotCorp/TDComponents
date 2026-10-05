@@ -1,0 +1,47 @@
+@namespace TDComponents.Components
+
+<section class="td-op" aria-label="Muelles">
+    <h2>Muelles</h2>
+    @if (Doors is null || Doors.Count == 0)
+    {
+        <p class="td-op__empty">No hay puertas asignadas en este turno.</p>
+    }
+    else
+    {
+        <ol>
+            @foreach (var door in Doors)
+            {
+                <li>
+                    @if (string.IsNullOrWhiteSpace(door.Href))
+                    {
+                        <div class="td-op__row">
+                            <p class="td-op__kicker">@door.Door</p>
+                            <h3>@door.Carrier</h3>
+                            <p class="td-op__meta">
+                                <span class="@TDMobileToneCss.Class(door.Tone)">@door.Status</span>
+                                <span>@door.When</span>
+                            </p>
+                        </div>
+                    }
+                    else
+                    {
+                        <a class="td-op__row" href="@door.Href">
+                            <p class="td-op__kicker">@door.Door</p>
+                            <h3>@door.Carrier</h3>
+                            <p class="td-op__meta">
+                                <span class="@TDMobileToneCss.Class(door.Tone)">@door.Status</span>
+                                <span>@door.When</span>
+                            </p>
+                            <p class="td-op__go">Abrir @door.Door</p>
+                        </a>
+                    }
+                </li>
+            }
+        </ol>
+    }
+</section>
+
+@code {
+    /// <summary>Puertas del andén. Vacío o nulo dice que no hay asignación.</summary>
+    [Parameter] public IReadOnlyList<TDDockDoor>? Doors { get; set; }
+}

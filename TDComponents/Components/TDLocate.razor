@@ -1,0 +1,40 @@
+@namespace TDComponents.Components
+
+<td-locate class="td-locate" data-td-locate data-pending="@PendingText" data-update="@UpdateLabel" data-retry="@RetryLabel">
+    <button type="button" class="td-btn td-btn--primary" data-td-locate-go aria-describedby="@_statusId">@Label</button>
+    <div id="@_statusId" role="status">
+        <p class="td-locate__result" data-td-locate-result hidden></p>
+        <p class="td-locate__status" data-td-locate-hint>@Hint</p>
+    </div>
+    <input type="hidden" name="@LatitudeName" data-td-locate-lat value="" />
+    <input type="hidden" name="@LongitudeName" data-td-locate-lng value="" />
+    <input type="hidden" name="@AccuracyName" data-td-locate-accuracy value="" />
+</td-locate>
+
+@code {
+    private readonly string _statusId = $"td-locate-{Guid.NewGuid():N}";
+
+    /// <summary>Texto del botón. Dice la acción: obtener la ubicación de este equipo.</summary>
+    [Parameter] public string Label { get; set; } = "Obtener mi ubicación";
+
+    /// <summary>Texto del botón después de una lectura correcta, para repetirla.</summary>
+    [Parameter] public string UpdateLabel { get; set; } = "Actualizar ubicación";
+
+    /// <summary>Texto del botón cuando la lectura falla.</summary>
+    [Parameter] public string RetryLabel { get; set; } = "Reintentar ubicación";
+
+    /// <summary>Texto mientras el equipo está leyendo.</summary>
+    [Parameter] public string PendingText { get; set; } = "Buscando tu ubicación…";
+
+    /// <summary>Qué va a pasar antes del primer clic.</summary>
+    [Parameter] public string Hint { get; set; } = "Toca el botón para leer la ubicación actual de este equipo.";
+
+    /// <summary>Nombre del campo de latitud en el formulario. El valor usa punto decimal.</summary>
+    [Parameter] public string LatitudeName { get; set; } = "Latitud";
+
+    /// <summary>Nombre del campo de longitud en el formulario. El valor usa punto decimal.</summary>
+    [Parameter] public string LongitudeName { get; set; } = "Longitud";
+
+    /// <summary>Nombre del campo de precisión, en metros.</summary>
+    [Parameter] public string AccuracyName { get; set; } = "Precision";
+}

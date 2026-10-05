@@ -1,0 +1,209 @@
+@namespace TDComponents.Components
+
+<td-editform class="td-editform"
+             data-invalid-title="@InvalidTitle"
+             data-invalid-detail="@InvalidDetail"
+             data-pending-text="@PendingText"
+             data-confirm-leave="@(ConfirmLeave ? "true" : "false")"
+             data-guard="@(GuardSubmit ? "true" : "false")"
+             data-summary="@(ShowSummary ? "true" : "false")"
+             data-autofocus="@(Autofocus ? "true" : "false")">
+    @if (!string.IsNullOrWhiteSpace(Title) || !string.IsNullOrWhiteSpace(Lead))
+    {
+        <header class="td-editform__head">
+            @if (!string.IsNullOrWhiteSpace(Title))
+            {
+                <h2 class="td-editform__title" id="@_titleId">@Title</h2>
+            }
+            @if (!string.IsNullOrWhiteSpace(Lead))
+            {
+                <p class="td-editform__lead">@Lead</p>
+            }
+        </header>
+    }
+
+    <div id="@_statusId"
+         class="td-editform__status"
+         data-td-editform-status
+         data-tone="invalid"
+         role="alert"
+         hidden>
+        <p class="td-editform__status-title" data-td-editform-status-title></p>
+        <p class="td-editform__status-detail" data-td-editform-status-detail></p>
+        <ul class="td-editform__errors" data-td-editform-errors></ul>
+        @if (HasHelp)
+        {
+            <a class="td-editform__help" href="@HelpHref" data-td-editform-help>@HelpText</a>
+        }
+    </div>
+
+    <EditForm Model="Model"
+              EditContext="EditContext"
+              OnSubmit="OnSubmit"
+              OnValidSubmit="OnValidSubmit"
+              OnInvalidSubmit="OnInvalidSubmit"
+              FormName="@FormName"
+              Enhance="Enhance"
+              AdditionalAttributes="FormAttributes"
+              Context="formContext">
+        <fieldset class="td-editform__fields" disabled="@Disabled">
+            @ChildContent?.Invoke(formContext)
+        </fieldset>
+        @if (Actions is not null || !string.IsNullOrWhiteSpace(SubmitLabel))
+        {
+            <div class="td-editform__actions">
+                @Actions
+                @if (!string.IsNullOrWhiteSpace(SubmitLabel))
+                {
+                    <TDButton ButtonType="TDButtonType.Submit" Disabled="Disabled" PendingText="@PendingText">@SubmitLabel</TDButton>
+                }
+            </div>
+        }
+    </EditForm>
+
+    <dialog class="td-editform__leave" data-td-editform-leave aria-labelledby="@_leaveTitleId">
+        <h2 id="@_leaveTitleId">@LeaveTitle</h2>
+        <p>@LeaveDetail</p>
+        <div class="td-editform__leave-actions">
+            <button type="button" class="td-editform__stay" data-td-editform-stay>@LeaveStay</button>
+            <button type="button" class="td-editform__discard" data-td-editform-discard>@LeaveDiscard</button>
+        </div>
+    </dialog>
+</td-editform>
+
+@code {
+    private readonly string _titleId = $"td-editform-title-{Guid.NewGuid():N}";
+    private readonly string _statusId = $"td-editform-status-{Guid.NewGuid():N}";
+    private readonly string _leaveTitleId = $"td-editform-leave-{Guid.NewGuid():N}";
+
+    /// <summary>Modelo que edita el formulario. No lo combines con <see cref="EditContext"/>.</summary>
+    [Parameter] public object? Model { get; set; }
+
+    /// <summary>Contexto ya creado. No lo combines con <see cref="Model"/>.</summary>
+    [Parameter] public EditContext? EditContext { get; set; }
+
+    /// <summary>Se ejecuta al enviar, aunque la validación del modelo falle.</summary>
+    [Parameter] public EventCallback<EditContext> OnSubmit { get; set; }
+
+    /// <summary>Se ejecuta solo si la validación del modelo pasa.</summary>
+    [Parameter] public EventCallback<EditContext> OnValidSubmit { get; set; }
+
+    /// <summary>Se ejecuta si la validación del modelo falla en el servidor.</summary>
+    [Parameter] public EventCallback<EditContext> OnInvalidSubmit { get; set; }
+
+    /// <summary>Nombre del formulario en una página estática. Hace falta para el post de Blazor.</summary>
+    [Parameter] public string? FormName { get; set; }
+
+    /// <summary>Envía sin recargar toda la página. Es el <c>Enhance</c> de <c>EditForm</c>.</summary>
+    [Parameter] public bool Enhance { get; set; }
+
+    /// <summary>Campos. Reciben el <see cref="EditContext"/> del formulario.</summary>
+    [Parameter] public RenderFragment<EditContext>? ChildContent { get; set; }
+
+    /// <summary>Atributos del <c>form</c> que este componente no declara, por ejemplo <c>id</c> o <c>class</c>.</summary>
+    [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    /// <summary>Nombre de la pantalla. Es el título del formulario.</summary>
+    [Parameter] public string? Title { get; set; }
+
+    /// <summary>Una frase que dice qué se guarda y qué pasa si se abandona.</summary>
+    [Parameter] public string? Lead { get; set; }
+
+    /// <summary>Texto del botón que envía. Si lo omites, el botón lo pones tú en el contenido o en <see cref="Actions"/>.</summary>
+    [Parameter] public string? SubmitLabel { get; set; }
+
+    /// <summary>Texto del botón y del aviso mientras el envío está en curso.</summary>
+    [Parameter] public string PendingText { get; set; } = "Guardando. Espera un momento.";
+
+    /// <summary>Botones extra, a la izquierda del botón principal.</summary>
+    [Parameter] public RenderFragment? Actions { get; set; }
+
+    /// <summary>Destino de la ayuda. Se rechazan enlaces <c>javascript:</c> y <c>data:</c>.</summary>
+    [Parameter] public string? HelpHref { get; set; }
+
+    /// <summary>Texto del enlace de ayuda. Tiene que decir a dónde lleva.</summary>
+    [Parameter] public string HelpLabel { get; set; } = "Pedir ayuda";
+
+    /// <summary>Codificación del post. Usa <c>multipart/form-data</c> si hay archivos o fotos.</summary>
+    [Parameter] public string? Enctype { get; set; }
+
+    /// <summary>Autocompletado del navegador para todo el formulario.</summary>
+    [Parameter] public string? Autocomplete { get; set; }
+
+    /// <summary>Lista, al enviar, qué campos fallaron y lleva el foco al primero.</summary>
+    [Parameter] public bool ShowSummary { get; set; } = true;
+
+    /// <summary>Muestra el globo nativo del navegador. El resumen de campos lo arma el navegador.</summary>
+    [Parameter] public bool UseBrowserValidation { get; set; }
+
+    /// <summary>Pregunta antes de salir si hay cambios sin guardar.</summary>
+    [Parameter] public bool ConfirmLeave { get; set; }
+
+    /// <summary>Ignora un segundo envío mientras el primero sigue en curso.</summary>
+    [Parameter] public bool GuardSubmit { get; set; } = true;
+
+    /// <summary>Al abrir, pone el foco en el primer campo obligatorio vacío.</summary>
+    [Parameter] public bool Autofocus { get; set; }
+
+    /// <summary>Bloquea todos los campos y el botón de guardar.</summary>
+    [Parameter] public bool Disabled { get; set; }
+
+    /// <summary>Título del aviso cuando el envío no pasa la validación.</summary>
+    [Parameter] public string InvalidTitle { get; set; } = "No se pudo guardar";
+
+    /// <summary>Explica que lo escrito sigue en el formulario y qué hay que revisar.</summary>
+    [Parameter] public string InvalidDetail { get; set; } = "Revisa los campos marcados. Lo escrito sigue en el formulario.";
+
+    /// <summary>Título del diálogo al intentar salir con cambios.</summary>
+    [Parameter] public string LeaveTitle { get; set; } = "Salir sin guardar";
+
+    /// <summary>Explica que al salir se pierde lo escrito.</summary>
+    [Parameter] public string LeaveDetail { get; set; } = "Lo escrito sigue solo en esta pantalla. Si sales, se pierde.";
+
+    /// <summary>Se queda en el formulario.</summary>
+    [Parameter] public string LeaveStay { get; set; } = "Seguir editando";
+
+    /// <summary>Abandona y descarta lo escrito.</summary>
+    [Parameter] public string LeaveDiscard { get; set; } = "Salir sin guardar";
+
+    private Dictionary<string, object> FormAttributes
+    {
+        get
+        {
+            var merged = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+            if (AdditionalAttributes is not null)
+            {
+                foreach (var pair in AdditionalAttributes)
+                {
+                    merged[pair.Key] = pair.Value;
+                }
+            }
+
+            var classes = merged.TryGetValue("class", out var existing) ? existing?.ToString() : null;
+            merged["class"] = string.IsNullOrWhiteSpace(classes) ? "td-editform__form" : $"{classes} td-editform__form";
+            if (!string.IsNullOrWhiteSpace(Enctype))
+            {
+                merged["enctype"] = Enctype;
+            }
+
+            if (!string.IsNullOrWhiteSpace(Autocomplete))
+            {
+                merged["autocomplete"] = Autocomplete;
+            }
+
+            if (!UseBrowserValidation)
+            {
+                merged["novalidate"] = true;
+            }
+
+            return merged;
+        }
+    }
+
+    private bool HasHelp =>
+        !string.IsNullOrWhiteSpace(HelpHref)
+        && !HelpHref.TrimStart().StartsWith("javascript:", StringComparison.OrdinalIgnoreCase)
+        && !HelpHref.TrimStart().StartsWith("data:", StringComparison.OrdinalIgnoreCase);
+
+    private string HelpText => string.IsNullOrWhiteSpace(HelpLabel) ? "Pedir ayuda" : HelpLabel;
+}

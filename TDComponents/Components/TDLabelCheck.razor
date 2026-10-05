@@ -1,0 +1,35 @@
+@namespace TDComponents.Components
+
+<article class="td-op">
+    <p class="td-op__kicker">Etiqueta</p>
+    <h2>@(string.IsNullOrWhiteSpace(Printed) ? "Sin lectura" : Printed)</h2>
+    <p class="td-op__pair"><span>La orden pide</span> <b>@Expected</b></p>
+    <p class="td-op__status @MatchClass">@MatchText</p>
+</article>
+
+@code {
+    /// <summary>Código que debe traer la etiqueta.</summary>
+    [Parameter] public string Expected { get; set; } = "";
+
+    /// <summary>Código impreso que se leyó. Vacío significa que todavía no hay lectura.</summary>
+    [Parameter] public string Printed { get; set; } = "";
+
+    /// <summary>La etiqueta se puede leer. En falso, pide una etiqueta nueva aunque el código coincida.</summary>
+    [Parameter] public bool Readable { get; set; } = true;
+
+    private bool HasPrint => !string.IsNullOrWhiteSpace(Printed);
+
+    private bool Same => HasPrint && string.Equals(Expected.Trim(), Printed.Trim(), StringComparison.OrdinalIgnoreCase);
+
+    private string MatchClass => !HasPrint ? "is-neutral" : Same && Readable ? "is-ok" : "is-bad";
+
+    private string MatchText => !HasPrint
+        ? "Todavía no se leyó la etiqueta."
+        : !Same && !Readable
+            ? "La etiqueta no coincide y no se lee. No lo guardes. Pide una etiqueta nueva."
+            : !Same
+                ? "La etiqueta no coincide con el producto de la orden. No lo guardes."
+                : !Readable
+                    ? "La etiqueta no se lee. Pide una reimpresión antes de guardar."
+                    : "La etiqueta coincide y se lee. Puedes seguir.";
+}

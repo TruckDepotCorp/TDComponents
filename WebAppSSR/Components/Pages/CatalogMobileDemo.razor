@@ -1,0 +1,85 @@
+<div class="td-mobile-stage">
+@switch (Id)
+{
+    case "mphone":
+        <div class="td-phone">
+            <TDAppBar Title="Recepción" Subtitle="Bodega Quilicura · turno mañana" BackHref="/c/mjobs" BackLabel="Volver a las tareas" ActionHref="/c/mshift" ActionLabel="Ayuda" />
+            <TDShiftBar Operator="María Soto" Site="Bodega Quilicura" Role="Operadora de recepción" Pending="3" Online="false" />
+            <TDJobSteps Title="Recepción del pallet 18" Current="1" Steps="pasos" />
+            <TDScanCard Code="BR-4521-AD" Name="Pastilla de freno delantera" Location="Pasillo A · rack 12 · nivel 2" Stock="24" Unit="unidades" Status="Ubicación confirmada" Tone="TDMobileTone.Success" ActionLabel="Guardar 24 unidades en A-12" ActionHref="/c/msheet" />
+            <TDQtyPad Label="Cantidad a guardar" Value="4" Unit="unidades" Min="1" Max="48" Name="cantidad" />
+            <TDConfirmSheet Open="true" Title="Guardar 24 unidades en A-12" Detail="El pallet sigue en el muelle hasta que confirmes. Si cierras, no se mueve nada." ConfirmLabel="Guardar en A-12" CancelLabel="Seguir revisando" HelpHref="/c/mshift" HelpLabel="Pedir ayuda al supervisor" />
+            <TDBottomNav Active="tareas" Items="secciones" />
+        </div>
+        break;
+    case "mappbar":
+        <TDAppBar Title="Recepción" Subtitle="Bodega Quilicura · turno mañana" BackHref="/c/mjobs" BackLabel="Volver a las tareas" ActionHref="/c/mshift" ActionLabel="Ayuda" />
+        break;
+    case "mbottom":
+        <TDBottomNav Active="tareas" Items="secciones" />
+        break;
+    case "mscan":
+        <TDScanCard Code="BR-4521-AD" Name="Pastilla de freno delantera" Location="Pasillo A · rack 12 · nivel 2" Stock="24" Unit="unidades" Status="Ubicación confirmada" Tone="TDMobileTone.Success" ActionLabel="Guardar 24 unidades en A-12" ActionHref="/c/msheet" />
+        break;
+    case "mqty":
+        <TDQtyPad Label="Cantidad a guardar" Value="4" Unit="unidades" Min="1" Max="48" Name="cantidad" />
+        break;
+    case "mjobs":
+        <TDJobList Jobs="tareas" />
+        break;
+    case "mbin":
+        <TDBinCard Aisle="A" Rack="12" Level="2" Bin="04" Sku="BR-4521-AD" SkuName="Pastilla de freno delantera" Quantity="24" Unit="unidades" />
+        break;
+    case "msheet":
+        <TDConfirmSheet Open="true" Title="Guardar 24 unidades en A-12" Detail="El pallet sigue en el muelle hasta que confirmes. Si cierras, no se mueve nada." ConfirmLabel="Guardar en A-12" CancelLabel="Seguir revisando" HelpHref="/c/mshift" HelpLabel="Pedir ayuda al supervisor" />
+        break;
+    case "mshift":
+        <TDShiftBar Operator="María Soto" Site="Bodega Quilicura" Role="Operadora de recepción" Pending="3" Online="false" />
+        break;
+    case "mpick":
+        <TDPickLine Sku="BR-4521-AD" Name="Pastilla de freno delantera" From="Pasillo A · rack 12 · nivel 2" Quantity="6" Picked="2" Unit="unidades" Field="recogidas" />
+        break;
+    case "msteps":
+        <TDJobSteps Title="Recepción del pallet 18" Current="1" Steps="pasos" />
+        break;
+    case "mcards":
+        <TDCardCarousel AriaLabel="Tareas del turno" Auto="true" Interval="5000" Cards="tarjetas" />
+        break;
+    case "micon":
+        <div class="td-ccarousel__nav">
+            <TDButtonIcon Icon="arrow_back" Label="Tarjeta anterior" />
+            <TDButtonIcon Icon="pause" Label="Pausar" />
+            <TDButtonIcon Icon="arrow_forward" Label="Tarjeta siguiente" />
+        </div>
+        break;
+}
+</div>
+
+@code {
+    [Parameter] public string Id { get; set; } = "";
+
+    private readonly TDMobileDest[] secciones =
+    [
+        new("inicio", "Inicio", "/c/mappbar"),
+        new("tareas", "Tareas", "/c/mjobs", 3),
+        new("escanear", "Escanear", "/c/mscan"),
+        new("ubicacion", "Ubicación", "/c/mbin"),
+        new("mas", "Más", "/c/mshift")
+    ];
+
+    private readonly TDWarehouseJob[] tareas =
+    [
+        new("t1", "Recibir pallet 18", "Muelle 2", "Recibir", "En curso", "Llega en 10 minutos", TDMobileTone.Warning, "/c/msteps"),
+        new("t2", "Guardar pastillas BR-4521-AD", "Pasillo A · rack 12", "Guardar", "Lista", "Antes de las 11:30", TDMobileTone.Success, "/c/mscan"),
+        new("t3", "Contar casillero B-04-1-02", "Pasillo B · rack 4", "Contar", "Bloqueada", "Falta el conteo anterior", TDMobileTone.Danger, "/c/mbin")
+    ];
+
+    private readonly string[] pasos = ["Identificar el pallet", "Contar bultos", "Asignar ubicación", "Confirmar guardado"];
+
+    private readonly TDCarouselCard[] tarjetas =
+    [
+        new("Recibir pallet 18", "Muelle 2. Llega en 10 minutos.", "En curso", TDMobileTone.Warning, "Abrir recepción", "/c/msteps"),
+        new("Guardar pastillas BR-4521-AD", "Pasillo A · rack 12. Antes de las 11:30.", "Lista", TDMobileTone.Success, "Abrir guardado", "/c/mscan"),
+        new("Contar casillero B-04-1-02", "Pasillo B · rack 4. Falta el conteo anterior.", "Bloqueada", TDMobileTone.Danger, "Ver ubicación", "/c/mbin")
+    ];
+}

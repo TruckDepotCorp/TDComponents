@@ -1,0 +1,105 @@
+@namespace TDComponents.Components
+@using System.Text.Json
+
+<td-maps class="td-maps" data-td-maps data-map-id="@MapId" style="--td-map-h:@Height">
+    <script type="application/json" data-td-maps-model>@((MarkupString)ModelJson)</script>
+</td-maps>
+
+@code {
+    /// <summary>Punto A, donde sale el vehículo. Si se omite junto con <c>Destination</c>, el mapa calcula la ruta de demostración.</summary>
+    [Parameter] public TDMapStop? Origin { get; set; }
+
+    /// <summary>Punto B, donde termina la ruta.</summary>
+    [Parameter] public TDMapStop? Destination { get; set; }
+
+    /// <summary>Entregas entre la salida y la llegada, en el orden en que se visitan. Una lista vacía es una ruta directa. Si se omite en la demostración, hay tres entregas.</summary>
+    [Parameter] public IReadOnlyList<TDMapStop>? Deliveries { get; set; }
+
+    /// <summary>Título de la vista.</summary>
+    [Parameter] public string Title { get; set; } = "Ruta de entregas";
+
+    /// <summary>Alto del mapa, en CSS. El defecto es 480px.</summary>
+    [Parameter] public string Height { get; set; } = "480px";
+
+    /// <summary>Identificador estable de este mapa.</summary>
+    [Parameter] public string MapId { get; set; } = "ruta";
+
+    /// <summary>Medio: driving, walking o cycling. El defecto es driving.</summary>
+    [Parameter] public string Profile { get; set; } = "driving";
+
+    /// <summary>Servidor OSRM. El defecto es el servicio público de demostración. En producción apunta a tu propio servidor.</summary>
+    [Parameter] public string RouterUrl { get; set; } = "https://router.project-osrm.org";
+
+    /// <summary>Plantilla de teselas {z}/{x}/{y}. El defecto es OpenStreetMap.</summary>
+    [Parameter] public string TileUrl { get; set; } = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
+
+    /// <summary>Texto de atribución del mapa.</summary>
+    [Parameter] public string Attribution { get; set; } = "OpenStreetMap";
+
+    private static readonly JsonSerializerOptions Json = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+
+    private bool CatalogDemo => Origin is null && Destination is null;
+
+    private string ModelJson
+    {
+        get
+        {
+            var from = Origin ?? DemoFrom;
+            var to = Destination ?? (CatalogDemo ? DemoTo : null);
+            var deliveries = (Deliveries ?? (CatalogDemo ? DemoDeliveries : [])).Take(20).ToArray();
+            var payload = new
+            {
+                title = Title,
+                showRoute = true,
+                showStops = true,
+                tileUrl = SafeHttp(TileUrl) ?? "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                attribution = Attribution,
+                units = Array.Empty<object>(),
+                plan = new
+                {
+                    incomplete = to is null,
+                    profile = ProfileName,
+                    router = SafeHttp(RouterUrl)?.TrimEnd('/') ?? "https://router.project-osrm.org",
+                    from = Stop(from),
+                    to = to is null ? null : Stop(to),
+                    deliveries = deliveries.Select(Stop)
+                }
+            };
+            return JsonSerializer.Serialize(payload, Json).Replace("<", "\\u003c", StringComparison.Ordinal);
+        }
+    }
+
+    private string ProfileName => Profile.Trim().ToLowerInvariant() switch
+    {
+        "walking" or "cycling" or "driving" => Profile.Trim().ToLowerInvariant(),
+        _ => "driving"
+    };
+
+    private static object Stop(TDMapStop stop) => new
+    {
+        name = stop.Name,
+        lat = stop.Latitude,
+        lng = stop.Longitude,
+        at = stop.At,
+        note = stop.Note
+    };
+
+    private static string? SafeHttp(string url)
+    {
+        if (Uri.TryCreate(url, UriKind.Absolute, out var uri) && (uri.Scheme == Uri.UriSchemeHttps || uri.Scheme == Uri.UriSchemeHttp))
+        {
+            return url;
+        }
+
+        return null;
+    }
+
+    private static readonly TDMapStop DemoFrom = new("Bodega Villa Nueva", 14.526, -90.588, Note: "Salida con la carga");
+    private static readonly TDMapStop DemoTo = new("Cliente Santa Catarina Pinula", 14.569, -90.478, Note: "Última entrega del turno");
+    private static readonly TDMapStop[] DemoDeliveries =
+    [
+        new("Cliente Mixco", 14.633, -90.607, "1", "Filtro de aceite"),
+        new("Taller Zona 1", 14.642, -90.513, "2", "Pastillas BR-4521-AD"),
+        new("Cliente Zona 10", 14.599, -90.514, "3", "Disco ventilado")
+    ];
+}

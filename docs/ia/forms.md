@@ -9,8 +9,8 @@ Fuente: parámetros reales de `TDComponents/Components`. El texto del catálogo 
 
 ## Reglas que no se pueden romper
 
-1. Solo `TDTextBox` acepta `@bind-Value`. Hereda `InputBase<string?>`, así que tiene `Value`, `ValueChanged` y `ValueExpression`.
-2. El resto de los campos no tiene `EventCallback`. `@bind-Value` en ellos no compila. Se rellenan con `Value` (valor inicial) y se envían por `Name` en un `<form>` o `<EditForm>` con post.
+1. `TDTextBox`, `TDSelect`, `TDDatePicker`, `TDMask`, `TDNumeric` y `TDSwitch` aceptan `@bind-Value`. `TDTextBox` hereda `InputBase<string?>`. Los otros cinco publican el nombre del campo en el post: si hay `Name`, gana; si no, el nombre es el de la propiedad enlazada.
+2. El resto de los campos no acepta `@bind-Value`. Se rellenan con `Value` (valor inicial) y se envían por `Name` en un `<form>` o `<EditForm>` con post. `TDSelect` en modo `Multiple` sigue usando `Values`, no `@bind-Value`. `TDFileInput` no enlaza el archivo al modelo: el post multipart usa `Field` para el nombre, o `OnChange` en una página interactiva. `TDPhotoButton` tampoco usa `@bind-Value`: el post trae el JPEG ya comprimido.
 3. No existe `TDFormField`. El ítem de catálogo FormField es `TDFieldset` más campos adentro.
 4. No existe `Menu="true"` en `TDFab`. El menú aparece si hay contenido hijo.
 5. `TDSlider` tiene una sola manija. No hay rango de dos valores.
@@ -42,7 +42,9 @@ Fuente: parámetros reales de `TDComponents/Components`. El texto del catálogo 
 | Elegir una fila (código, nombre, stock) | `TDDropDownDataGrid` | `TDSelect` si la decisión depende de varias columnas |
 | Sugerencias al escribir, el valor es texto libre | `TDAutoComplete` | `TDSelect Searchable="true"` si el valor tiene que ser una opción cerrada |
 | Color | `TDColorPicker` | texto libre |
-| Archivo | `TDFileInput` | |
+| Archivo que no es una foto, o que no debe recomprimirse | `TDFileInput` | `TDPhotoButton` si es una foto que debe llegar liviana |
+| Foto tomada o elegida, ya comprimida para el servidor | `TDPhotoButton` | `TDPhotoCapture` si son varias fotos seguidas |
+| Varias fotos seguidas, sin cerrar la cámara | `TDPhotoCapture` | `TDPhotoButton` si es una sola |
 | Código de un solo uso | `TDSecurityCode` | `TDTextBox` |
 | Firma | `TDSignaturePad` | |
 | HTML enriquecido | `TDHtmlEditor` | `TDMarkdown` si la salida debe ser HTML |
@@ -50,6 +52,7 @@ Fuente: parámetros reales de `TDComponents/Components`. El texto del catálogo 
 | Etiquetas que el usuario agrega | `TDChipList` | `TDSelect Multiple` si el conjunto está cerrado |
 | Etiqueta visual o filtro | `TDChip` | |
 | Agrupar campos | `TDFieldset` | |
+| Formulario con título, resumen de errores y aviso al salir | `TDEditForm` | `<EditForm>` si no quieres esa cáscara |
 | Aviso junto al campo | `TDMessage` | |
 | Acción principal del formulario | `TDButton` con `ButtonType="TDButtonType.Submit"` | `TDButtonType.Button` dentro de un form si debe enviar |
 | Acción que no envía el form | `TDButton ButtonType="TDButtonType.Button"` | el default, que es `Submit` |
@@ -68,10 +71,17 @@ El id del catálogo no es el tag.
 | --- | --- |
 | textbox, password, textarea | `TDTextBox` |
 | dropdown, select, ddmulti | `TDSelect` |
+| ddtree | `TDDropDownTree` |
+| ddgrid | `TDDropDownDataGrid` |
+| seccode | `TDSecurityCode` |
+| splitbtn | `TDSplitButton` |
 | fileinput, upload | `TDFileInput` |
+| photo | `TDPhotoButton` |
+| photocapture | `TDPhotoCapture` |
 | fieldset, formfield | `TDFieldset` |
 | fab, fabmenu | `TDFab` |
-| form | no hay tag TD. Es `<EditForm>` de ASP.NET con campos TD adentro |
+| editform | `TDEditForm` |
+| form | `<EditForm>` de ASP.NET, sin la cáscara de `TDEditForm` |
 | inplace | `TDInplace` para envolver un editor propio. `TDInplaceEdit` para el editor ya armado |
 
 ## Tipos compartidos
@@ -126,17 +136,69 @@ Enums:
 
 ## Patrón de formulario
 
-El ítem TemplateForm no es un componente. Un formulario de alta se arma así. Solo el texto usa `@bind-Value`. Los demás campos viajan por `Name` en el post.
+El ítem TemplateForm no es un componente. Un formulario de alta se arma así. Texto, selección simple, fecha, máscara, número e interruptor usan `@bind-Value`.
 
 ```razor
-<EditForm Model="pedido" FormName="pedido" OnValidSubmit="Guardar" Enhance>
+<TDEditForm Model="pedido" FormName="pedido" OnValidSubmit="Guardar" Enhance Title="Alta de flota" SubmitLabel="Guardar flota">
     <TDTextBox @bind-Value="pedido.Flota" Label="Nombre de la flota" Required="true" RequiredText="Obligatorio" />
-    <TDSelect Name="marca" Label="Marca" Options="marcas" />
-    <TDButton>Guardar</TDButton>
-</EditForm>
+    <TDSelect @bind-Value="pedido.Marca" Label="Marca" Options="marcas" />
+</TDEditForm>
 ```
 
-`TDButton` dentro de `EditForm` debe quedar en `ButtonType="Submit"` (el default) para enviar. Cualquier otro botón del mismo formulario lleva `ButtonType="TDButtonType.Button"`.
+`TDEditForm` es un `EditForm`. Si el botón lo armas tú, omite `SubmitLabel` y usa `TDButton` con `ButtonType="TDButtonType.Submit"`. Cualquier otro botón del mismo formulario lleva `ButtonType="TDButtonType.Button"`.
+
+## TDEditForm
+
+Cáscara del formulario. Sirve para un alta o una edición con título, un botón que dice qué se guarda, la lista de lo que falló y un aviso si la persona sale con cambios.
+
+Pasa todos los parámetros de `EditForm`. El contenido son los campos. `Model` y `EditContext` no van juntos. En una página estática hace falta `FormName`.
+
+```razor
+<TDEditForm Model="flota" FormName="alta-flota" OnValidSubmit="Guardar" Enhance
+            Title="Alta de flota"
+            Lead="El nombre queda en el despacho. Si sales sin guardar, lo escrito se pierde."
+            SubmitLabel="Guardar flota"
+            PendingText="Guardando la flota…"
+            HelpHref="/c/fieldset" HelpLabel="Ver cómo agrupar campos"
+            ConfirmLeave="true">
+    <TDTextBox @bind-Value="flota.Nombre" Label="Nombre de la flota" Required="true" RequiredText="Obligatorio" RequiredMessage="Escribe el nombre de la flota." />
+    <TDTextBox @bind-Value="flota.Solicitud" Label="Solicitud" Required="true" RequiredText="Obligatorio" RequiredMessage="Describe qué hay que hacer." Multiline="true" />
+</TDEditForm>
+```
+
+| Parámetro | Tipo | Default | Para qué | Cuándo |
+| --- | --- | --- | --- | --- |
+| `Model` | `object?` | `null` | Modelo del `EditForm`. | Alta o edición. No lo combines con `EditContext`. |
+| `EditContext` | `EditContext?` | `null` | Contexto ya creado. | Cuando el contexto lo armas tú. No lo combines con `Model`. |
+| `OnSubmit` | `EventCallback<EditContext>` | vacío | Corre al enviar, falle o no la validación del modelo. | El post lo manejas siempre. |
+| `OnValidSubmit` | `EventCallback<EditContext>` | vacío | Corre solo si la validación del modelo pasa. | Guardar cuando el modelo es válido. |
+| `OnInvalidSubmit` | `EventCallback<EditContext>` | vacío | Corre si la validación del modelo falla en el servidor. | Quieres un manejo propio del rechazo. |
+| `FormName` | `string?` | `null` | Nombre del formulario estático. | Página sin interactividad. |
+| `Enhance` | `bool` | `false` | Post sin recargar toda la página. | El resto de la pantalla debe quedarse. |
+| `ChildContent` | campos | — | Campos. Reciben el `EditContext`. | Siempre. |
+| `Title` | `string?` | `null` | Título visible. | El formulario es la pantalla. |
+| `Lead` | `string?` | `null` | Una frase de qué se guarda. | Hace falta decir qué pasa al salir. |
+| `SubmitLabel` | `string?` | `null` | Texto del botón que envía. | El botón dice la acción, por ejemplo «Guardar flota». |
+| `PendingText` | `string` | `Guardando. Espera un momento.` | Texto mientras el envío sigue. | Cámbialo si la acción no es guardar. |
+| `Actions` | contenido | `null` | Botones a la izquierda del principal. | Hay cancelar u otra acción que no envía. |
+| `HelpHref` | `string?` | `null` | Destino de la ayuda. Rechaza `javascript:` y `data:`. | Hay una persona o una página que explica el alta. |
+| `HelpLabel` | `string` | `Pedir ayuda` | Texto de ese enlace. | Siempre que haya `HelpHref`. |
+| `Enctype` | `string?` | `null` | Codificación del post. | `multipart/form-data` si hay archivo o foto. |
+| `Autocomplete` | `string?` | `null` | Autocompletado de todo el formulario. | Quieres `off` o `on`. |
+| `ShowSummary` | `bool` | `true` | Lista los campos que fallaron. | Déjalo en true. |
+| `UseBrowserValidation` | `bool` | `false` | El navegador muestra su globo y el resumen no sale. | Quieres el aviso nativo del navegador. |
+| `ConfirmLeave` | `bool` | `false` | Pregunta antes de salir con cambios. | Lo escrito no está guardado en el servidor. |
+| `GuardSubmit` | `bool` | `true` | Ignora un segundo envío. | Déjalo en true. |
+| `Autofocus` | `bool` | `false` | Foco en el primer obligatorio vacío. | Esta pantalla es el inicio de la tarea. |
+| `Disabled` | `bool` | `false` | Bloquea campos y botón. | El registro no se puede editar. |
+| `InvalidTitle` | `string` | `No se pudo guardar` | Título del aviso de error. | La acción no es guardar. |
+| `InvalidDetail` | `string` | `Revisa los campos marcados. Lo escrito sigue en el formulario.` | Qué pasó y qué hacer. | Quieres otra frase. |
+| `LeaveTitle` | `string` | `Salir sin guardar` | Título del diálogo al salir. | |
+| `LeaveDetail` | `string` | `Lo escrito sigue solo en esta pantalla. Si sales, se pierde.` | Qué se pierde. | |
+| `LeaveStay` | `string` | `Seguir editando` | Se queda. | |
+| `LeaveDiscard` | `string` | `Salir sin guardar` | Descarta y sale. | |
+
+No tiene `OnChange`. Los campos siguen usando `@bind-Value` o `Name` como en el resto de Forms.
 
 ---
 
@@ -165,7 +227,7 @@ Campo de texto. Cubre el catálogo TextBox, Password y TextArea.
 
 Úsalo para nombre, correo, búsqueda, notas y contraseña. Para una máscara visual usa `TDMask`. Para un entero con botones usa `TDNumeric`.
 
-Es el único campo con `@bind-Value`. El nombre del post es `Name` si lo pones; si no, es el nombre de la propiedad enlazada.
+El nombre del post es `Name` si lo pones; si no, es el nombre de la propiedad enlazada. `TDSelect`, `TDDatePicker`, `TDMask`, `TDNumeric` y `TDSwitch` usan el mismo contrato.
 
 ```razor
 <TDTextBox @bind-Value="pedido.Flota" Label="Nombre de la flota" Placeholder="Transportes del Sur" Hint="Nombre con el que aparece en el despacho." />
@@ -311,7 +373,7 @@ Una sola opción. El `Name` es el grupo de radios.
 
 ## TDSwitch
 
-Interruptor de dos estados. El valor enviado es el literal `true` cuando está activo.
+Interruptor de dos estados. Acepta `@bind-Value`. Si solo se indica `Checked`, ese es el estado inicial. Activo envía `true` e inactivo envía `false`.
 
 Úsalo para una preferencia que se aplica al momento. Para aceptar términos usa `TDCheckBox`.
 
@@ -324,7 +386,10 @@ Interruptor de dos estados. El valor enviado es el literal `true` cuando está a
 | --- | --- | --- | --- | --- |
 | `Name` | `string?` | `null` | Nombre del post. | Debe enviarse. |
 | `Label` | `string` | `""` | Texto del interruptor. | Siempre. El interruptor solo no dice qué cambia. |
-| `Checked` | `bool` | `false` | Empieza activo. | Valor inicial. |
+| `Checked` | `bool` | `false` | Empieza activo cuando no hay `@bind-Value`. | Valor inicial suelto. |
+| `Value` | `bool` | `false` | Estado enlazado. Acepta `@bind-Value`. | El interruptor pertenece al modelo. |
+| `ValueChanged` | `EventCallback<bool>` | | El formulario devuelve el estado. | Lo escribe `@bind-Value`. |
+| `ValueExpression` | `Expression<Func<bool>>?` | `null` | Campo del modelo para la validación. | Lo escribe `@bind-Value`. |
 | `Disabled` | `bool` | `false` | No se puede cambiar. | |
 | `Size` | `TDSize` | `Medium` | `Small`, `Medium`, `Large`. | Densidad de la barra. |
 | `LabelPosition` | `TDLabelPosition` | `End` | `End` texto a la derecha. `Start` texto a la izquierda. | El texto precede al control. |
@@ -333,24 +398,26 @@ Interruptor de dos estados. El valor enviado es el literal `true` cuando está a
 
 Desplegable. Cubre DropDown, DropDown simple y DropDown múltiple.
 
-Una opción: pon `Value`. Varias: `Multiple="true"` y `Values`. Cada valor elegido viaja en un input hidden con `Name`.
+Una opción: `@bind-Value`. Varias: `Multiple="true"` y `Values`. Cada valor elegido viaja en el post. Si hay `@bind-Value` y no hay `Name`, el nombre es el del modelo y el error de validación queda bajo el campo.
 
 `TDOption.Group` agrupa. `TDOption.Hint` es la segunda línea. `TDOption.Disabled` bloquea esa opción.
 
 ```razor
-<TDSelect Name="marca" Label="Marca" Value="volvo" Options="marcas" />
+<TDSelect @bind-Value="pedido.Marca" Label="Marca" Options="marcas" />
 <TDSelect Name="marca" Label="Marca" Searchable="true" Clearable="true" Options="marcas" />
 <TDSelect Name="sistemas" Label="Sistemas" Multiple="true" Chips="true" MaxSelected="3" MaxChips="2" Values="@(new[] { "frenos" })" Options="sistemas" />
 ```
 
 | Parámetro | Tipo | Default | Para qué | Cuándo |
 | --- | --- | --- | --- | --- |
-| `Name` | `string` | `"valor"` | Nombre de cada hidden enviado. | Siempre cámbialo. |
+| `Name` | `string?` | `null` | Nombre de cada valor enviado. Si se omite y hay `@bind-Value`, usa el nombre del modelo. Sin enlace, el post usa `valor`. | |
 | `Label` | `string?` | `null` | Etiqueta. | Siempre en un formulario. |
 | `Hint` | `string?` | `null` | Ayuda bajo el control. | |
 | `Placeholder` | `string` | `"Elegir"` | Texto si no hay selección. | El default no describe el dato. |
 | `Options` | `IReadOnlyList<TDOption>` | vacío | Opciones. | Siempre. |
-| `Value` | `string?` | `null` | Selección simple inicial. Se ignora como selección visible si `Multiple` es true. | Una sola opción. |
+| `Value` | `string?` | `null` | Selección simple. Acepta `@bind-Value`. Se ignora como selección visible si `Multiple` es true. | Una sola opción. |
+| `ValueChanged` | `EventCallback<string?>` | | El formulario devuelve la opción. | Lo escribe `@bind-Value`. |
+| `ValueExpression` | `Expression<Func<string?>>?` | `null` | Campo del modelo para la validación. | Lo escribe `@bind-Value`. |
 | `Values` | `IReadOnlyList<string>` | vacío | Selección múltiple inicial. | Junto con `Multiple`. |
 | `Multiple` | `bool` | `false` | Permite varias. | Más de un valor. |
 | `Searchable` | `bool` | `false` | Caja de búsqueda dentro del panel. | Hay más de ~8 opciones. |
@@ -470,10 +537,10 @@ Letras y dígitos que no coinciden con el token se saltan. No uses esto para un 
 
 | Parámetro | Tipo | Default | Para qué | Cuándo |
 | --- | --- | --- | --- | --- |
-| `Name` | `string` | `"mascara"` | Nombre del post. | |
+| `Name` | `string?` | `null` | Nombre del post. Si se omite y hay `@bind-Value`, usa el nombre del modelo. | |
 | `Label` | `string?` | `null` | Etiqueta. | |
 | `Hint` | `string?` | `null` | Ayuda. | |
-| `Value` | `string?` | `null` | Valor inicial, ya con la forma del patrón. | |
+| `Value` | `string?` | `null` | Valor, ya con la forma del patrón. Acepta `@bind-Value`. | |
 | `Placeholder` | `string` | `""` | Ejemplo vacío. | Muestra la forma (`ABCD-12`). |
 | `Pattern` | `string` | `"XXXX-00"` | Máscara. | Siempre define la forma real. |
 | `InputMode` | `string?` | `null` | Teclado móvil. | Teléfono o solo números. |
@@ -490,10 +557,10 @@ Cantidad decimal con botones − y +. No formatea moneda: el valor es un `decima
 
 | Parámetro | Tipo | Default | Para qué | Cuándo |
 | --- | --- | --- | --- | --- |
-| `Name` | `string` | `"cantidad"` | Nombre del post. | |
+| `Name` | `string?` | `null` | Nombre del post. Si se omite y hay `@bind-Value`, usa el nombre del modelo. | |
 | `Label` | `string?` | `null` | Etiqueta. | |
 | `Hint` | `string?` | `null` | Ayuda. | Unidades, no el número en sí. |
-| `Value` | `decimal` | `0` | Valor inicial. | |
+| `Value` | `decimal` | `0` | Cantidad. Acepta `@bind-Value`. | |
 | `Min` | `decimal` | `0` | Mínimo. | |
 | `Max` | `decimal` | `9999` | Máximo. | |
 | `Step` | `decimal` | `1` | Incremento de los botones y del input. | Decimales: `0.5` o `0.01`. |
@@ -512,11 +579,11 @@ Fecha, fecha y hora, o solo hora, según `Mode`. `Value`, `Min` y `Max` son stri
 
 | Parámetro | Tipo | Default | Para qué | Cuándo |
 | --- | --- | --- | --- | --- |
-| `Name` | `string` | `"fecha"` | Nombre del post. | |
+| `Name` | `string?` | `null` | Nombre del post. Si se omite y hay `@bind-Value`, usa el nombre del modelo. | |
 | `Mode` | `TDDateMode` | `Date` | `Date`, `DateTime` o `Time`. | El dato incluye hora o no. |
 | `Label` | `string?` | `null` | Etiqueta. | |
 | `Hint` | `string?` | `null` | Ayuda. | |
-| `Value` | `string?` | `null` | Valor inicial en formato del input. | |
+| `Value` | `string?` | `null` | Fecha en el formato del modo. Acepta `@bind-Value`. | |
 | `Min` | `string?` | `null` | Mínimo, mismo formato que `Value`. | No permitir días pasados. |
 | `Max` | `string?` | `null` | Máximo. | |
 | `Required` | `bool` | `false` | Obligatorio. | |
@@ -627,13 +694,69 @@ Un archivo. Cubre FileInput y Upload. Muestra el nombre elegido. No hay parámet
 
 | Parámetro | Tipo | Default | Para qué | Cuándo |
 | --- | --- | --- | --- | --- |
-| `Name` | `string` | `"archivo"` | Nombre del post del archivo. | |
+| `Name` | `string?` | `null` | Nombre del post del archivo. Si se omite y hay `Field`, usa el nombre del modelo. | |
+| `Field` | `Expression<Func<IFormFile?>>?` | `null` | Propiedad del modelo que recibe el archivo en el post. | El archivo pertenece al formulario. |
+| `OnChange` | `EventCallback<InputFileChangeEventArgs>` | | Entrega el archivo en una página interactiva. | La página no espera al post. |
 | `Label` | `string?` | `null` | Etiqueta. | |
 | `Hint` | `string?` | `null` | Tipos y límite que la persona debe conocer. | Siempre que `Accept` no sea obvio. |
 | `Accept` | `string` | `""` | Atributo HTML `accept` (`image/*`, `.pdf`). | Restringe el diálogo del sistema. No reemplaza la validación del servidor. |
 | `Placeholder` | `string` | `"Ningún archivo elegido"` | Texto antes de elegir. | |
 
 El formulario que lo contiene tiene que poder enviar archivos (`enctype` multipart).
+
+## TDPhotoButton
+
+Botón de cámara. La persona toma una foto o elige una de la galería. Antes del post, el navegador la convierte a JPEG con calidad 0.85. Si el lado largo pasa de 1920 px, lo baja a 1920. Una foto más chica no se agranda. El archivo del formulario ya es ese JPEG.
+
+La página tiene que cargar Material Symbols e incluir `photo_camera` en `icon_names`. Si el nombre no está en la fuente, el botón muestra la palabra en lugar del ícono.
+
+```razor
+@page "/repuesto"
+@using TDComponents
+@using TDComponents.Components
+
+<EditForm Model="parte" FormName="foto-repuesto" OnSubmit="Guardar" enctype="multipart/form-data">
+    <TDPhotoButton Name="fotoChica" Label="Foto pequeña" Size="TDSize.Small" Hint="Toca la cámara. Luego toca la imagen para verla en grande." />
+    <TDPhotoButton Name="foto" Label="Foto mediana" Hint="Toca la cámara. Luego toca la imagen para verla en grande." />
+    <TDPhotoButton Name="fotoGrande" Label="Foto grande" Size="TDSize.Large" Hint="Toca la cámara. Luego toca la imagen para verla en grande." />
+    <TDButton ButtonType="TDButtonType.Submit">Guardar fotos</TDButton>
+</EditForm>
+```
+
+| Parámetro | Tipo | Default | Para qué | Cuándo |
+| --- | --- | --- | --- | --- |
+| `Name` | `string?` | `null` | Nombre del post del JPEG. Si se omite y hay `Field`, usa el nombre del modelo. Sin los dos, el post usa `foto`. | |
+| `Field` | `Expression<Func<IFormFile?>>?` | `null` | Propiedad del modelo que recibe el JPEG comprimido. | El archivo pertenece al formulario. |
+| `Label` | `string?` | `null` | Texto visible y nombre accesible del botón. | Siempre. Sin esto el botón solo se entiende por el ícono. |
+| `Hint` | `string` | `"Toca la cámara para tomar una foto o elegir una de la galería. Se comprime antes de enviarla."` | Qué va a pasar, antes de elegir. | Cuando la frase por defecto no alcanza. |
+| `Size` | `TDSize` | `Medium` | Tamaño del botón y de la miniatura: `Small`, `Medium` o `Large`. | Una barra densa usa `Small`. Una foto principal usa `Large`. |
+
+No tiene `OnChange`. El archivo listo es el que viaja en el post multipart. No hay parámetro de calidad: es 0.85. Después de elegirla, tocar la miniatura abre el visor de `TDImage`: la foto en grande, con acercar, alejar, girar y cerrar. Para un PDF o un archivo que no deba recomprimirse, usa `TDFileInput`. Para varias fotos seguidas, usa `TDPhotoCapture`.
+
+## TDPhotoCapture
+
+Varias fotos con la cámara del dispositivo. La cámara no se cierra entre tomas. Cada disparo se comprime a JPEG 0.85, entra en la colección y se puede quitar antes de guardar. Al enviar el formulario, viajan todas juntas.
+
+```razor
+@page "/repuesto"
+@using TDComponents
+@using TDComponents.Components
+
+<EditForm Model="parte" FormName="fotos-repuesto" OnSubmit="Guardar" enctype="multipart/form-data">
+    <TDPhotoCapture Name="fotos" Label="Fotos del repuesto" Hint="Abre la cámara. Cada toque agrega una foto sin cerrarla. Quita las que no quieras." />
+    <TDButton ButtonType="TDButtonType.Submit">Guardar la colección</TDButton>
+</EditForm>
+```
+
+| Parámetro | Tipo | Default | Para qué | Cuándo |
+| --- | --- | --- | --- | --- |
+| `Name` | `string?` | `null` | Nombre del post de todas las fotos. Si se omite y hay `Field`, usa el nombre del modelo. Sin los dos, el post usa `fotos`. | |
+| `Field` | `Expression<Func<IFormFileCollection?>>?` | `null` | Propiedad del modelo que recibe la colección. | El formulario enlaza `IFormFileCollection` o `List<IFormFile>`. |
+| `Label` | `string?` | `null` | Texto visible y nombre accesible del botón que abre la cámara. | Siempre. |
+| `Hint` | `string` | `"Abre la cámara y toma las fotos seguidas. Cada una entra en la colección y puedes quitar las que no quieras."` | Qué va a pasar, antes de abrir. | Cuando la frase por defecto no alcanza. |
+| `Size` | `TDSize` | `Medium` | Tamaño del botón que abre la cámara. | La misma escala que `TDPhotoButton`. |
+
+No cierra la cámara al tomar. `Cerrar cámara` apaga el video y deja la colección. El formulario tiene que ser `multipart/form-data`. El sitio tiene que ser HTTPS o localhost. Para una sola foto, usa `TDPhotoButton`.
 
 ## TDSecurityCode
 

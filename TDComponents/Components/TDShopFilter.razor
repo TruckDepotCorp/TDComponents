@@ -1,0 +1,41 @@
+@namespace TDComponents.Components
+
+<div class="td-mxfilter" data-td-mx-filter>
+    <div class="td-mxfilter__bar">
+        <label class="td-mxsearch">
+            <TDMiscIcon Name="search" Size="18" />
+            <input data-td-mx-q placeholder="@Placeholder" aria-label="@Placeholder" />
+        </label>
+        <div class="td-mxchips" role="group" aria-label="Filtros">
+            @foreach (var chip in Used)
+            {
+                <button type="button" class="td-mxchip @(chip.Tag == "" ? "is-on" : null)" data-td-mx-chip="@chip.Tag">@chip.Label <span>@chip.Count</span></button>
+            }
+        </div>
+    </div>
+    <div data-td-mx-list>@ChildContent</div>
+    <p class="td-mxemptyline" data-td-mx-empty hidden>@EmptyText</p>
+</div>
+
+@code {
+    /// <summary>Texto del buscador.</summary>
+    [Parameter] public string Placeholder { get; set; } = "Buscar por nombre o teléfono";
+
+    /// <summary>Mensaje cuando ningún elemento pasa el filtro.</summary>
+    [Parameter] public string EmptyText { get; set; } = "Sin resultados con este filtro.";
+
+    /// <summary>Filtros. El de marca vacía muestra todos.</summary>
+    [Parameter] public IReadOnlyList<TDShopChip>? Chips { get; set; }
+
+    /// <summary>Filas que se filtran. Cada una declara data-text y data-tags.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private IReadOnlyList<TDShopChip> Used => Chips ?? Demo;
+
+    private static readonly TDShopChip[] Demo =
+    [
+        new("Todos", 5),
+        new("Me deben", 2, "deuda"),
+        new("Con crédito", 3, "credito")
+    ];
+}

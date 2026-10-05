@@ -1,0 +1,33 @@
+@namespace TDComponents.Components
+
+<article class="td-op">
+    <p class="td-op__kicker">Sello del camión</p>
+    <h2>@(string.IsNullOrWhiteSpace(Read) ? "Sin lectura" : Read)</h2>
+    <p class="td-op__pair"><span>El aviso trae</span> <b>@Expected</b></p>
+    <p class="td-op__status @MatchClass">@MatchText</p>
+</article>
+
+@code {
+    /// <summary>Sello que declara el aviso de despacho.</summary>
+    [Parameter] public string Expected { get; set; } = "";
+
+    /// <summary>Sello leído en la puerta. Vacío significa que todavía no hay lectura.</summary>
+    [Parameter] public string Read { get; set; } = "";
+
+    /// <summary>El sello físico está intacto. En falso, la descarga se detiene aunque el número coincida.</summary>
+    [Parameter] public bool Intact { get; set; } = true;
+
+    private bool HasRead => !string.IsNullOrWhiteSpace(Read);
+
+    private bool Same => HasRead && string.Equals(Expected.Trim(), Read.Trim(), StringComparison.OrdinalIgnoreCase);
+
+    private string MatchClass => !HasRead ? "is-neutral" : Same && Intact ? "is-ok" : "is-bad";
+
+    private string MatchText => !HasRead
+        ? "Todavía no se leyó el sello. No descargues."
+        : !Same
+            ? "El sello no es el del aviso. Detén la descarga y avisa al supervisor."
+            : !Intact
+                ? "El sello está violado. Detén la descarga y avisa al supervisor."
+                : "El sello coincide y está intacto. Puedes descargar.";
+}

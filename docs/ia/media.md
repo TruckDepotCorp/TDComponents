@@ -10,9 +10,9 @@ Fuente: parámetros reales de `TDComponents/Components`. El texto del catálogo 
 ## Reglas que no se pueden romper
 
 1. `TDCompare` compara dos estados de una imagen. El comparador de productos es `TDEcom` con `Kind="ecompare"`.
-2. `TDImage` no tiene dirección de imagen. Pinta `Alt` sobre `Background`, con vista previa y descarga. No inventes `Src`.
+2. `TDImage` muestra la foto de la aplicación con `Src`. Sin `Src` pinta `Alt` sobre `Background`, que es la vista del catálogo.
 3. `TDGallery` no recibe archivos. Cada pieza es un `TDGalleryItem` (`Title`, `Code`, `Background`).
-4. `TDScheduler` no recibe eventos. La agenda vive en el cliente y el componente no tiene parámetros.
+4. `TDScheduler` sin `Appointments` muestra la semana del catálogo. Una lista vacía es una agenda real sin trabajos. `Name` publica las citas en el post.
 5. El carrusel de diapositivas está en la guía de navegación: `TDCarousel`.
 
 ## Qué componente elegir
@@ -22,7 +22,7 @@ Fuente: parámetros reales de `TDComponents/Components`. El texto del catálogo 
 | Antes y después de una foto | `TDCompare` | `TDEcom Kind="ecompare"` |
 | Pieza con título y código en una rejilla | `TDGallery` | `TDImage` si es una sola figura |
 | Figura con texto alternativo y vista ampliada | `TDImage` | TDGallery si son varias piezas con código. |
-| Agenda de demostración | `TDScheduler` | No le pases citas: no tiene ese parámetro |
+| Agenda con citas del sistema | `TDScheduler` | `TDChart` para un calendario de números |
 
 ## Alias del catálogo
 
@@ -67,11 +67,12 @@ Rejilla de piezas con título y código.
 Imagen con pie, vista previa y descarga. `Alt` describe la imagen. No repitas el pie dentro del texto alternativo.
 
 ```razor
-<TDImage Alt="Disco de freno ventilado" Caption="BR-4521-AD" Background="#1F2327" />
+<TDImage Src="@parte.Foto" Alt="Disco de freno ventilado" Caption="BR-4521-AD" />
 ```
 
 | Parámetro | Tipo | Default | Para qué | Cuándo |
 | --- | --- | --- | --- | --- |
+| `Src` | `string?` | `null` | Dirección de la imagen de la aplicación. | Una ficha o un listado real. Sin ella queda la vista de catálogo. Se rechazan `javascript:` y `data:`. |
 | `Alt` | `string` | `"Imagen"` | Texto alternativo. | Siempre, con una descripción real. |
 | `Caption` | `string` | `""` | Pie visible. | Hay un pie que no debe repetirse dentro de Alt. |
 | `Background` | `string` | `"#1F2327"` | Color de respaldo. | El color de respaldo no es el de la marca. |
@@ -80,8 +81,19 @@ Imagen con pie, vista previa y descarga. `Alt` describe la imagen. No repitas el
 
 ## TDScheduler
 
-Agenda de demostración. No declares parámetros: el calendario vive en el cliente.
+Calendario de trabajos. Sin `Appointments` pinta la semana de demostración. Con citas, pinta las de la aplicación. El horario visible va de 07:00 a 20:00, en pasos de 15 minutos. Las fechas van en `yyyy-MM-dd` y las horas en `HH:mm`.
 
 ```razor
-<TDScheduler />
+<TDScheduler Date="@hoy" View="week" Resources="bahias" Appointments="citas" Name="agenda" />
 ```
+
+`bahias` es `IReadOnlyList<TDScheduleResource>` y `citas` es `IReadOnlyList<TDAppointment>`. Si `Name` está puesto, al guardar, mover o eliminar el campo oculto lleva un JSON de `TDAppointment`: `Id`, `Title`, `Date`, `Start`, `End`, `ResourceId`, `Note`.
+
+| Parámetro | Tipo | Default | Para qué | Cuándo |
+| --- | --- | --- | --- | --- |
+| `Appointments` | `IReadOnlyList<TDAppointment>?` | `null` | Citas del sistema. | Una agenda real. `null` deja la demostración. Vacío deja el calendario sin trabajos. |
+| `Resources` | `IReadOnlyList<TDScheduleResource>?` | `null` | Bahías, personas o equipos. | Los recursos no son las cuatro bahías del catálogo. `null` las deja. |
+| `Date` | `string?` | `null` | Día inicial, `yyyy-MM-dd`. | La agenda debe abrir en un día distinto de hoy. |
+| `View` | `string` | `"week"` | `day`, `week`, `month`, `agenda` o `resources`. | La vista inicial no es la semana. |
+| `Name` | `string?` | `null` | Campo oculto con el JSON de las citas actuales. | El formulario tiene que guardar los cambios de la agenda. |
+| `ReadOnly` | `bool` | `false` | Se puede cambiar el día y la vista, no los trabajos. | La persona no debe crear, mover ni borrar citas. |

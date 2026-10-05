@@ -1,0 +1,21 @@
+@namespace TDComponents.Components
+
+<div class="td-mxform" data-td-mx-form>
+    @ChildContent
+    <footer class="td-mxsave">
+        <span data-td-mx-dirty><i></i>Sin cambios</span>
+        <button type="button" class="td-mxbtn td-mxbtn--ghost" data-td-mx-reset>@CancelLabel</button>
+        <button type="button" class="td-mxbtn" data-td-mx-save disabled>@SaveLabel</button>
+    </footer>
+</div>
+
+@code {
+    /// <summary>Campos del formulario. Guardar se activa cuando hay cambios y el nombre no está vacío.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>Texto de cancelar.</summary>
+    [Parameter] public string CancelLabel { get; set; } = "Cancelar";
+
+    /// <summary>Texto de guardar.</summary>
+    [Parameter] public string SaveLabel { get; set; } = "Guardar cambios";
+}

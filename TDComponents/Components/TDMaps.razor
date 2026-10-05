@@ -1,0 +1,146 @@
+@namespace TDComponents.Components
+@using System.Text.Json
+
+<td-maps class="td-maps" data-td-maps data-map-id="@MapId" style="--td-map-h:@Height">
+    <script type="application/json" data-td-maps-model>@((MarkupString)ModelJson)</script>
+</td-maps>
+
+@code {
+    /// <summary>Pilotos o vehículos. Si se omite, el mapa muestra la flota de demostración. Una lista vacía deja el mapa sin marcas.</summary>
+    [Parameter] public IReadOnlyList<TDMapUnit>? Units { get; set; }
+
+    /// <summary>Título de la vista.</summary>
+    [Parameter] public string Title { get; set; } = "Pilotos en ruta";
+
+    /// <summary>Alto del mapa, en CSS. El defecto es 480px.</summary>
+    [Parameter] public string Height { get; set; } = "480px";
+
+    /// <summary>Identificador estable. Conserva el encuadre si la página vuelve a pintar el mismo mapa.</summary>
+    [Parameter] public string MapId { get; set; } = "pilotos";
+
+    /// <summary>Dibuja la ruta recorrida de cada unidad. El defecto es true.</summary>
+    [Parameter] public bool ShowRoute { get; set; } = true;
+
+    /// <summary>Reconstruye por calles la lista de coordenadas de cada piloto. El defecto es true. En false, une las coordenadas en línea recta.</summary>
+    [Parameter] public bool MatchRoute { get; set; } = true;
+
+    /// <summary>Medio del recorrido: driving, walking o cycling. El defecto es driving.</summary>
+    [Parameter] public string Profile { get; set; } = "driving";
+
+    /// <summary>Servidor que reconstruye el recorrido. El defecto es el servicio público de demostración. En producción apunta al servidor propio.</summary>
+    [Parameter] public string RouterUrl { get; set; } = "https://router.project-osrm.org";
+
+    /// <summary>Dibuja las paradas ejecutadas. El defecto es true.</summary>
+    [Parameter] public bool ShowStops { get; set; } = true;
+
+    /// <summary>Plantilla de teselas {z}/{x}/{y}. El defecto es OpenStreetMap.</summary>
+    [Parameter] public string TileUrl { get; set; } = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
+
+    /// <summary>Texto de atribución del mapa. El defecto nombra a OpenStreetMap.</summary>
+    [Parameter] public string Attribution { get; set; } = "OpenStreetMap";
+
+    private static readonly JsonSerializerOptions Json = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+
+    private string ModelJson
+    {
+        get
+        {
+            var units = Units ?? Demo;
+            var payload = new
+            {
+                title = Title,
+                demo = Units is null,
+                showRoute = ShowRoute,
+                showStops = ShowStops,
+                matchRoute = MatchRoute && ShowRoute,
+                profile = ProfileName,
+                router = SafeHttp(RouterUrl)?.TrimEnd('/') ?? "https://router.project-osrm.org",
+                tileUrl = SafeTile(TileUrl),
+                attribution = Attribution,
+                units = units.Select(unit => new
+                {
+                    id = unit.Id,
+                    name = unit.Name,
+                    lat = unit.Latitude,
+                    lng = unit.Longitude,
+                    kind = unit.Kind,
+                    status = unit.Status,
+                    vehicle = unit.Vehicle,
+                    plate = unit.Plate,
+                    detail = unit.Detail,
+                    updated = unit.Updated,
+                    route = (ShowRoute ? unit.Route : null)?.Select(point => new { lat = point.Latitude, lng = point.Longitude }),
+                    stops = (ShowStops ? unit.Stops : null)?.Select(stop => new
+                    {
+                        name = stop.Name,
+                        lat = stop.Latitude,
+                        lng = stop.Longitude,
+                        at = stop.At,
+                        note = stop.Note
+                    })
+                })
+            };
+            return JsonSerializer.Serialize(payload, Json).Replace("<", "\\u003c", StringComparison.Ordinal);
+        }
+    }
+
+    private string ProfileName => Profile.Trim().ToLowerInvariant() switch
+    {
+        "walking" or "cycling" or "driving" => Profile.Trim().ToLowerInvariant(),
+        _ => "driving"
+    };
+
+    private static string? SafeHttp(string url)
+    {
+        if (Uri.TryCreate(url, UriKind.Absolute, out var uri) && (uri.Scheme == Uri.UriSchemeHttps || uri.Scheme == Uri.UriSchemeHttp))
+        {
+            return url;
+        }
+
+        return null;
+    }
+
+    private static string SafeTile(string url)
+    {
+        if (Uri.TryCreate(url, UriKind.Absolute, out var uri) && (uri.Scheme == Uri.UriSchemeHttps || uri.Scheme == Uri.UriSchemeHttp))
+        {
+            return url;
+        }
+
+        return "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
+    }
+
+    private static readonly TDMapUnit[] Demo =
+    [
+        new("cr", "Camila Rojas", 14.626, -90.560, "Piloto", "En ruta", "Volvo FH", "ABCD-12", "Pedido OC-00481 · tres paradas", "Hace 1 minuto",
+        [
+            new(14.526, -90.588),
+            new(14.575, -90.590),
+            new(14.633, -90.607),
+            new(14.626, -90.560)
+        ],
+        [
+            new("Bodega Villa Nueva", 14.526, -90.588, "08:10", "Cargó 3 repuestos"),
+            new("Cliente Mixco", 14.633, -90.607, "08:40", "Entregó el filtro"),
+            new("Taller Zona 1", 14.642, -90.513, "09:05", "Dejó las pastillas")
+        ]),
+        new("dt", "Diego Torres", 14.599, -90.514, "Piloto", "Detenido", "Scania R", "EFGH-34", "Descarga en el cliente", "Hace 4 minutos",
+        [
+            new(14.642, -90.513),
+            new(14.620, -90.513),
+            new(14.599, -90.514)
+        ],
+        [
+            new("Zona 10", 14.599, -90.514, "09:20", "Espera la firma de la guía")
+        ]),
+        new("js", "Jorge Soto", 14.555, -90.545, "Vehículo", "En ruta", "Mercedes Actros", "IJKL-56", "Vuelve a bodega", "Hace 2 minutos",
+        [
+            new(14.569, -90.478),
+            new(14.560, -90.510),
+            new(14.555, -90.545)
+        ],
+        [
+            new("Santa Catarina Pinula", 14.569, -90.478, "08:55", "Retiró una devolución")
+        ])
+    ];
+}

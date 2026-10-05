@@ -2,7 +2,39 @@ namespace WebAppSSR.Catalog;
 
 internal static class CatalogSamplesExtra
 {
-    public static IReadOnlyList<CatalogCode> For(string id) => id.ToLowerInvariant() switch
+    public static IReadOnlyList<CatalogCode> For(string id)
+    {
+        var forms = CatalogFormPages.For(id);
+        if (forms is not null)
+        {
+            return forms;
+        }
+
+        var shell = CatalogShellPages.For(id);
+        if (shell is not null)
+        {
+            return shell;
+        }
+
+        var views = CatalogViewPages.For(id);
+        if (views is not null)
+        {
+            return views;
+        }
+
+        var surface = CatalogSurfacePages.For(id);
+        if (surface is not null)
+        {
+            return surface;
+        }
+
+        var maps = CatalogMapPages.For(id);
+        if (maps is not null)
+        {
+            return maps;
+        }
+
+        return id.ToLowerInvariant() switch
     {
         "stack" => [R("stack.razor", """
 <TDStack Orientation="TDOrientation.Horizontal" Gap="12px"
@@ -593,8 +625,235 @@ const value = codes[0]?.rawValue;
 // El lector USB / Bluetooth llega como teclado y cierra con Enter.
 """),
         ],
-        "scheduler" => [R("Pages/Agenda.razor", """
+        "scheduler" => [Page("Pages/Agenda.razor", "/agenda", """
 <TDScheduler />
+""")],
+        "mphone" => [Page("Pages/Recepcion.razor", "/recepcion", """
+<div class="td-phone">
+    <TDAppBar Title="Recepción" Subtitle="Bodega Quilicura · turno mañana" BackHref="/c/mjobs" BackLabel="Volver a las tareas" ActionHref="/c/mshift" ActionLabel="Ayuda" />
+    <TDShiftBar Operator="María Soto" Site="Bodega Quilicura" Role="Operadora de recepción" Pending="3" Online="false" />
+    <TDJobSteps Title="Recepción del pallet 18" Current="1" Steps="pasos" />
+    <TDScanCard Code="BR-4521-AD" Name="Pastilla de freno delantera" Location="Pasillo A · rack 12 · nivel 2" Stock="24" Unit="unidades" Status="Ubicación confirmada" Tone="TDMobileTone.Success" ActionLabel="Guardar 24 unidades en A-12" ActionHref="/c/msheet" />
+    <TDQtyPad Label="Cantidad a guardar" Value="4" Unit="unidades" Min="1" Max="48" Name="cantidad" />
+    <TDConfirmSheet Open="true" Title="Guardar 24 unidades en A-12" Detail="El pallet sigue en el muelle hasta que confirmes. Si cierras, no se mueve nada." ConfirmLabel="Guardar en A-12" CancelLabel="Seguir revisando" HelpHref="/c/mshift" HelpLabel="Pedir ayuda al supervisor" />
+    <TDBottomNav Active="tareas" Items="secciones" />
+</div>
+""", """
+    private readonly string[] pasos = ["Identificar el pallet", "Contar bultos", "Asignar ubicación", "Confirmar guardado"];
+
+    private readonly TDMobileDest[] secciones =
+    [
+        new("inicio", "Inicio", "/c/mappbar"),
+        new("tareas", "Tareas", "/c/mjobs", 3),
+        new("escanear", "Escanear", "/c/mscan"),
+        new("ubicacion", "Ubicación", "/c/mbin"),
+        new("mas", "Más", "/c/mshift")
+    ];
+""")],
+        "mappbar" => [Page("Pages/Recepcion.razor", "/recepcion", """
+<TDAppBar Title="Recepción" Subtitle="Bodega Quilicura · turno mañana" BackHref="/c/mjobs" BackLabel="Volver a las tareas" ActionHref="/c/mshift" ActionLabel="Ayuda" />
+""")],
+        "mbottom" => [Page("Pages/Recepcion.razor", "/recepcion", """
+<TDBottomNav Active="tareas" Items="secciones" />
+""", """
+    private readonly TDMobileDest[] secciones =
+    [
+        new("inicio", "Inicio", "/c/mappbar"),
+        new("tareas", "Tareas", "/c/mjobs", 3),
+        new("escanear", "Escanear", "/c/mscan"),
+        new("ubicacion", "Ubicación", "/c/mbin"),
+        new("mas", "Más", "/c/mshift")
+    ];
+""")],
+        "mscan" => [Page("Pages/Recepcion.razor", "/recepcion", """
+<TDScanCard Code="BR-4521-AD" Name="Pastilla de freno delantera" Location="Pasillo A · rack 12 · nivel 2" Stock="24" Unit="unidades" Status="Ubicación confirmada" Tone="TDMobileTone.Success" ActionLabel="Guardar 24 unidades en A-12" ActionHref="/c/msheet" />
+""")],
+        "mqty" => [Page("Pages/Recepcion.razor", "/recepcion", """
+<TDQtyPad Label="Cantidad a guardar" Value="4" Unit="unidades" Min="1" Max="48" Name="cantidad" />
+""")],
+        "mjobs" => [Page("Pages/Tareas.razor", "/tareas", """
+<TDJobList Jobs="tareas" />
+""", """
+    private readonly TDWarehouseJob[] tareas =
+    [
+        new("t1", "Recibir pallet 18", "Muelle 2", "Recibir", "En curso", "Llega en 10 minutos", TDMobileTone.Warning, "/c/msteps"),
+        new("t2", "Guardar pastillas BR-4521-AD", "Pasillo A · rack 12", "Guardar", "Lista", "Antes de las 11:30", TDMobileTone.Success, "/c/mscan"),
+        new("t3", "Contar casillero B-04-1-02", "Pasillo B · rack 4", "Contar", "Bloqueada", "Falta el conteo anterior", TDMobileTone.Danger, "/c/mbin")
+    ];
+""")],
+        "mbin" => [Page("Pages/Ubicacion.razor", "/ubicacion", """
+<TDBinCard Aisle="A" Rack="12" Level="2" Bin="04" Sku="BR-4521-AD" SkuName="Pastilla de freno delantera" Quantity="24" Unit="unidades" />
+""")],
+        "msheet" => [Page("Pages/Recepcion.razor", "/recepcion", """
+<TDConfirmSheet Open="true" Title="Guardar 24 unidades en A-12" Detail="El pallet sigue en el muelle hasta que confirmes. Si cierras, no se mueve nada." ConfirmLabel="Guardar en A-12" CancelLabel="Seguir revisando" HelpHref="/c/mshift" HelpLabel="Pedir ayuda al supervisor" />
+""")],
+        "mshift" => [Page("Pages/Turno.razor", "/turno", """
+<TDShiftBar Operator="María Soto" Site="Bodega Quilicura" Role="Operadora de recepción" Pending="3" Online="false" />
+""")],
+        "mpick" => [Page("Pages/Picking.razor", "/picking", """
+<TDPickLine Sku="BR-4521-AD" Name="Pastilla de freno delantera" From="Pasillo A · rack 12 · nivel 2" Quantity="6" Picked="2" Unit="unidades" Field="recogidas" />
+""")],
+        "msteps" => [Page("Pages/Recepcion.razor", "/recepcion", """
+<TDJobSteps Title="Recepción del pallet 18" Current="1" Steps="pasos" />
+""", """
+    private readonly string[] pasos = ["Identificar el pallet", "Contar bultos", "Asignar ubicación", "Confirmar guardado"];
+""")],
+        "mcards" => [Page("Pages/Tareas.razor", "/tareas", """
+<TDCardCarousel AriaLabel="Tareas del turno" Auto="true" Interval="5000" Cards="tarjetas" />
+""", """
+    private readonly TDCarouselCard[] tarjetas =
+    [
+        new("Recibir pallet 18", "Muelle 2. Llega en 10 minutos.", "En curso", TDMobileTone.Warning, "Abrir recepción", "/c/msteps"),
+        new("Guardar pastillas BR-4521-AD", "Pasillo A · rack 12. Antes de las 11:30.", "Lista", TDMobileTone.Success, "Abrir guardado", "/c/mscan"),
+        new("Contar casillero B-04-1-02", "Pasillo B · rack 4. Falta el conteo anterior.", "Bloqueada", TDMobileTone.Danger, "Ver ubicación", "/c/mbin")
+    ];
+""")],
+        "micon" => [Page("Pages/Tareas.razor", "/tareas", """
+<div class="td-ccarousel__nav">
+    <TDButtonIcon Icon="arrow_back" Label="Tarjeta anterior" />
+    <TDButtonIcon Icon="pause" Label="Pausar" />
+    <TDButtonIcon Icon="arrow_forward" Label="Tarjeta siguiente" />
+</div>
+""")],
+        "omuelle" => [Page("Pages/Anden.razor", "/anden", """
+<TDDockBoard Doors="muelles" />
+""", """
+    private readonly TDDockDoor[] muelles =
+    [
+        new("m2", "Muelle 2", "Transportes del Sur", "Descargando", "Sale a las 16:40", TDMobileTone.Warning, "/c/odespacho"),
+        new("m4", "Muelle 4", "Libre", "Libre", "El próximo camión llega a las 18:00", TDMobileTone.Success),
+        new("m6", "Muelle 6", "Andes Cargo", "Bloqueada", "Falta el sello del despacho anterior", TDMobileTone.Danger, "/c/ocalidad")
+    ];
+""")],
+        "oconteo" => [Page("Pages/Conteo.razor", "/conteo", """
+<TDCountDiff Sku="BR-4521-AD" Location="Pasillo A · rack 12 · nivel 2" Expected="24" Counted="21" Unit="unidades" Name="contado" />
+""")],
+        "oincidencia" => [Page("Pages/Incidencia.razor", "/incidencia", """
+<TDIssueCard Title="Faltan 3 pastillas" What="El conteo quedó abierto. La mercadería no se movió." Next="Vuelve a contar el casillero o deja la incidencia para el supervisor." Tone="TDMobileTone.Warning" HelpHref="/c/orelevo" HelpLabel="Pedir ayuda al supervisor de turno" />
+""")],
+        "oruta" => [Page("Pages/Ruta.razor", "/ruta", """
+<TDRouteStop Sequence="2" Customer="Taller Los Andes" Address="Av. Vicuña Mackenna 4200, La Florida" Window="Entre 14:00 y 16:00" Packages="8" Status="En ruta" Tone="TDMobileTone.Success" />
+""")],
+        "opallet" => [Page("Pages/Pallet.razor", "/pallet", """
+<TDPalletBuild Code="PLT-1842" Title="Pastillas de freno delanteras" Layers="3" LayerTarget="4" WeightKg="820" MaxWeightKg="900" Mixed="true" />
+""")],
+        "orelevo" => [Page("Pages/Relevo.razor", "/relevo", """
+<TDShiftNote From="María Soto" At="Hoy a las 14:00, bodega Quilicura" Note="El muelle 2 sigue descargando el camión de Transportes del Sur. El lote L-904 está en calidad y no se mueve." OpenTasks="2" />
+""")],
+        "oreponer" => [Page("Pages/Reposicion.razor", "/reposicion", """
+<TDReplenLine Sku="BR-4521-AD" Name="Pastilla de freno delantera" From="Reserva · pasillo C · rack 3" To="Picking · pasillo A · rack 12" Needed="12" Moved="4" Unit="unidades" Field="movidas" />
+""")],
+        "oubicacion" => [Page("Pages/Ubicacion.razor", "/ubicacion", """
+<TDSlotCheck Sku="BR-4521-AD" Suggested="A-12-2-04" Scanned="B-04-1-02" />
+""")],
+        "ocalidad" => [Page("Pages/Calidad.razor", "/calidad", """
+<TDQcHold Lot="L-904" Reason="El empaque llegó abierto. Calidad tiene que revisarlo." Quantity="48" Unit="unidades" Owner="Camila Ríos, calidad" Tone="TDMobileTone.Danger" />
+""")],
+        "odespacho" => [Page("Pages/Despacho.razor", "/despacho", """
+<TDDispatchCard Order="OC-00481" Door="Muelle 4" Departs="Hoy a las 17:10" Seal="" Status="Falta el sello" Tone="TDMobileTone.Warning" ActionHref="/c/omuelle" ActionLabel="Cerrar despacho OC-00481" />
+""")],
+        "recibo" => [Page("Pages/Entrada.razor", "/entrada", """
+<TDReceiptHeader Document="OC-00481" Supplier="Frenos del Pacífico" Dock="Muelle 2 · Bodega Quilicura" ExpectedLines="6" ReceivedLines="4" Status="En recepción" Tone="TDMobileTone.Warning" />
+""")],
+        "rlinea" => [Page("Pages/Entrada.razor", "/entrada", """
+<TDReceiptLine Sku="BR-4521-AD" Name="Pastilla de freno delantera" Ordered="24" Received="21" Unit="unidades" Field="recibidas" />
+""")],
+        "aviso" => [Page("Pages/Entrada.razor", "/entrada", """
+<TDAsnMatch Notice="ASN-18" ExpectedPackages="12" CountedPackages="10" Field="bultos" />
+""")],
+        "rsello" => [Page("Pages/Entrada.razor", "/entrada", """
+<TDSealCheck Expected="SL-88421" Read="SL-88419" Intact="true" />
+""")],
+        "rlote" => [Page("Pages/Entrada.razor", "/entrada", """
+<TDLotCapture Sku="BR-4521-AD" Lot="L-904" Expires="Marzo 2028" Quantity="24" Unit="unidades" />
+""")],
+        "revision" => [Page("Pages/Revision.razor", "/revision", """
+<TDInspectList Product="Pastilla de freno delantera" Checks="criterios" FieldPrefix="revision" />
+""", """
+    private readonly TDInspectCheck[] criterios =
+    [
+        new("empaque", "Empaque cerrado", "Cumple", "La caja sellada no está abierta."),
+        new("etiqueta", "Etiqueta legible", "No cumple", "El código se ve cortado."),
+        new("cantidad", "Cantidad de la línea", "Pendiente")
+    ];
+""")],
+        "dano" => [Page("Pages/Revision.razor", "/revision", """
+<TDDamageNote Sku="BR-4521-AD" What="La caja llegó húmeda y dos pastillas están oxidadas." Affected="2" Unit="unidades" Next="Separa las 2 unidades. El resto puede seguir a revisión." Tone="TDMobileTone.Warning" />
+""")],
+        "rtemp" => [Page("Pages/Revision.razor", "/revision", """
+<TDTempCheck Product="Líquido de frenos" Reading="11" Min="2" Max="8" Unit="°C" />
+""")],
+        "etiqueta" => [Page("Pages/Revision.razor", "/revision", """
+<TDLabelCheck Expected="BR-4521-AD" Printed="BR-4521-AD" Readable="false" />
+""")],
+        "decision" => [Page("Pages/Revision.razor", "/revision", """
+<TDDisposition Product="Pastilla de freno delantera" Decision="Mandar a calidad" Consequence="Las 24 unidades quedan detenidas. No entran a la ubicación de picking." Tone="TDMobileTone.Danger" ActionHref="/c/revision" ActionLabel="Mandar 24 unidades a calidad" />
+""")],
+        "editform" => [Page("Pages/Flota.razor", "/flota", """
+<TDEditForm Model="flota" FormName="alta-flota" OnValidSubmit="Guardar" Enhance
+            Title="Alta de flota"
+            Lead="El nombre queda en el despacho. Si sales sin guardar, lo escrito se pierde."
+            SubmitLabel="Guardar flota"
+            PendingText="Guardando la flota…"
+            HelpHref="/c/fieldset" HelpLabel="Ver cómo agrupar campos"
+            ConfirmLeave="true">
+    <TDTextBox @bind-Value="flota.Nombre" Label="Nombre de la flota" Required="true" RequiredText="Obligatorio" RequiredMessage="Escribe el nombre de la flota." Placeholder="Transportes del Sur" Hint="Nombre con el que aparece en el despacho." />
+    <TDTextBox @bind-Value="flota.Solicitud" Label="Solicitud" Required="true" RequiredText="Obligatorio" RequiredMessage="Describe qué hay que hacer." Multiline="true" Rows="4" Hint="Qué necesitas que hagamos." />
+</TDEditForm>
+""", """
+    private Flota flota = new() { Nombre = "Transportes del Sur" };
+
+    private void Guardar()
+    {
+    }
+
+    private sealed class Flota
+    {
+        public string? Nombre { get; set; }
+        public string? Solicitud { get; set; }
+    }
+""")],
+        "photocapture" => [R("Pages/Repuesto.razor", """
+@page "/repuesto"
+@using TDComponents
+@using TDComponents.Components
+
+<EditForm Model="parte" FormName="fotos-repuesto" OnSubmit="Guardar" enctype="multipart/form-data">
+    <TDPhotoCapture Name="fotos" Label="Fotos del repuesto" Hint="Abre la cámara. Cada toque agrega una foto sin cerrarla. Quita las que no quieras." />
+    <TDButton ButtonType="TDButtonType.Submit">Guardar la colección</TDButton>
+</EditForm>
+
+@code {
+    private Parte parte = new();
+
+    private void Guardar()
+    {
+    }
+
+    private sealed class Parte;
+}
+""")],
+        "photo" => [R("Pages/Repuesto.razor", """
+@page "/repuesto"
+@using TDComponents
+@using TDComponents.Components
+
+<EditForm Model="parte" FormName="foto-repuesto" OnSubmit="Guardar" enctype="multipart/form-data">
+    <TDPhotoButton Name="fotoChica" Label="Foto pequeña" Size="TDSize.Small" Hint="Toca la cámara. Luego toca la imagen para verla en grande." />
+    <TDPhotoButton Name="foto" Label="Foto mediana" Hint="Toca la cámara. Luego toca la imagen para verla en grande." />
+    <TDPhotoButton Name="fotoGrande" Label="Foto grande" Size="TDSize.Large" Hint="Toca la cámara. Luego toca la imagen para verla en grande." />
+    <TDButton ButtonType="TDButtonType.Submit">Guardar fotos</TDButton>
+</EditForm>
+
+@code {
+    private Parte parte = new();
+
+    private void Guardar()
+    {
+    }
+
+    private sealed class Parte;
+}
 """)],
         "ddgrid" => [R("Forms/ddgrid.razor", """
 <TDDropDownDataGrid Name="PartId" AllowFiltering="true"
@@ -602,9 +861,22 @@ const value = codes[0]?.rawValue;
                     Rows="_rows" />
 """)],
         _ => []
-    };
+        };
+    }
 
     private static CatalogCode R(string file, string source) => new(file, "razor", source);
+
+    private static CatalogCode Page(string file, string route, string markup, string? code = null)
+    {
+        var block = string.IsNullOrWhiteSpace(code) ? "" : $"\n\n@code {{\n{code}\n}}";
+        return R(file, $"""
+@page "{route}"
+@using TDComponents
+@using TDComponents.Components
+
+{markup}{block}
+""");
+    }
 
     private static CatalogCode[] Shop(string kind) =>
     [

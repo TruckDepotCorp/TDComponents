@@ -1,33 +1,39 @@
 @namespace TDComponents.Components
 
-<td-mask class="td-field">
-    @if (!string.IsNullOrWhiteSpace(Label))
-    {
-        <TDLabel For="@_id" Required="Required">@Label</TDLabel>
-    }
-    <input id="@_id"
-           class="td-input td-input--mono"
-           type="text"
-           name="@Name"
-           value="@Value"
-           placeholder="@Placeholder"
-           required="@Required"
-           inputmode="@InputMode"
-           autocomplete="@Autocomplete"
-           data-td-mask="@Pattern"
-           aria-describedby="@_hintId" />
-    @if (!string.IsNullOrWhiteSpace(Hint))
-    {
-        <p class="td-field__hint" id="@_hintId">@Hint</p>
-    }
-</td-mask>
+<TDFormText Value="Value" ValueChanged="ValueChanged" ValueExpression="ValueExpression" ExplicitName="@Name" Fallback="mascara" Context="posted">
+    <td-mask class="td-field">
+        @if (!string.IsNullOrWhiteSpace(Label))
+        {
+            <TDLabel For="@_id" Required="Required">@Label</TDLabel>
+        }
+        <input id="@_id"
+               class="td-input td-input--mono"
+               type="text"
+               name="@posted"
+               value="@Value"
+               placeholder="@Placeholder"
+               required="@Required"
+               inputmode="@InputMode"
+               autocomplete="@Autocomplete"
+               data-td-mask="@Pattern"
+               aria-describedby="@_hintId" />
+        @if (!string.IsNullOrWhiteSpace(Hint))
+        {
+            <p class="td-field__hint" id="@_hintId">@Hint</p>
+        }
+        @if (ValueExpression is not null)
+        {
+            <div class="td-field__server"><ValidationMessage For="ValueExpression" /></div>
+        }
+    </td-mask>
+</TDFormText>
 
 @code {
     private readonly string _id = $"td-mask-{Guid.NewGuid():N}";
     private string _hintId => $"{_id}-hint";
 
-    /// <summary>Nombre del texto enmascarado que se envía.</summary>
-    [Parameter] public string Name { get; set; } = "mascara";
+    /// <summary>Nombre del texto enmascarado. Si se omite y el campo usa <c>@bind-Value</c>, el post usa el nombre del modelo.</summary>
+    [Parameter] public string? Name { get; set; }
 
     /// <summary>Etiqueta del campo.</summary>
     [Parameter] public string? Label { get; set; }
@@ -35,7 +41,7 @@
     /// <summary>Ayuda bajo el campo.</summary>
     [Parameter] public string? Hint { get; set; }
 
-    /// <summary>Valor inicial, ya con la forma de <see cref="Pattern"/>.</summary>
+    /// <summary>Valor, ya con la forma de <see cref="Pattern"/>. Acepta <c>@bind-Value</c>.</summary>
     [Parameter] public string? Value { get; set; }
 
     /// <summary>Ejemplo del campo vacío, por ejemplo <c>ABCD-12</c>.</summary>

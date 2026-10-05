@@ -1,0 +1,62 @@
+@namespace TDComponents.Components
+
+<section class="td-mxcard">
+    <header class="td-mxcard__head">
+        <span class="td-mxkicker">@Title</span>
+        <b class="td-mxcount">@Used.Count</b>
+    </header>
+    @if (Used.Count == 0)
+    {
+        <p class="td-mxemptyline">@EmptyText</p>
+    }
+    else
+    {
+        <ul class="td-mxalerts">
+            @foreach (var item in Used)
+            {
+                <li class="td-mxalert @ToneClass(item.Tone)">
+                    <span class="td-mxalert__icon"><TDMiscIcon Name="@ToneIcon(item.Tone)" Size="18" /></span>
+                    <span><strong>@item.Title</strong><small>@item.Detail</small></span>
+                    <button type="button" class="td-mxbtn td-mxbtn--ghost" data-td-mx-say="@item.Action">@item.Action</button>
+                </li>
+            }
+        </ul>
+    }
+</section>
+
+@code {
+    /// <summary>Título de la lista.</summary>
+    [Parameter] public string Title { get; set; } = "Requiere atención";
+
+    /// <summary>Texto si no hay avisos.</summary>
+    [Parameter] public string EmptyText { get; set; } = "Todo en orden.";
+
+    /// <summary>Avisos. Si se omite, queda la lista de demostración.</summary>
+    [Parameter] public IReadOnlyList<TDShopAlert>? Items { get; set; }
+
+    private IReadOnlyList<TDShopAlert> Used => Items ?? Demo;
+
+    private static string ToneClass(TDShopTone tone) => tone switch
+    {
+        TDShopTone.Danger => "is-danger",
+        TDShopTone.Success => "is-ok",
+        TDShopTone.Info => "is-info",
+        TDShopTone.Warning => "is-warn",
+        _ => ""
+    };
+
+    private static string ToneIcon(TDShopTone tone) => tone switch
+    {
+        TDShopTone.Danger => "alert",
+        TDShopTone.Info => "users",
+        TDShopTone.Success => "check",
+        _ => "lock"
+    };
+
+    private static readonly TDShopAlert[] Demo =
+    [
+        new("Caja cerrada", "Ábrela para poder vender hoy.", "Abrir caja", TDShopTone.Warning),
+        new("1 producto por agotarse", "Mouse alámbrico · 0 u.", "Ver inventario", TDShopTone.Danger),
+        new("Q 415.50 por cobrar", "Ventas al crédito pendientes", "Ver cuentas", TDShopTone.Info)
+    ];
+}
