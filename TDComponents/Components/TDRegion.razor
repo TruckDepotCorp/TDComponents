@@ -1,0 +1,11 @@
+@namespace TDComponents.Components
+
+<div data-td-region="@Id" style="display:contents">@ChildContent</div>
+
+@code {
+    /// <summary>Identificador de la zona, único en la página.</summary>
+    [Parameter, EditorRequired] public string Id { get; set; } = "";
+
+    /// <summary>Contenido de la zona. Cuando un <c>@onclick</c> de <c>TDButton</c> dentro de ella cambia el estado de la página, solo esta zona se vuelve a pintar. El resto de la página (por ejemplo un formulario a medio llenar) no se toca. Sin <c>TDRegion</c>, se repinta toda la <c>TDPage</c>.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

@@ -61,7 +61,7 @@ Pedido: «la diferencia entre lo que dice el sistema y lo que se contó en el pa
 
 Pedido: «ver en el mapa a los pilotos, la ruta que ya hicieron y las paradas».
 
-`Pantallas.Mapa`. Cada persona es un `TDMapUnit` en `Units`. `Route` es la lista de coordenadas por donde pasó y el mapa la reconstruye por calles. La ruta con entregas entre dos puntos es `Pantallas.Ruta`. La posición de quien inició sesión es `Pantallas.Ubicacion`, no una latitud enviada por el servidor. Un botón que solo toma el punto actual, sin mapa, es `Pantallas.Punto`.
+`Pantallas.Mapa`. Cada persona es un `TDMapUnit` en `Units`. `Route` es la lista de coordenadas por donde pasó y el mapa la reconstruye por calles. La ruta con entregas entre dos puntos es `Pantallas.Ruta`. La posición de quien inició sesión es `Pantallas.Ubicacion`, no una latitud enviada por el servidor.
 
 Pedido: «recibir la orden y revisar si el producto se puede ingresar».
 
@@ -82,6 +82,6 @@ Pedido: «un botón de cancelar dentro del formulario».
 | `Mobile` | [mobile.md](mobile.md) |
 | `Operaciones` | [operaciones.md](operaciones.md) |
 | `Entrada` | [entrada.md](entrada.md) |
-| Mapas, `Pantallas.Mapa`, `Pantallas.Ubicacion` y `Pantallas.Punto` | [mapas.md](mapas.md) |
+| Mapas, `Pantallas.Mapa` y `Pantallas.Ubicacion` | [mapas.md](mapas.md) |
 
 Las frases exactas están en el XML de `TDArchitecture`, una constante por intención. Esta página no las duplica para que el mapa tenga una sola fuente.

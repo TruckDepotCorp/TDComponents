@@ -191,7 +191,6 @@ public static class ComponentCatalog
         I("maps", "Mapas", "Pilotos", "<TDMaps>", "Uno o varios pilotos o vehículos en un mapa abierto. La ficha aparece sobre la marca y la posición se mueve cuando llegan nuevas coordenadas. La lista de coordenadas de cada piloto se reconstruye por calles.", "Flota en el mapa"),
         I("maptrace", "Mapas", "Recorrido", "<TDMaps MatchRoute=\"true\">", "Reconstruye por calles la ruta ya recorrida a partir de la lista de coordenadas por donde pasó el piloto.", "Ruta ya recorrida"),
         I("mapuser", "Mapas", "Mi ubicación", "<TDMapUser>", "Sigue la geolocalización del equipo de quien tiene la sesión abierta y dibuja el recorrido de esta visita.", "Dónde estoy"),
-        I("locate", "Mapas", "Ubicación actual", "<TDLocate>", "Un botón que, al hacer clic, lee la ubicación actual de este equipo y deja latitud, longitud y precisión listas para el formulario.", "Obtener mi ubicación"),
         I("maproute", "Mapas", "Ruta de entregas", "<TDMapRoute>", "Calcula el camino por calles desde la salida hasta la llegada, pasando por las entregas en el orden indicado.", "De A a B con entregas"),
         I("modal", "Overlays", "Modal", "<TDDialog>", "Se abre sin ida y vuelta al servidor. Atrapa el foco, cierra con Esc y envía su formulario interno por SSR.", "Diálogo con foco atrapado"),
         I("drawer", "Overlays", "Drawer", "<TDDrawer Side=\"Right\">", "Panel lateral con transición CSS para filtros y navegación. El conteo se recalcula localmente.", "Panel lateral"),

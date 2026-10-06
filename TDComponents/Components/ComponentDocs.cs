@@ -392,7 +392,3 @@ public partial class TDMaps { }
 /// <summary>Ruta por calles desde un punto A hasta un punto B, con las entregas del camino.</summary>
 /// <remarks>Sin <c>Origin</c> ni <c>Destination</c> calcula la ruta de demostración. <c>Deliveries</c> se visitan en el orden de la lista, entre la salida y la llegada. Una lista vacía es el camino directo. El trazado sale de un servidor OSRM. <c>RouterUrl</c> en producción debe ser el servidor propio. <c>Profile</c> es <c>driving</c>, <c>walking</c> o <c>cycling</c>.</remarks>
 public partial class TDMapRoute { }
-
-/// <summary>Botón que lee la ubicación actual de este equipo.</summary>
-/// <remarks>Un clic pide la posición al navegador. Muestra la coordenada y la precisión en metros. Los campos ocultos <c>Latitud</c>, <c>Longitud</c> y <c>Precision</c> quedan listos para el formulario. La coordenada no sale del servidor. Si el equipo niega el permiso o la lectura falla, el botón explica qué pasó y ofrece reintentar.</remarks>
-public partial class TDLocate { }

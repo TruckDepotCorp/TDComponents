@@ -62,9 +62,6 @@ internal static class CatalogMapPages
         "mapuser" => [Page("Pages/Ubicacion.razor", "/ubicacion", """
 <TDMapUser Name="María Soto" Role="Operadora de recepción" />
 """)],
-        "locate" => [Page("Pages/Aqui.razor", "/aqui", """
-<TDLocate />
-""")],
         "maproute" => [Page("Pages/Entregas.razor", "/entregas", """
 <TDMapRoute Title="Ruta de entregas" Origin="salida" Destination="llegada" Deliveries="entregas" />
 """, """

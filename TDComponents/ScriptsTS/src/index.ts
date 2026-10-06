@@ -13,7 +13,7 @@ import { handleOpsClick } from './components/td-ops';
 import { handleInboundClick, handleInboundKey } from './components/td-inbound';
 import { armEditFormPending, bindEditForms, clearEditForm, collectEditFormProblems, focusEditFormProblem, guardEditFormLeave, hideEditFormStatus, isEditFormBusy, markEditFormDirty, showEditFormProblems } from './components/td-editform';
 import { bindMaps } from './components/td-maps';
-import { bindLocate } from './components/td-locate';
+import { runClickEvent } from './components/td-event';
 
 if (!customElements.get('td-button')) {
     customElements.define('td-button', TDButtonElement);
@@ -187,6 +187,12 @@ document.addEventListener('click', (event) => {
         if (group instanceof HTMLElement) {
             group.hidden = !open;
         }
+    }
+
+    const clickTrigger = target.closest('[data-td-click]');
+    if (clickTrigger instanceof HTMLButtonElement && !clickTrigger.disabled) {
+        void runClickEvent(clickTrigger, bootPage);
+        return;
     }
 
     const themePick = target.closest('[data-td-theme-pick]');
@@ -429,7 +435,6 @@ function bootPage(): void {
     syncThemeFamily();
     bindEditForms();
     bindMaps();
-    bindLocate();
 }
 
 bootPage();
@@ -449,7 +454,32 @@ document.addEventListener('reset', (event) => {
 });
 
 const blazor = (window as Window & { Blazor?: { addEventListener?: (name: string, handler: () => void) => void } }).Blazor;
-blazor?.addEventListener?.('enhancedload', bootPage);
+// Una navegación o un envío mejorado reemplaza <html> y pierde data-theme / data-td-theme.
+// Se recuerda el último valor para devolverlo cuando Blazor termina de aplicar la página.
+const themeAttributes = ['data-theme', 'data-td-theme'] as const;
+const lastTheme = new Map<string, string>(themeAttributes.flatMap((name) => {
+    const value = document.documentElement.getAttribute(name);
+    return value ? [[name, value] as [string, string]] : [];
+}));
+new MutationObserver((records) => {
+    for (const record of records) {
+        const name = record.attributeName;
+        if (!name) continue;
+        const value = document.documentElement.getAttribute(name);
+        if (value) {
+            lastTheme.set(name, value);
+        }
+    }
+}).observe(document.documentElement, { attributes: true, attributeFilter: [...themeAttributes] });
+
+blazor?.addEventListener?.('enhancedload', () => {
+    for (const [name, value] of lastTheme) {
+        if (!document.documentElement.hasAttribute(name)) {
+            document.documentElement.setAttribute(name, value);
+        }
+    }
+    bootPage();
+});
 
 const hostWatch = new MutationObserver((records) => {
     for (const record of records) {

@@ -1,4 +1,7 @@
 @namespace TDComponents.Components
+@using Microsoft.AspNetCore.Antiforgery
+@using Microsoft.AspNetCore.Http
+@using Microsoft.Extensions.DependencyInjection
 
 <td-button variant="@VariantToken" size="@SizeToken" block="@Block">
     @if (IsLink)
@@ -13,16 +16,18 @@
     }
     else
     {
-        <button @attributes="AdditionalAttributes"
+        <button @attributes="Attributes"
                 class="@ModifierClass"
                 type="@TypeToken"
+                data-td-click="@ClickToken"
+                data-td-token="@(ClickToken is null ? null : Antiforgery)"
                 disabled="@Disabled">
             <span class="td-btn__label">@ChildContent</span>
             @if (ButtonType == TDButtonType.Submit)
             {
                 <span class="td-btn__pending" aria-hidden="true">
                     <span class="td-btn__spinner" aria-hidden="true"></span>
-                    @PendingText
+                    <span class="td-btn__pending-text">@PendingText</span>
                 </span>
             }
         </button>
@@ -54,8 +59,38 @@
     /// <summary>Etiqueta del botón. Puede incluir un ícono.</summary>
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
+    [CascadingParameter] private HttpContext? Http { get; set; }
+
+    [Inject] private IServiceProvider Services { get; set; } = default!;
+
     /// <summary>Atributos HTML que este componente no declara, por ejemplo un <c>id</c> o un <c>data-*</c>.</summary>
     [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string? _clickToken;
+
+    /// <summary>Token cifrado del <c>@onclick</c> del botón. Solo con <see cref="TDButtonType.Button"/>.</summary>
+    private string? ClickToken => _clickToken;
+
+    private string? Antiforgery => Http is null ? null : Services.GetService<IAntiforgery>()?.GetAndStoreTokens(Http).RequestToken;
+
+    private Dictionary<string, object>? Attributes { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        _clickToken = null;
+        Attributes = AdditionalAttributes;
+        if (ButtonType != TDButtonType.Button || Http is null || AdditionalAttributes is null || !AdditionalAttributes.TryGetValue("onclick", out var handler))
+        {
+            return;
+        }
+
+        _clickToken = TDEventTokens.Create(Services, handler);
+        if (_clickToken is not null)
+        {
+            Attributes = new Dictionary<string, object>(AdditionalAttributes);
+            Attributes.Remove("onclick");
+        }
+    }
 
     private bool IsLink => IsSafeHref;
 

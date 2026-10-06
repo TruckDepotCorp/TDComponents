@@ -719,6 +719,7 @@ textarea.td-input {
 }
 
 .td-btn {
+    position: relative;
     display: inline-grid;
     align-items: center;
     justify-items: center;
@@ -764,8 +765,20 @@ textarea.td-input {
     gap: 8px;
 }
 
+/* El spinner se superpone al botón: no participa del tamaño, así que el ancho no cambia al enviar. */
 .td-btn__pending {
+    position: absolute;
+    inset: 0;
     visibility: hidden;
+}
+
+.td-btn__pending-text {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
 }
 
 td-button[data-pending] .td-btn__label {
@@ -777,7 +790,6 @@ td-button[data-pending] .td-btn__pending {
 }
 
 td-button[data-pending] .td-btn {
-    min-width: 170px;
     cursor: progress;
     pointer-events: none;
 }
@@ -4975,7 +4987,8 @@ td-layout[data-collapsed="true"] [data-td-layout-label] { display: none; }
 .td-appshell__nav span { width: 22px; font: 700 11px var(--td-font-mono); text-align: center; flex: none; }
 .td-appshell__nav.is-on { background: color-mix(in srgb, var(--td-color-primary) 12%, transparent); color: var(--td-color-primary); }
 .td-appshell__footmark, .td-appshell__hint { margin-top: auto; padding: 6px 10px; font: 500 11px var(--td-font-mono); color: var(--td-color-text-muted); }
-.td-appshell__body { grid-area: b; overflow: auto; padding: 18px; display: flex; flex-direction: column; gap: 14px; }
+/* position: relative hace del cuerpo el contenedor de los inputs ocultos (radio, casilla, interruptor). Sin esto quedan fuera del recorte y, al recibir foco, el navegador desplaza todo el marco. */
+.td-appshell__body { position: relative; grid-area: b; overflow: auto; padding: 18px; display: flex; flex-direction: column; gap: 14px; }
 .td-appshell__body-title { font: 700 16px var(--td-font-family); }
 .td-appshell__kpi { padding: 12px 14px; border: 1px solid var(--td-color-border); border-radius: var(--td-radius-md); background: var(--td-color-surface); display: flex; flex-direction: column; gap: 4px; }
 .td-appshell__kpi span { font: 700 10.5px var(--td-font-family); letter-spacing: .12em; text-transform: uppercase; color: var(--td-color-text-muted); }
@@ -5095,6 +5108,9 @@ td-layout.td-appshell--menu[data-mode="float"] .td-appshell__mask { left: 0; rig
 td-layout.td-appshell--menu[data-mode="float"] .td-appshell__side { left: 0; z-index: 24; width: min(288px, 86vw); background: var(--td-color-surface); box-shadow: var(--td-shadow-lg); }
 td-layout.td-appshell--menu[data-mode="float"][data-collapsed="true"] .td-appshell__mask,
 td-layout.td-appshell--menu[data-mode="float"][data-collapsed="true"] .td-appshell__side { display: none; }
+/* Fullscreen: el shell es el contenedor de toda la aplicación y ocupa la ventana completa. */
+td-layout.td-appshell--full { display: block; height: 100vh; height: 100dvh; }
+td-layout.td-appshell--full .td-appshell__frame { height: 100vh; height: 100dvh; border: 0; border-radius: 0; }
 .td-appshell--menu .td-appshell__head { gap: 10px; }
 .td-appshell--menu .td-appshell__brand { display: flex; flex-direction: column; gap: 0; min-width: 0; text-transform: none; line-height: 1.1; }
 .td-appshell--menu .td-appshell__brand strong { font: 800 18px/1.1 var(--td-font-display); text-transform: uppercase; }
@@ -5968,9 +5984,4 @@ td-maps { display: block; }
     .td-maps__body { grid-template-columns: 1fr; }
     .td-maps__stage { min-height: 320px; }
 }
-
-.td-locate { display: grid; gap: 10px; justify-items: start; max-width: 36rem; }
-.td-locate__result { margin: 0; color: var(--td-color-text); font: 700 22px/1.3 var(--td-font-family); }
-.td-locate__status { margin: 0; color: var(--td-color-text-muted); font-size: 15px; line-height: 1.45; }
-.td-locate .td-btn:focus-visible { outline: 2px solid var(--td-color-primary); outline-offset: 2px; }
 

@@ -18,7 +18,6 @@
 | Teléfono de bodega | `Pantallas.Telefono` | Barra, turno, pasos, escaneo, cantidad, confirmación y navegación. La cámara sigue siendo `TDScanner`. |
 | Flota en el mapa | `Pantallas.Mapa` | `Units` de `TDMaps`: posición, `Route` con las coordenadas ya recorridas y paradas. `MatchRoute` reconstruye esa lista por calles. |
 | Dónde estoy | `Pantallas.Ubicacion` | `TDMapUser` con el nombre y el rol de la sesión. La coordenada sale del equipo. |
-| Ubicación actual | `Pantallas.Punto` | `TDLocate`. Un clic lee latitud, longitud y precisión en este equipo. |
 | Ruta con entregas | `Pantallas.Ruta` | `Origin`, `Destination` y `Deliveries` de `TDMapRoute`. El orden de la lista es el orden de visita. |
 
 ## Qué se queda en el catálogo

@@ -1,0 +1,8 @@
+@namespace TDComponents.Components
+
+<div data-td-page style="display:contents">@ChildContent</div>
+
+@code {
+    /// <summary>Contenido de la página. Es la zona que se vuelve a dibujar cuando un <c>@onclick</c> de <c>TDButton</c> cambia el estado de la página. <c>TDMenuAppShell</c> ya la incluye. Con otro marco, envuelve <c>@Body</c>.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

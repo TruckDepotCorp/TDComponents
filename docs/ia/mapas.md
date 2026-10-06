@@ -15,10 +15,9 @@ Fuente: parámetros reales de `TDComponents/Components`. El mapa es OpenStreetMa
 4. `Route` es la lista de coordenadas por donde pasó el piloto, en orden. `MatchRoute` vale true si se omite y reconstruye esa lista por calles. En false, une los puntos en línea recta. `Stops` son las paradas ejecutadas. `ShowRoute` y `ShowStops` valen true si se omiten.
 5. Para mover una marca, vuelve a pintar `TDMaps` con el mismo `Id` y la nueva latitud y longitud.
 6. `TDMapUser` es la persona que tiene la sesión en este equipo. La coordenada la entrega el navegador. `Name` y `Role` salen de la sesión.
-7. `TDLocate` es un botón. Al hacer clic lee la ubicación actual de este equipo y llena `Latitud`, `Longitud` y `Precision` para el formulario. No abre un mapa.
-8. `TDMapRoute` calcula el camino por calles de `Origin` a `Destination`. `Deliveries` son las entregas, en el orden de la lista. Una lista vacía es la ruta directa.
-9. `TileUrl` es una plantilla `https://…/{z}/{x}/{y}.png`. Otro esquema se ignora y queda OpenStreetMap.
-10. `RouterUrl` es un servidor OSRM. El defecto es el servicio público de demostración. En producción usa el servidor propio.
+7. `TDMapRoute` calcula el camino por calles de `Origin` a `Destination`. `Deliveries` son las entregas, en el orden de la lista. Una lista vacía es la ruta directa.
+8. `TileUrl` es una plantilla `https://…/{z}/{x}/{y}.png`. Otro esquema se ignora y queda OpenStreetMap.
+9. `RouterUrl` es un servidor OSRM. El defecto es el servicio público de demostración. En producción usa el servidor propio.
 
 ## Qué componente elegir
 
@@ -28,10 +27,8 @@ Fuente: parámetros reales de `TDComponents/Components`. El mapa es OpenStreetMa
 | Reconstruir el camino ya recorrido desde una lista de coordenadas | `TDMaps` con `MatchRoute="true"` |
 | Calcular de un punto A a un punto B con entregas | `TDMapRoute` |
 | Ver dónde está quien inició sesión y el trazo de esta visita | `TDMapUser` |
-| Un botón que obtiene la ubicación actual y la deja en el formulario | `TDLocate` |
 | Una pantalla de flota con datos del sistema | `Pantallas.Mapa` |
-| La ubicación de la sesión en el mapa | `Pantallas.Ubicacion` |
-| El punto actual, sin mapa | `Pantallas.Punto` |
+| La ubicación de la sesión | `Pantallas.Ubicacion` |
 
 ## Alias del catálogo
 
@@ -40,7 +37,6 @@ Fuente: parámetros reales de `TDComponents/Components`. El mapa es OpenStreetMa
 | maps | `TDMaps` |
 | maptrace | `TDMaps` con `MatchRoute` |
 | mapuser | `TDMapUser` |
-| locate | `TDLocate` |
 | maproute | `TDMapRoute` |
 
 ## TDMaps
@@ -94,27 +90,6 @@ Fuente: parámetros reales de `TDComponents/Components`. El mapa es OpenStreetMa
 | `Attribution` | Igual que en `TDMaps`. |
 
 Si el equipo niega la ubicación, el mapa dice qué pasó y ofrece Reintentar ubicación.
-
-## TDLocate
-
-Un botón. Al hacer clic lee la ubicación actual de este equipo. No abre un mapa.
-
-```razor
-<TDLocate />
-```
-
-| Parámetro | Uso |
-| --- | --- |
-| `Label` | Texto del botón. El defecto es Obtener mi ubicación. |
-| `UpdateLabel` | Texto después de una lectura correcta. El defecto es Actualizar ubicación. |
-| `RetryLabel` | Texto cuando falla. El defecto es Reintentar ubicación. |
-| `PendingText` | Texto mientras lee. El defecto es Buscando tu ubicación…. |
-| `Hint` | Qué va a pasar, antes del primer clic. |
-| `LatitudeName` | Campo del post. El defecto es `Latitud`. El valor usa punto decimal. |
-| `LongitudeName` | Campo del post. El defecto es `Longitud`. |
-| `AccuracyName` | Precisión en metros. El defecto es `Precision`. |
-
-La coordenada visible incluye el hemisferio. La precisión va en metros, con texto. Si el navegador no tiene ubicación, o el equipo niega el permiso, el botón dice qué pasó y pasa a Reintentar ubicación.
 
 ## TDMapRoute
 

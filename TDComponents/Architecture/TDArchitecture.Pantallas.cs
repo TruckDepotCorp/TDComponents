@@ -95,10 +95,6 @@ public static partial class TDArchitecture
         /// <remarks>La coordenada la entrega el equipo. <c>Name</c> y <c>Role</c> salen de la sesión. No envíes latitud desde el servidor para este caso.</remarks>
         public const string Ubicacion = """<TDMapUser Name="@usuario.Nombre" Role="@usuario.Rol" />""";
 
-        /// <summary>Un botón que lee la ubicación actual de este equipo y la deja en el formulario.</summary>
-        /// <remarks>La coordenada la entrega el navegador al hacer clic. <c>Latitud</c>, <c>Longitud</c> y <c>Precision</c> son los nombres del post. No envíes la posición desde el servidor.</remarks>
-        public const string Punto = """<TDLocate />""";
-
         /// <summary>Ruta por calles de la salida a la llegada, con las entregas del camino.</summary>
         /// <remarks><c>Deliveries</c> van en el orden de visita. Vacía es el camino directo. Sin <c>Origin</c> ni <c>Destination</c> queda la ruta del catálogo. El trazado lo calcula OSRM.</remarks>
         public const string Ruta = """<TDMapRoute Origin="salida" Destination="llegada" Deliveries="entregas" />""";
